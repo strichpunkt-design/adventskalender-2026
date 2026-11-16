@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%27-24 -24 48 48%27%3E%3Crect x=%27-24%27 y=%27-24%27 width=%2748%27 height=%2748%27/%3E%3Cpolygon fill=%27%23B78CFF%27 points=%2720,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4%27/%3E%3C/svg%3E">
+<title>Strichpunkt Advent 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Strichpunkt+Sans:wdth,wght@100..150,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="street.css">
+</head>
+<body data-weather="cloudy">
+<div id="sky" aria-hidden="true"></div>
+<main id="stage"><div id="far" class="layer" aria-hidden="true"></div><div id="ground"></div><div id="world" class="layer"></div><div id="fg" class="layer" aria-hidden="true"></div></main>
+<canvas id="fx" aria-hidden="true"></canvas>
+
+<header id="top">
+  <div class="brand"><b>Strichpunkt</b><span>Advent 2026</span></div>
+  <button id="pill" class="pill" type="button"><span id="clock">--:--</span><i>·</i><span id="place">…</span><span id="wicon" aria-hidden="true"></span></button>
+  <div class="tools"><button id="snd" class="pill ghost" type="button" aria-pressed="false">♪</button><button id="lang" class="pill ghost" type="button" aria-label="Sprache wechseln / Switch language"><b>DE</b><i>/</i><span>EN</span></button></div>
+</header>
+
+<button id="hint" class="sticker" type="button" hidden></button>
+<div id="toast" class="sticker" role="status" hidden></div>
+
+<aside id="card" role="dialog" aria-modal="true" aria-labelledby="card-title" hidden>
+  <button id="card-close" class="x" type="button" aria-label="Schließen">×</button>
+  <div id="card-body"></div>
+</aside>
+
+<dialog id="onboard">
+  <form method="dialog" id="onboard-form">
+    <p class="kicker" data-t="ob_kicker"></p>
+    <h2 data-t="ob_title"></h2>
+    <label><span data-t="ob_name"></span><input id="ob-name" name="name" maxlength="24" autocomplete="given-name"></label>
+    <p class="small" data-t="ob_where"></p>
+    <div class="row">
+      <button type="button" id="ob-geo" class="btn" data-t="ob_geo"></button>
+      <select id="ob-city" aria-label="Stadt">
+        <option value="" data-t="ob_pick"></option>
+        <option>Stuttgart</option><option>Berlin</option><option>Hamburg</option>
+        <option value="other" data-t="ob_other"></option>
+      </select>
+    </div>
+    <input id="ob-other" placeholder="Köln" maxlength="40" hidden>
+    <p id="ob-status" class="small" aria-live="polite"></p>
+    <button type="submit" class="btn primary" data-t="ob_go"></button>
+  </form>
+</dialog>
+
+<script src="config.js"></script>
+<script type="module" src="js/street/app.js"></script>
+</body>
+</html>

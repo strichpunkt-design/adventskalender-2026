@@ -1,0 +1,212 @@
+@import url("style.css");
+/* Version 2: the window grows into a full layer; no day bar, a compass sticker instead. */
+#hint{left:50%;bottom:calc(20px + var(--safe-b));translate:-50% 0;rotate:-2deg;font-size:12px;padding:10px 16px;background:var(--bg);color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+body[data-weather=rainy]:not([data-night]) #hint{background:var(--bg);color:var(--ink)}
+#hint:hover{transform:scale(1.06) rotate(2deg)}
+.badge{position:absolute;right:-18px;top:-16px;min-width:34px;padding:4px 8px;background:var(--ink);color:var(--bg);box-shadow:0 0 0 2px var(--bg);font-weight:900;font-stretch:150%;font-size:18px;text-align:center;rotate:8deg;z-index:2}
+.house:not(.opened) .badge{display:none}
+.house.solid .badge{background:var(--bg);color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+
+#card{left:0;right:0;top:0;bottom:0;width:auto;max-height:none;border-radius:0;transform-origin:0 0;animation:none!important}
+#card-body{height:100%;padding-bottom:0}
+.c-head{height:34dvh;min-height:210px}
+.c-head .illu{height:72%}
+.c-main{padding:22px 18px calc(48px + var(--safe-b))}
+.x{top:calc(12px + var(--safe-t))}
+@media (min-width:900px){
+  #card{left:20px;right:20px;top:20px;bottom:20px;border-radius:22px}
+  #card-body{overflow:hidden}
+  #card-body>div{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);height:100%}
+  .c-head{height:100%}
+  .c-head .illu{height:auto;width:64%;max-height:66%}
+  .c-head .count{left:28px;top:26px}.c-head .tag{left:28px;bottom:28px;font-size:13px;padding:7px 12px}
+  .c-main{overflow-y:auto;overscroll-behavior:contain;padding:72px 56px 56px}
+  .c-main>*{max-width:700px}
+  .c-main h2{font-size:clamp(40px,4.2vw,76px);margin-bottom:22px}
+  .c-main blockquote{font-size:clamp(34px,3.4vw,60px)}
+  .c-main p{font-size:18px}
+  .board{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+  .x{right:20px;top:20px;width:44px;height:44px}
+}
+
+/* street life: one colour, with a thin outline in the sky colour so they read against any house */
+.actor{position:absolute;left:0;top:0;z-index:3;pointer-events:none;will-change:transform}
+.actor .flip{transform:scaleX(var(--f,1))}
+.actor .fig{transform-origin:50% 100%;pointer-events:auto;cursor:pointer}
+.actor svg,.santa svg{display:block;height:100%;width:100%;overflow:visible;color:var(--ink);--kb:var(--bg);transition:color .8s;
+  filter:drop-shadow(2.5px 0 0 var(--bg)) drop-shadow(-2.5px 0 0 var(--bg)) drop-shadow(0 2.5px 0 var(--bg)) drop-shadow(0 -2.5px 0 var(--bg))}
+.actor.walk .fig{animation:waddle .34s ease-in-out infinite alternate}
+.actor.run .fig{animation-duration:.15s}
+.actor.greet .fig,.actor.hop .fig{animation:jump .5s ease-in-out 2}
+.actor.hop .fig{animation-iteration-count:1}
+.actor.greet .arm{animation:wave .26s ease-in-out 6 alternate}
+.actor .eye{animation:blink 4.2s infinite;animation-delay:var(--bd,0s)}
+.actor .tail{animation:wag .26s ease-in-out infinite alternate}
+.actor.pop .fig{animation:popin .5s cubic-bezier(.3,1.6,.5,1)}
+.actor.enter .fig{animation:indoor .7s ease-in forwards}
+.actor.exit .fig{animation:indoor .6s ease-out reverse backwards}
+.actor.fly .fig{animation:fly .9s ease-in forwards}
+.actor.gift .fig,.actor.snow .fig{transform:scale(0);transition:transform .6s cubic-bezier(.3,1.6,.5,1) .5s}
+.actor.gift.on .fig,body[data-weather=snowy] .actor.snow .fig{transform:none}
+.actor.gift.hop .fig,.actor.snow.hop .fig{animation:jump .5s}
+@keyframes waddle{from{transform:rotate(-5deg) translateY(0)}50%{transform:rotate(0) translateY(-5px)}to{transform:rotate(5deg) translateY(0)}}
+@keyframes jump{50%{transform:translateY(-16px) scale(.97,1.04)}}
+@keyframes wave{from{transform:rotate(-14deg)}to{transform:rotate(22deg)}}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}96%{transform:scaleY(.08)}}
+@keyframes wag{from{transform:rotate(-9deg)}to{transform:rotate(12deg)}}
+@keyframes popin{from{transform:scale(0)}}
+@keyframes indoor{to{transform:translateY(-6px) scale(.35);opacity:0}}
+@keyframes fly{to{transform:translate(320px,-460px) rotate(-18deg) scale(.7);opacity:0}}
+/* the chimney on house 24 */
+.chim{position:absolute;width:56px;height:124px;background:var(--ink);transition:background .8s}
+.chim::before{content:"";position:absolute;left:-9px;right:-9px;top:0;height:18px;background:inherit}
+.house.line .chim,.house.line .chim::before{background:var(--bg);box-shadow:inset 0 0 0 5px var(--ink)}
+.santa{position:absolute;width:160px;height:160px;overflow:hidden;pointer-events:none}
+.house .santa svg{position:static;transform:translateY(104%);transition:transform .8s cubic-bezier(.3,1.5,.5,1),color .8s}
+.house .santa.up svg{transform:translateY(8%);animation:sway 1.1s ease-in-out infinite alternate}
+@keyframes sway{from{rotate:-4deg}to{rotate:4deg}}
+.smoke{position:absolute;width:22px;height:22px;pointer-events:none}
+.smoke i{position:absolute;inset:0;border-radius:50%;background:var(--bg);box-shadow:0 0 0 3px var(--ink);opacity:0;animation:puff 3.6s linear infinite}
+.smoke i:nth-child(2){animation-delay:-1.2s}.smoke i:nth-child(3){animation-delay:-2.4s}
+.house.santa-on .smoke{display:none}
+@keyframes puff{0%{transform:scale(.4);opacity:0}12%{opacity:1}100%{transform:translate(34px,-150px) scale(1.7);opacity:0}}
+
+/* ---- round 3: selected characters, brand eye, calmer houses ---- */
+#wicon{display:inline-flex;margin-left:2px}
+#wicon svg{width:15px;height:15px;fill:currentColor}
+.pill.ghost{box-shadow:none;padding:0 2px}
+/* the sun is the brand star, filled, nothing else */
+#sky .sun{background:none;border-radius:0}
+#sky .sun svg{inset:0;width:100%;height:100%}
+#sky .sun polygon{fill:var(--lilac);stroke:none}
+/* houses stay still; only today's shutters react to the cursor */
+.house .pupil{transform:translate(calc(var(--ex,0)*15px),calc(var(--ey,0)*5px));transition:transform .3s ease-out}
+@media (hover:hover){
+  .house:hover,.house.locked:hover{transform:none}
+  .house:not(.locked):not(.opened):hover .sh.l,.house:not(.locked):not(.opened):hover .sh.r{transform:none}
+  .house.today:not(.locked):not(.opened):hover .sh.l{transform:rotateY(-32deg)}
+  .house.today:not(.locked):not(.opened):hover .sh.r{transform:rotateY(32deg)}
+}
+.actor.greet .hat{animation:tip .45s ease-in-out 2 alternate}
+@keyframes tip{to{transform:rotate(-20deg) translateY(-5px)}}
+.actor.cane .fig{transform:rotate(14deg);pointer-events:none}
+.actor.peek{overflow:hidden}
+.actor.peek .fig{transform:translateY(106%);transition:transform .7s cubic-bezier(.3,1.5,.5,1)}
+.actor.peek.up .fig{transform:translateY(16%)}
+.ball{position:absolute;width:58px;transform-origin:50% 0;rotate:calc(var(--ex,0)*14deg);transition:rotate .8s cubic-bezier(.3,1.9,.5,1);pointer-events:none;color:var(--frame);--kb:var(--ink)}
+.house.line .ball{--kb:var(--bg)}
+.ball::before{content:"";display:block;width:2.5px;height:34px;margin:0 auto -2px;background:var(--frame)}
+.house .ball svg{position:static;display:block;width:100%;height:auto;overflow:visible}
+.santa{width:180px;height:180px}
+.house .santa.up svg{transform:translateY(36%)}
+.santa.up .arm{animation:wave .3s ease-in-out infinite alternate}
+
+/* ---- round 4: eye as lock, sound switch, finale, colleague dots ---- */
+.tools{justify-self:end;display:flex;gap:12px;align-items:center}
+#snd{font-size:17px;position:relative}
+#snd.off{opacity:.45}
+#snd.off::after{content:"";position:absolute;left:-2px;right:-2px;top:50%;height:1.5px;background:currentColor;rotate:-35deg}
+@media (max-width:899px){body.card-open .tools{opacity:0;pointer-events:none}}
+.sh::after{display:none}
+.house .lock{inset:auto;left:50%;top:20px;width:76px;height:46px;margin-left:-38px;z-index:1;overflow:visible;transition:opacity .3s}
+.lock .o{fill:var(--ink);transform-origin:36px 22px;animation:blink 5.200s infinite;animation-delay:var(--d2,0s)}
+.house.solid .lock .o{fill:#000}body[data-night] .house.solid .lock .o{fill:#fff}
+.house .lock .pupil{fill:var(--paper)}
+.house.today .lock .pupil{fill:var(--accent)}
+.lock .c{display:none;fill:none;stroke:var(--frame);stroke-width:6;stroke-linecap:round}
+.house.locked .lock .o{display:none}
+.house.locked .lock .c{display:block}
+.house.locked .sh{border-color:transparent}
+.house.opened .lock{opacity:0}
+.house.today .lock .o{animation:wake .7s 1s cubic-bezier(.3,1.6,.5,1) backwards,blink 5.200s 2s infinite}
+@keyframes wake{from{transform:scaleY(.06)}}
+.dots{position:absolute;left:0;right:0;top:170px;display:flex;justify-content:center;gap:5px;flex-wrap:wrap;pointer-events:auto}
+.dots i{width:11px;height:11px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 2px var(--frame);animation:popin .4s cubic-bezier(.3,1.6,.5,1) backwards}
+.dots em{font-style:normal;font-size:11px;font-weight:900;font-stretch:150%;color:var(--frame);line-height:11px}
+.house.locked .dots{display:none}
+body.finale .house .dw{fill:var(--accent);transition-delay:calc(var(--i)*40ms + var(--d,0ms))}
+.burst{position:fixed;z-index:15;pointer-events:none}
+.burst i{position:absolute;width:28px;height:28px;margin:-14px;color:var(--lilac);animation:burst 2s cubic-bezier(.1,.7,.3,1) forwards}
+.burst svg{display:block;width:100%;height:100%}
+@keyframes burst{to{transform:translate(var(--x),var(--y)) rotate(220deg) scale(var(--s));opacity:0}}
+
+/* ---- round 5: new cast, sleigh in the sky, decorated trees ---- */
+.ftree{position:absolute;top:668px;width:150px;height:247px;color:var(--ink);--kb:var(--bg);transition:color .8s;
+  filter:drop-shadow(2.5px 0 0 var(--bg)) drop-shadow(-2.5px 0 0 var(--bg)) drop-shadow(0 2.5px 0 var(--bg)) drop-shadow(0 -2.5px 0 var(--bg))}
+.ftree svg{position:static;display:block;width:100%;height:100%;overflow:visible}
+.ball.sock{width:46px}
+.sleigh{position:absolute;left:0;top:var(--t,14vh);height:min(22vh,180px);aspect-ratio:566/351;color:var(--ink);--kb:var(--bg);transition:color .8s;animation:flyby 17s linear forwards}
+.sleigh svg{display:block;width:100%;height:100%;overflow:visible;animation:skybob 1.7s ease-in-out infinite alternate}
+@keyframes flyby{from{transform:translateX(calc(-100% - 20px))}to{transform:translateX(100vw)}}
+@keyframes skybob{from{transform:translateY(-9px) rotate(-3deg)}to{transform:translateY(9px) rotate(2deg)}}
+
+/* ---- round 6: calmer sky, clean numbers, colour instead of outlines, endless street ---- */
+:root{--cast:var(--lilac)}
+#ground{position:absolute;left:0;right:0;bottom:0;background:var(--ink);transition:background .8s}
+.ftree{left:0}
+#sky .cloud .o{display:none}
+body[data-night] #sky .cloud .f{fill:#1e1e1e}
+/* rainy days are grey, not lilac */
+body[data-weather=rainy]{--bg:#CFCFCF;--accent:#B78CFF}
+body[data-weather=rainy][data-night]{--bg:#000}
+body[data-weather=rainy]:not([data-night]) #card{--ch:var(--lilac)}
+/* locked numbers: a clean outline, the fill hides where letter shapes overlap */
+.house.locked .sh b{color:var(--ink);-webkit-text-stroke:3px var(--frame);paint-order:stroke fill}
+.house.line.locked .sh b{color:var(--bg)}
+/* illustrations in lilac, no outline; their inner details take the dark colour */
+.actor svg,.santa svg,.ftree,.sleigh{color:var(--cast);--kb:var(--ink);filter:none}
+.ball{width:54px;margin-left:-27px;color:var(--cast);--kb:var(--ink)}
+.house.line .ball{--kb:var(--bg)}
+.ball::before{background:var(--cast)}
+.ball.sock{width:42px;margin-left:-21px}
+.ball.cane{width:50px;margin-left:-25px}
+
+/* ---- round 7: closed number outlines, backing colour for deco details ---- */
+.house.locked .sh{overflow:visible}
+.house.locked .sh b{padding:3px 1px 2px}
+.house.line .ball{--kb:var(--ink)}
+
+/* ---- round 8: precise backing, magical arrivals ---- */
+.art{position:relative;display:block;width:100%}
+.art svg{position:absolute;inset:0;display:block;width:100%;height:100%;overflow:visible}
+.bk{position:absolute;background:var(--ink);pointer-events:none;transition:background .8s;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+.actor .art,.sleigh .art,.santa .art{width:auto;height:100%}
+.santa .art{margin:0 auto}
+.house .art svg{position:absolute;inset:0;width:100%;height:100%}
+.ftree{height:auto}
+.ftree svg{position:absolute}
+/* Santa at the chimney: the whole figure slides, not only the drawing */
+.house .santa svg,.house .santa.up svg{transform:none;animation:none;transition:none}
+.santa .art{transform:translateY(104%);transition:transform .8s cubic-bezier(.3,1.5,.5,1)}
+.santa.up .art{transform:translateY(36%);animation:sway 1.100s ease-in-out infinite alternate}
+.sleigh svg{animation:none}
+.sleigh .art{animation:skybob 1.700s ease-in-out infinite alternate}
+/* arriving and leaving: no growing from small, they blink into place with a flash of stars */
+.actor.exit .fig{animation:warp-in .62s cubic-bezier(.2,.9,.3,1) backwards}
+.actor.enter .fig{animation:warp-out .42s ease-in forwards}
+@keyframes warp-in{0%{clip-path:circle(0% at 50% 55%);transform:scale(1.3,.62) translateY(12%)}40%{clip-path:circle(85% at 50% 55%);transform:scale(.88,1.16)}68%{transform:scale(1.06,.95)}100%{clip-path:circle(140% at 50% 55%);transform:none}}
+@keyframes warp-out{0%{clip-path:circle(140% at 50% 45%);transform:none}35%{transform:scale(1.12,.9)}100%{clip-path:circle(0% at 50% 45%);transform:scale(.72,1.35) translateY(-14%)}}
+.spark{position:absolute;left:0;top:0;z-index:4;pointer-events:none}
+.spark svg{display:block;width:100%;height:100%}
+.spark b{position:absolute;width:170px;height:170px;margin:-85px;color:var(--cast);animation:flash .55s cubic-bezier(.2,.8,.3,1) forwards}
+.spark i{position:absolute;width:22px;height:22px;margin:-11px;color:var(--cast);animation:burst .85s cubic-bezier(.1,.7,.3,1) forwards}
+.spark i:nth-child(odd){color:var(--ink)}
+@keyframes flash{0%{transform:scale(0) rotate(0);opacity:.95}55%{opacity:.9}100%{transform:scale(1.2) rotate(140deg);opacity:0}}
+.santa{text-align:center}
+.santa .art{display:inline-block;margin:0}
+
+/* a house door lights up while a character walks through it */
+.house.door-open .door{fill:var(--cast);transition:fill .2s}
+
+/* ---- going through a house door: the door is the frame ---- */
+/* the doorway goes dark while someone is in it, so the lilac figure shows inside the arch */
+.house.door-open .door{fill:var(--ink);stroke:none;transition:fill .15s}
+.actor.indoor{animation:doormask .9s linear forwards}
+.actor.indoor .fig{animation:through .9s cubic-bezier(.4,0,.6,1) forwards}
+.actor.outdoor{animation:doormask .9s linear reverse backwards}
+.actor.outdoor .fig{animation:through .9s cubic-bezier(.4,0,.6,1) reverse backwards}
+/* first the figure steps back until it fits the door, then the arch closes around it and it walks into the dark */
+@keyframes through{0%{transform:none;opacity:1}48%{transform:translateY(-16px) scale(var(--ds,.6));opacity:1}80%{opacity:1}100%{transform:translateY(-20px) scale(calc(var(--ds,.6)*.82));opacity:0}}
+@keyframes doormask{0%{clip-path:inset(-240px round 0 0 0 0)}58%,100%{clip-path:var(--dm)}}
+/* on black houses the open doorway keeps a thin frame, so the arch stays readable */
+.house.solid.door-open .door{stroke:var(--bg);stroke-width:3}
