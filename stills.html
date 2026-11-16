@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Advent 2026: Wetter und Farben</title>
+<style>
+  body{margin:0;padding:20px;background:#111;color:#fff;font:14px/1.4 system-ui,sans-serif}
+  h1{font-size:18px;margin:0 0 4px}
+  p{margin:0 0 18px;opacity:.7}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,520px),1fr));gap:18px}
+  figure{margin:0}
+  figcaption{margin:0 0 6px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;font-size:12px}
+  iframe{display:block;width:100%;aspect-ratio:16/10;border:0;border-radius:10px;background:#000}
+  .phones{grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:28px}
+  .phones iframe{aspect-ratio:9/19}
+</style>
+</head>
+<body>
+<h1>Advent 2026: every sky</h1>
+<p>Each frame is the live calendar in demo mode (day 12, characters switched on), forced to one weather. You can walk around in every frame.</p>
+<div class="grid">
+  <figure><figcaption>Sunny</figcaption><iframe src="./?demo&cast&weather=sunny&night=0" loading="lazy"></iframe></figure>
+  <figure><figcaption>Cloudy</figcaption><iframe src="./?demo&cast&weather=cloudy&night=0" loading="lazy"></iframe></figure>
+  <figure><figcaption>Rainy</figcaption><iframe src="./?demo&cast&weather=rainy&night=0" loading="lazy"></iframe></figure>
+  <figure><figcaption>Snowy</figcaption><iframe src="./?demo&cast&weather=snowy&night=0" loading="lazy"></iframe></figure>
+  <figure><figcaption>Clear night</figcaption><iframe src="./?demo&cast&weather=sunny&night=1" loading="lazy"></iframe></figure>
+  <figure><figcaption>Snowy night</figcaption><iframe src="./?demo&cast&weather=snowy&night=1" loading="lazy"></iframe></figure>
+</div>
+<div class="grid phones">
+  <figure><figcaption>Phone · sunny</figcaption><iframe src="./?demo&cast&weather=sunny&night=0" loading="lazy"></iframe></figure>
+  <figure><figcaption>Phone · rainy</figcaption><iframe src="./?demo&cast&weather=rainy&night=0" loading="lazy"></iframe></figure>
+  <figure><figcaption>Phone · night</figcaption><iframe src="./?demo&cast&weather=cloudy&night=1" loading="lazy"></iframe></figure>
+</div>
+</body>
+</html>

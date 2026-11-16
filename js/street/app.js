@@ -136,6 +136,7 @@ function compass() {
   hint.hidden = false;
   if (!n) return hint.textContent = t('soon', Math.max(1, Math.ceil((new Date(2026, 11, 1) - new Date()) / 864e5)));
   const d = ring(n, nearest || n);
+  $('#navL').classList.toggle('to', d < 0); $('#navR').classList.toggle('to', d > 0);
   hint.textContent = d ? t('compass', n, Math.abs(d), Math.sign(d)) : t(state.opened.has(n) ? 'reopen' : 'here', n);
 }
 // Tapping it walks a few houses that way, never the whole distance.
@@ -146,6 +147,10 @@ hint.addEventListener('click', () => {
   if (!d) return tapHouse(n);
   walkTo(order[(slot[nearest] + Math.sign(d) * Math.min(3, Math.abs(d)) + 24) % 24]);
 });
+// On phones two round arrows walk the street; the one that leads to today's door is filled.
+const step = dir => { if (!state.card && !state.busy) walkTo(order[(slot[nearest] + dir * 2 + 24) % 24]); };
+$('#navL').addEventListener('click', () => step(-1));
+$('#navR').addEventListener('click', () => step(1));
 // Small counters show where colleagues have left something.
 async function badges() {
   try {
@@ -435,7 +440,7 @@ load('flake').then(wx.setFlake).catch(() => {});
 wx.tune({ soft: true });
 life = initLife({ world, houses, els, GROUND, W, state, view: () => ({ x0: cam.x - vw / 2 / cam.z, x1: cam.x + vw / 2 / cam.z }) });
 // Ask the browser for the location straight away; the city picker is the fallback. The name is asked on the first post.
-if (!wx.getLoc()) wx.geolocate(state.lang, t('somewhere')).then(() => wx.refresh()).catch(() => openOnboard());
+if (!wx.getLoc() && !demo) wx.geolocate(state.lang, t('somewhere')).then(() => wx.refresh()).catch(() => openOnboard());
 addEventListener('pagehide', () => { localStorage.sp_x = Math.round(cam.x); });
 badges(); setInterval(badges, 60000);
 if (state.today === 24 && state.opened.has(24)) document.body.classList.add('finale');

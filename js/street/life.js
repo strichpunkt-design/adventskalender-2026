@@ -7,12 +7,14 @@ const DIR = new URL('../../assets/xmas/', import.meta.url);
 const RIG = {
   santa: [['arm', [1155.6, 219.1, 51.7, 80.7], [1158, 298]]],
   ginger: [['hat', [814.9, 207.3, 72.8, 40.2], [851, 247]]],
-  snowman: [['arm', [2007.8, 238.2, 34.2, 42.8], [2010, 280]]],
+  snowman: [['arm', [1509.2, 238, 34.2, 42.8], [1511.4, 280]]],
 };
 // key, height, speed, facing of the drawing (1 = right), how often it is picked
 const WALKERS = [['elf', 125, 120, 1, 3], ['ginger', 118, 44, 1, 2]];
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const cache = {}, rigged = {};
+// These drawings already carry their own backing shapes; only the deco set needs one worked out.
+const OWN_BACKING = ['elf', 'ginger', 'santa', 'snowman', 'sleigh', 'tree'];
 
 export const load = key => cache[key] || (cache[key] = fetch(new URL(key + '.svg', DIR)).then(r => r.text()));
 
@@ -21,7 +23,7 @@ const arts = {}, sheet = document.head.appendChild(document.createElement('style
 export const art = key => arts[key] || (arts[key] = load(key).then(async svg => {
   const vb = svg.match(/viewBox="([^"]+)"/)[1].split(' ').map(Number);
   let bk = '';
-  try {
+  if (!OWN_BACKING.includes(key)) try {
     const b = await backing(svg, { skip: (RIG[key] || []).map(r => r[1]) });
     if (b.url) {
       sheet.textContent += `.bk-${key}{-webkit-mask-image:url(${b.url});mask-image:url(${b.url})}`;

@@ -4,7 +4,7 @@
 // An entry is a file name, or { file, from, for } to play only a part of it (seconds).
 const DIR = new URL('../../assets/sound/', import.meta.url);
 let ctx, out, files = null, music = null, loopCfg = null, loopBuf = null, loopSrc = null, manifest = {}, gen = 0, timer = 0, playing = false, lastSanta = 0;
-const st = { on: localStorage.sp_sound === '1' };
+const st = { on: localStorage.sp_sound !== '0' }; // on unless someone switched it off
 
 function ac() {
   if (!ctx) { ctx = new (window.AudioContext || window.webkitAudioContext)(); out = ctx.createGain(); out.connect(ctx.destination); }
