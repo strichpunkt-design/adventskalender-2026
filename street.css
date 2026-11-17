@@ -210,3 +210,39 @@ body[data-weather=rainy]:not([data-night]) #card{--ch:var(--lilac)}
 @keyframes doormask{0%{clip-path:inset(-240px round 0 0 0 0)}58%,100%{clip-path:var(--dm)}}
 /* on black houses the open doorway keeps a thin frame, so the arch stays readable */
 .house.solid.door-open .door{stroke:var(--bg);stroke-width:3}
+
+/* ---- round 9: drawings with their own backing, clearer sound button, arrows on phones ---- */
+.actor svg,.santa svg,.ftree,.sleigh,.ball{--kb:var(--paper)}
+.house.line .ball{--kb:var(--paper)}
+.bk{background:var(--paper)}
+#snd{width:36px;height:36px;padding:0;justify-content:center;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--ink);background:color-mix(in srgb,var(--paper) 55%,transparent);font-size:18px}
+#snd.off{opacity:1;color:color-mix(in srgb,var(--ink) 45%,transparent)}
+#snd.off::after{left:8px;right:8px;background:var(--ink)}
+.nav{display:none}
+@media (max-width:899px){
+  .nav{display:grid;place-items:center;position:fixed;z-index:11;bottom:calc(16px + var(--safe-b));width:56px;height:56px;border-radius:50%;background:var(--bg);box-shadow:0 0 0 2px var(--ink);color:var(--ink);transition:transform .15s,opacity .3s,background .3s}
+  .nav svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+  .nav:active{transform:scale(.9)}
+  #navL{left:16px}#navR{right:16px}
+  .nav.to{background:var(--lilac);color:#000;animation:nudge 1.4s ease-in-out infinite}
+  #navL.to{--n:-5px}#navR.to{--n:5px}
+  @keyframes nudge{50%{translate:var(--n) 0}}
+  body.card-open .nav{opacity:0;pointer-events:none}
+  #hint{max-width:calc(100vw - 176px);overflow:hidden;text-overflow:ellipsis;bottom:calc(27px + var(--safe-b))}
+}
+
+/* ---- round 10 ---- */
+/* house doors are always white or black, never lilac, so the lilac walkers stay visible in front of them */
+.house .door,.house.opened .door,body.finale .house .door{fill:var(--paper);stroke:none}
+.house.line .door,.house.line.opened .door,body.finale .house.line .door{fill:var(--ink);stroke:none}
+.house.door-open .door{fill:var(--ink)}
+.house.line.door-open .door{fill:var(--ink)}
+/* the sleigh sits a layer behind: dark grey instead of lilac */
+.sleigh{color:#4a4a4a;--kb:var(--bg)}
+body[data-night] .sleigh{color:#555}
+
+/* sound button: the bell from the icon set, black, in a plain round button without an outline */
+#snd,#snd.off{box-shadow:none;background:rgba(255,255,255,.72);color:#000}
+#snd svg{width:20px;height:20px;fill:#000}
+#snd.off svg{opacity:.4}
+#snd.off::after{left:7px;right:7px;background:#000;height:2px}
