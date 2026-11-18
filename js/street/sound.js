@@ -3,7 +3,7 @@
 // assets/sound/ and name them in assets/sound/sounds.json (open, santa, locked, close, finale, music).
 // An entry is a file name, or { file, from, for } to play only a part of it (seconds).
 const DIR = new URL('../../assets/sound/', import.meta.url);
-let hushed = false, ctx, out, files = null, music = null, loopCfg = null, loopBuf = null, loopSrc = null, manifest = {}, gen = 0, timer = 0, playing = false, lastSanta = 0;
+let hushed = false, ctx, out, music = null, loopCfg = null, loopBuf = null, loopSrc = null, manifest = {}, gen = 0, timer = 0, playing = false, lastSanta = 0;
 const st = { on: localStorage.sp_sound !== '0' }; // on unless someone switched it off
 
 function ac() {
@@ -62,32 +62,39 @@ function round(my, bus) {
 function startMusic() {
   if (playing) return;
   playing = true;
-  if (loopCfg) { startLoop(++gen); return; }
+  const my = ++gen;
+  // Wait for the sound list first; only without a named recording does the generated music box play.
+  ready.then(() => { if (my === gen && playing) startTrack(my); });
+}
+function startTrack(my) {
+  if (loopCfg) { startLoop(my); return; }
   if (music) { music.currentTime = 0; music.play().catch(() => { playing = false; }); return; }
   const c = ac(), bus = c.createGain();
   bus.connect(out); startMusic.bus = bus;
-  round(++gen, bus);
+  round(my, bus);
 }
 // A recorded track loops on a bar line: the part between loopFrom and loopTo repeats, and the last
 // moment before the seam is blended into the lead-in so the join is not heard as a cut.
 async function startLoop(my) {
   try {
     const c = ac();
-    if (!loopBuf) {
-      const src = await c.decodeAudioData(await (await fetch(new URL(loopCfg.file, DIR))).arrayBuffer());
-      const sr = src.sampleRate, a = Math.round(loopCfg.loopFrom * sr), len = Math.round((loopCfg.loopTo - loopCfg.loopFrom) * sr), f = Math.min(Math.round((loopCfg.fade || 0.1) * sr), a);
-      loopBuf = c.createBuffer(src.numberOfChannels, len, sr);
-      for (let ch = 0; ch < src.numberOfChannels; ch++) {
-        const s = src.getChannelData(ch), d = loopBuf.getChannelData(ch);
-        for (let i = 0; i < len; i++) d[i] = s[a + i];
-        for (let i = 0; i < f; i++) { const t = (i + 1) / f, j = len - f + i; d[j] = s[a + j] * Math.cos(t * Math.PI / 2) + s[a - f + i] * Math.sin(t * Math.PI / 2); }
-      }
-    }
-    if (my !== gen || !playing) return;
+    if (!loopBuf) loopBuf = await loopReady;
+    if (!loopBuf || my !== gen || !playing) return;
     const bus = c.createGain(); bus.gain.value = 0.0001; bus.gain.exponentialRampToValueAtTime(0.32, c.currentTime + 0.6); bus.connect(out);
     loopSrc = c.createBufferSource(); loopSrc.buffer = loopBuf; loopSrc.loop = true; loopSrc.connect(bus); loopSrc.start();
     loopSrc.bus = bus;
   } catch (e) { playing = false; }
+}
+// Cut the loop out of the decoded track: the part between loopFrom and loopTo, with the seam blended.
+function buildLoop(src) {
+  const c = ac(), sr = src.sampleRate, a = Math.round(loopCfg.loopFrom * sr), len = Math.round((loopCfg.loopTo - loopCfg.loopFrom) * sr), f = Math.min(Math.round((loopCfg.fade || 0.1) * sr), a);
+  const buf = c.createBuffer(src.numberOfChannels, len, sr);
+  for (let ch = 0; ch < src.numberOfChannels; ch++) {
+    const sd = src.getChannelData(ch), d = buf.getChannelData(ch);
+    for (let i = 0; i < len; i++) d[i] = sd[a + i];
+    for (let i = 0; i < f; i++) { const t = (i + 1) / f, jj = len - f + i; d[jj] = sd[a + jj] * Math.cos(t * Math.PI / 2) + sd[a - f + i] * Math.sin(t * Math.PI / 2); }
+  }
+  return buf;
 }
 function stopMusic() {
   playing = false; gen++; clearTimeout(timer);
@@ -97,28 +104,28 @@ function stopMusic() {
 }
 // Real recordings named in sounds.json replace the generated ones.
 const entry = e => !e ? null : typeof e === 'string' ? { file: e } : e;
-// The list is read straight away so the music element exists before the first tap (phones only start audio inside a tap).
+// Everything is fetched and decoded as soon as the page opens, so the first tap plays the real recordings
+// at once (decoding works before a tap; only playing needs one).
+const decode = file => fetch(new URL(file, DIR)).then(r => r.arrayBuffer()).then(b => ac().decodeAudioData(b));
+const NAMES = ['open', 'santa', 'locked', 'close', 'finale', 'right', 'wrong'];
+const clips = {};
+let loopReady = Promise.resolve(null);
 const ready = fetch(new URL('sounds.json', DIR)).then(r => r.json()).then(m => {
   manifest = m;
   const mu = entry(m.music);
-  if (mu && mu.loopTo) loopCfg = mu;
-  else if (mu) { music = new Audio(new URL(mu.file, DIR)); music.loop = true; music.volume = 0.3; music.preload = 'none'; }
-}).catch(() => {});
-async function loadFiles() {
-  if (files) return;
-  files = {};
-  await ready;
-  for (const k of ['open', 'santa', 'locked', 'close', 'finale', 'right', 'wrong']) {
-    const e = entry(manifest[k]);
-    if (e) try { files[k] = { buf: await ac().decodeAudioData(await (await fetch(new URL(e.file, DIR))).arrayBuffer()), from: e.from || 0, len: e.for }; } catch (x) {}
+  if (mu && mu.loopTo) { loopCfg = mu; loopReady = decode(mu.file).then(buildLoop).catch(() => null); }
+  else if (mu) { music = new Audio(new URL(mu.file, DIR)); music.loop = true; music.volume = 0.3; music.preload = 'auto'; }
+  for (const k of NAMES) {
+    const e = entry(m[k]);
+    if (e) clips[k] = decode(e.file).then(buf => ({ buf, from: e.from || 0, len: e.for })).catch(() => null);
   }
-}
+}).catch(() => {});
 
 export const sfx = {
   get on() { return st.on; },
   toggle() {
     st.on = !st.on; localStorage.sp_sound = st.on ? '1' : '0';
-    if (st.on) { loadFiles(); this.play('open'); startMusic(); } else stopMusic();
+    if (st.on) { this.play('open'); startMusic(); } else stopMusic();
     return st.on;
   },
   // A video is playing: the music waits until it is closed.
@@ -128,12 +135,18 @@ export const sfx = {
     try {
       // Santa's laugh is kept rare, however often he shows up.
       if (name === 'santa') { if (performance.now() - lastSanta < 30000) return; lastSanta = performance.now(); }
-      const f = files && files[name];
-      if (f) { const c = ac(), n = c.createBufferSource(); n.buffer = f.buf; n.connect(out); n.start(0, f.from, f.len || f.buf.duration - f.from); }
-      else SOUNDS[name]();
+      const asked = performance.now();
+      ready.then(() => {
+        // A named recording always wins; if it is still loading it plays as soon as it is ready (but not late).
+        if (clips[name]) return clips[name].then(f => {
+          if (!f || performance.now() - asked > 1500) return;
+          const c = ac(), n = c.createBufferSource(); n.buffer = f.buf; n.connect(out); n.start(0, f.from, f.len || f.buf.duration - f.from);
+        });
+        if (SOUNDS[name]) SOUNDS[name]();
+      }).catch(() => {});
     } catch (e) {}
   },
 };
 // If sound was left on last time, the music starts with the first tap (browsers require one).
-addEventListener('pointerdown', () => { if (st.on && !playing && !hushed) { loadFiles(); startMusic(); } }, { passive: true });
+addEventListener('pointerdown', () => { if (ctx && ctx.state === 'suspended') ctx.resume(); if (st.on && !playing && !hushed) startMusic(); }, { passive: true });
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopMusic(); });

@@ -48,8 +48,8 @@
 @keyframes cd-fl{from{transform:scale(.94,.9)}to{transform:scale(1.04,1.08)}}
 .cd-w{animation:cd-w 9s infinite}
 @keyframes cd-w{0%,24%{opacity:0}32%,80%{opacity:1}88%,100%{opacity:0}}
-.snow{animation:snow 7s linear infinite}
-@keyframes snow{from{transform:translateY(-20px)}to{transform:translateY(480px)}}
+.cd-snow{animation:cd-snow 7s linear infinite}
+@keyframes cd-snow{from{transform:translateY(-20px)}to{transform:translateY(480px)}}
 /* bauble: letters for the seven Christmas post offices */
 .letter{animation:letter 8s infinite linear}
 @keyframes letter{0%,30%{transform:translateY(-60px);opacity:0}33%{opacity:1}64%{opacity:1}68%,100%{transform:translateY(520px);opacity:0}}
