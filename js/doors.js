@@ -221,10 +221,11 @@ export function doorTypes({ wall, onCleanup }) {
     },
 
     // ---------- Christmas dinner: a long table ----------
-    dinner(el, d) {
+    dinner(el, d, o, head) {
       const dish = h('input', { maxlength: 80, placeholder: L({ de: 'Was gibt es bei euch?', en: 'What’s on your table?' }), 'aria-label': L({ de: 'Gericht', en: 'Dish' }) });
       const from = h('input', { maxlength: 40, placeholder: L({ de: 'Woher kommt die Tradition?', en: 'Where is the tradition from?' }), 'aria-label': L({ de: 'Herkunft', en: 'Origin' }) });
-      const e1 = err(), table = h('div', { class: 'table' });
+      const e1 = err(), table = h('div', { class: 'longtable' });
+      stage(head, 'blush scroll', table);
       const send = btn(L({ de: 'Auf den Tisch', en: 'On the table' }), async () => {
         if (!dish.value.trim()) return e1.textContent = L({ de: 'Was kommt auf den Teller?', en: 'What goes on the plate?' });
         if (!needName(send)) return;
@@ -233,15 +234,16 @@ export function doorTypes({ wall, onCleanup }) {
         send.disabled = false;
       }, 'primary');
       const hint = h('p', { class: 'small', style: 'opacity:.7' });
-      el.append(h('div', { class: 'wall-form' }, dish, from, h('div', { class: 'row' }, send), e1), hint, table);
+      el.append(h('div', { class: 'wall-form' }, dish, from, h('div', { class: 'row' }, send), e1), hint);
       if (!store.isShared) el.append(h('p', { class: 'small', style: 'opacity:.5' }, t('local')));
+      // One place setting: fork, plate, knife.
+      const setting = (plate, cls = '') => h('div', { class: 'setting ' + cls }, h('span', { class: 'cut', html: FORK }), plate, h('span', { class: 'cut', html: KNIFE }));
       live(d.n, posts => {
         const plates = posts.filter(p => p.kind === 'text').reverse();
-        table.style.setProperty('--n', Math.max(4, plates.length));
-        const seats = Array.from({ length: Math.max(0, (plates.length < 6 ? 6 : plates.length % 2 ? 1 : 2) - (plates.length < 6 ? plates.length : 0)) }, () => h('div', { class: 'plate empty-seat', 'aria-hidden': 'true' }));
-        table.replaceChildren(h('div', { class: 'cloth' }), ...(plates.length ? plates.map(p => { const [a, b] = p.body.split('\n'); return h('div', { class: 'plate' }, h('span', { class: 'dish' }, a), b && h('span', { class: 'from' }, b), h('span', { class: 'who' }, p.name), store.isMine(p.id) && h('button', { class: 'del', type: 'button', 'aria-label': t('clear'), onclick: () => store.remove(d.n, p.id).catch(() => {}) }, '×')); })
-          : []), ...seats);
-        hint.textContent = plates.length ? '' : L({ de: 'Noch sitzt niemand am Tisch. Schreib dein Gericht oben rein, dann steht es hier auf einem Teller.', en: 'Nobody at the table yet. Write your dish above and it appears here on a plate.' });
+        const free = Math.max(plates.length < 8 ? 8 - plates.length : 0, plates.length % 2);
+        table.replaceChildren(...plates.map(p => { const [a, b] = p.body.split('\n'); return setting(h('div', { class: 'plate' }, h('span', { class: 'dish' }, a), b && h('span', { class: 'from' }, b), h('span', { class: 'who' }, p.name), store.isMine(p.id) && h('button', { class: 'del', type: 'button', 'aria-label': t('clear'), onclick: () => store.remove(d.n, p.id).catch(() => {}) }, '×'))); }),
+          ...Array.from({ length: free }, () => setting(h('div', { class: 'plate' }), 'free')));
+        hint.textContent = plates.length ? '' : L({ de: 'Noch sitzt niemand am Tisch. Schreib dein Gericht hier rein, dann steht es links auf einem Teller.', en: 'Nobody at the table yet. Write your dish here and it appears on a plate on the left.' });
       });
     },
 
@@ -320,19 +322,30 @@ export function doorTypes({ wall, onCleanup }) {
 }
 
 // ---------- drawings ----------
+// Bites for the chocolate Nikolaus, in eating order: hat first, then down to the boots, until nothing is left.
+const BITES = [[62, 4], [86, 12], [40, 8], [70, 24], [44, 26], [18, 22], [88, 34], [64, 42], [38, 44], [12, 42], [86, 54], [60, 60], [34, 62], [10, 62], [84, 74], [58, 78], [32, 80], [8, 82], [70, 94], [42, 96], [16, 96], [88, 92]];
+// Things a picture needs to move after it is placed.
+export const ART_RUN = {
+  // Every bite lands a little after the last; once he is gone, he comes back whole.
+  nikolaus(stage) {
+    const T = 6500, bites = stage.querySelectorAll('.bite'), crumbs = stage.querySelectorAll('.crumb'), n = bites.length;
+    // The last crumbs of chocolate vanish with the last bite.
+    stage.querySelector('.niko img').animate([{ opacity: 1, offset: 0 }, { opacity: 1, offset: 0.72 }, { opacity: 0, offset: 0.76 }, { opacity: 0, offset: 0.9 }, { opacity: 1, offset: 0.95 }, { opacity: 1, offset: 1 }], { duration: T, iterations: Infinity });
+    bites.forEach((b, i) => {
+      const at = 0.04 + i * 0.68 / n;
+      b.animate([{ scale: 0, offset: 0 }, { scale: 0, offset: at }, { scale: 1, offset: Math.min(at + 0.025, 0.86) }, { scale: 1, offset: 0.88 }, { scale: 0, offset: 0.95 }, { scale: 0, offset: 1 }], { duration: T, iterations: Infinity, easing: 'ease-out' });
+      crumbs[i].animate([{ opacity: 0, transform: 'none', offset: 0 }, { opacity: 0, transform: 'none', offset: at }, { opacity: 1, transform: 'none', offset: at + 0.01 }, { opacity: 0, transform: `translate(${(i % 2 ? 1 : -1) * (10 + i % 5 * 6)}px,110px) rotate(160deg)`, offset: Math.min(at + 0.12, 0.99) }, { opacity: 0, offset: 1 }], { duration: T, iterations: Infinity });
+    });
+  },
+};
 // Pictures for the left column of simple doors (set with art: in content.js).
 export const ART = {
   // A chocolate Nikolaus: someone takes bites out of his hat and hand, sweets float around.
-  nikolaus: `<div class="niko"><img src="${ASSET('xmas/santa.svg')}" alt=""><i class="bite b1"></i><i class="bite b2"></i><i class="bite b3"></i>
-    <i class="crumb c1"></i><i class="crumb c2"></i><i class="crumb c3"></i><i class="crumb c4"></i></div>
+  nikolaus: `<div class="niko"><img src="${ASSET('xmas/santa.svg')}" alt="">${BITES.map(([x, y]) => `<i class="bite" style="left:${x}%;top:${y}%"></i><i class="crumb" style="left:${x}%;top:${y + 4}%"></i>`).join('')}</div>
     ${[[8, 18, '#fff', -20, 0], [80, 12, '#000', 25, 1.2], [14, 70, '#F3E6E0', 10, 2.1], [84, 64, '#fff', -35, .6], [70, 86, '#000', 15, 1.7], [24, 88, '#fff', 40, 2.6]].map(([x, y, c, r, dl]) =>
       `<svg class="bonbon" style="left:${x}%;top:${y}%;--r:${r}deg;animation-delay:-${dl}s" viewBox="0 0 60 30" aria-hidden="true"><polygon points="0,4 14,15 0,26" fill="${c}"/><polygon points="60,4 46,15 60,26" fill="${c}"/><ellipse cx="30" cy="15" rx="17" ry="13" fill="${c}"/></svg>`).join('')}`,
-  // A pretzel and a coffee for breakfast.
-  pretzel: `<svg class="pretzel" viewBox="0 0 240 200" aria-hidden="true"><g fill="none" stroke="#000" stroke-linecap="round">
-    <path d="M44 108 C44 172 196 172 196 108" stroke-width="30"/>
-    <path d="M44 110 C38 56 90 30 114 80 C124 102 138 128 164 152" stroke-width="19"/>
-    <path d="M196 110 C202 56 150 30 126 80 C116 102 102 128 76 152" stroke-width="19"/></g>
-    <g fill="#fff"><circle cx="70" cy="150" r="3"/><circle cx="96" cy="160" r="2.5"/><circle cx="120" cy="158" r="3"/><circle cx="146" cy="162" r="2.5"/><circle cx="174" cy="148" r="3"/><circle cx="58" cy="128" r="2.5"/><circle cx="184" cy="126" r="2.5"/><circle cx="56" cy="80" r="2.5"/><circle cx="184" cy="78" r="2.5"/></g></svg>`,
+  // Pretzel for breakfast (Noun Project, Taufik Ramadhan).
+  pretzel: `<svg class="pretzel" viewBox="0 3 100 92" aria-hidden="true"><path d="m89.387 21.523c-5.5078-5.5078-12.816-8.5391-20.582-8.5391-5.7109 0-11.164 1.6523-15.879 4.7539 0.10547 0.10156 0.21484 0.19922 0.32031 0.30469l6.9961 6.9766c0.6875 0.69141 1.2852 1.4336 1.8203 2.207 6.1914-2.8164 13.434-1.543 18.297 3.3203 3.0898 3.0898 4.7891 7.1914 4.7891 11.555 0 4.3633-1.6992 8.4648-4.7891 11.555l-6.2578 6.2461 9.0312 9.0391 6.2578-6.2578c5.5-5.5 8.5312-12.812 8.5312-20.59 0-7.7734-3.0273-15.082-8.5273-20.574zm-21.941-1.5117c0 0.57422-0.46484 1.043-1.043 1.043-0.57422 0-1.043-0.46484-1.043-1.043v-1.9102c0-0.57422 0.46484-1.043 1.043-1.043 0.57422 0 1.043 0.46484 1.043 1.043zm13.598 1.9023-1.3438 1.3594c-0.20312 0.20703-0.47266 0.30859-0.74219 0.30859-0.26562 0-0.52734-0.10156-0.73047-0.30078-0.41016-0.40234-0.41406-1.0625-0.007812-1.4727l1.3438-1.3594c0.40625-0.41016 1.0625-0.41406 1.4727-0.007813 0.41016 0.40234 0.41406 1.0625 0.007813 1.4727zm6.4648 9.1875 1.3594-1.3594c0.40625-0.40625 1.0664-0.40625 1.4727 0s0.40625 1.0664 0 1.4727l-1.3594 1.3594c-0.20312 0.20312-0.46875 0.30469-0.73828 0.30469-0.26563 0-0.53516-0.10156-0.73828-0.30469-0.40625-0.40625-0.40625-1.0664 0-1.4727zm-1.4336 28.273c-0.20312 0.20312-0.46875 0.30469-0.73828 0.30469-0.26563 0-0.53516-0.10156-0.73828-0.30469-0.40625-0.40625-0.40625-1.0664 0-1.4727 5.1758-5.1758 8.1914-12.051 8.4922-19.363 0.023437-0.57422 0.49609-1.0312 1.082-0.99609 0.57422 0.023437 1.0234 0.50781 0.99609 1.082-0.32031 7.8359-3.5547 15.203-9.1016 20.75z"/><path d="m37.133 67.66c0.007813-0.007812 0.015626-0.007812 0.019532-0.011718l10.367-10.359-7.7656-7.7656c-0.43359-0.43359-0.82422-0.88672-1.1992-1.3555l-10.438 10.445c-0.007813 0.007813-0.007813 0.015625-0.015626 0.019531-0.007812 0.007813-0.015624 0.007813-0.019531 0.011719l-10.449 10.461c-0.011718 0.011719-0.015624 0.03125-0.027343 0.042969-0.011719 0.011718-0.023438 0.011718-0.035157 0.023437-1.1875 1.1992-1.8398 2.7852-1.8398 4.4766 0 1.707 0.66406 3.3125 1.8711 4.5117 1.207 1.2109 2.8086 1.8789 4.5156 1.8789 1.7109 0 3.3125-0.66406 4.5117-1.8711l0.003906-0.003907 10.488-10.48c0.007812-0.007813 0.007812-0.015625 0.011718-0.019532zm-8.1523 1.082-1.3594 1.3398c-0.20312 0.19922-0.46875 0.30078-0.73047 0.30078-0.26953 0-0.53906-0.10547-0.74219-0.30859-0.40234-0.41016-0.39844-1.0703 0.007812-1.4727l1.3594-1.3398c0.41016-0.40625 1.0664-0.39844 1.4727 0.007812 0.40234 0.41016 0.39844 1.0703-0.007812 1.4727zm7.168-7.5781c-0.26563 0-0.52734-0.10156-0.73047-0.30078l-1.3594-1.3398c-0.41016-0.40234-0.41406-1.0625-0.007813-1.4727 0.40625-0.41016 1.0625-0.41406 1.4727-0.007812l1.3594 1.3398c0.41016 0.40234 0.41406 1.0625 0.007813 1.4727-0.20312 0.20703-0.47266 0.30859-0.74219 0.30859z"/><path d="m25.891 57.891-6.2539-6.2539c-3.082-3.082-4.7812-7.1836-4.7812-11.547 0-4.3633 1.6992-8.4609 4.7812-11.547 3.0898-3.0898 7.1914-4.7891 11.555-4.7891 4.0547 0 7.875 1.4883 10.879 4.1758 0.023438 0.019531 0.054688 0.023437 0.074219 0.046874 0.19922 0.18359 0.39844 0.36719 0.60156 0.56641l16.73 16.734c4.6523-5.4258 4.418-13.641-0.71094-18.781l-6.9922-6.9766c-5.5039-5.5039-12.812-8.5312-20.59-8.5312s-15.082 3.0273-20.574 8.5312c-5.4961 5.4961-8.5234 12.805-8.5234 20.582 0 7.7773 3.0273 15.086 8.5234 20.582l6.25 6.25 9.0352-9.0391zm24.895-28.742 1.3438-1.3594c0.40625-0.41016 1.0625-0.41406 1.4727-0.007812 0.41016 0.40234 0.41406 1.0625 0.007813 1.4727l-1.3438 1.3594c-0.20312 0.20703-0.47266 0.30859-0.74219 0.30859-0.26563 0-0.52734-0.10156-0.73047-0.30078-0.41016-0.40234-0.41406-1.0625-0.007813-1.4727zm-8.0039-8.0078 1.3438-1.3594c0.40234-0.41016 1.0625-0.41406 1.4727-0.007812 0.41016 0.40234 0.41406 1.0625 0.007813 1.4727l-1.3438 1.3594c-0.20312 0.20703-0.47266 0.30859-0.74219 0.30859-0.26562 0-0.52734-0.10156-0.73047-0.30078-0.41016-0.40234-0.41406-1.0625-0.007812-1.4727zm-10.125-4.9961c0-0.57422 0.46484-1.043 1.043-1.043 0.57422 0 1.043 0.46484 1.043 1.043v1.9102c0 0.57422-0.46484 1.043-1.043 1.043-0.57422 0-1.043-0.46484-1.043-1.043zm-13.57 2.3359c0.41016-0.40625 1.0703-0.39844 1.4727 0.007812l1.3438 1.3594c0.40234 0.41016 0.39844 1.0703-0.007813 1.4727-0.20312 0.19922-0.46875 0.30078-0.73047 0.30078-0.26953 0-0.53906-0.10547-0.74219-0.30859l-1.3438-1.3594c-0.40234-0.41016-0.39844-1.0703 0.007813-1.4727zm-9.3008 9.3008c0.41016-0.40625 1.0703-0.39844 1.4727 0.007812l1.3438 1.3594c0.40234 0.41016 0.39844 1.0703-0.007812 1.4727-0.20312 0.19922-0.46875 0.30078-0.73047 0.30078-0.26953 0-0.53906-0.10547-0.74219-0.30859l-1.3438-1.3594c-0.40234-0.41016-0.39844-1.0703 0.007812-1.4727zm0.14844 15.113h-1.9102c-0.57422 0-1.043-0.46484-1.043-1.043 0-0.57422 0.46484-1.043 1.043-1.043h1.9102c0.57422 0 1.043 0.46484 1.043 1.043 0 0.57422-0.46484 1.043-1.043 1.043zm3.9102 10.133-1.3594 1.3594c-0.20312 0.20312-0.46875 0.30469-0.73828 0.30469-0.26562 0-0.53516-0.10156-0.73828-0.30469-0.40625-0.40625-0.40625-1.0664 0-1.4727l1.3594-1.3594c0.40625-0.40625 1.0664-0.40625 1.4727 0s0.40625 1.0664 0 1.4727z"/><path d="m41.254 30.02c-0.26172-0.25391-0.51562-0.48828-0.76562-0.70312-4.0195 4.7148-4.3438 11.539-1 16.598 0.019531 0.023438 0.050781 0.039063 0.066407 0.0625 0.50391 0.74609 1.0703 1.4375 1.6875 2.0586l8.4961 8.5117c0.011719 0.011719 0.019531 0.03125 0.03125 0.042969l23.594 23.594c1.2031 1.2109 2.8047 1.875 4.5117 1.875s3.3125-0.66406 4.5117-1.8711l0.003906-0.003906c1.2109-1.2109 1.8789-2.8242 1.875-4.5352-0.003906-1.6953-0.66797-3.2852-1.8711-4.4727zm7.6836 15.344-1.3438 1.3594c-0.20312 0.20703-0.47266 0.30859-0.74219 0.30859-0.26562 0-0.52734-0.10156-0.73047-0.30078-0.41016-0.40234-0.41406-1.0625-0.007813-1.4727l1.3438-1.3594c0.40234-0.41016 1.0625-0.41406 1.4727-0.007813 0.41016 0.40234 0.41406 1.0625 0.007812 1.4727zm8.0078 9.3477c-0.20312 0.20703-0.47266 0.30859-0.74219 0.30859-0.26562 0-0.52734-0.10156-0.73047-0.30078l-1.3594-1.3398c-0.41016-0.40234-0.41406-1.0625-0.007812-1.4727s1.0625-0.41406 1.4727-0.007812l1.3594 1.3398c0.41016 0.40234 0.41406 1.0625 0.007812 1.4727zm7.9961 6.6719-1.3594 1.3398c-0.20312 0.19922-0.46875 0.30078-0.73047 0.30078-0.26953 0-0.53906-0.10547-0.74219-0.30859-0.40234-0.41016-0.39844-1.0703 0.007813-1.4727l1.3594-1.3398c0.41016-0.40625 1.0664-0.39844 1.4727 0.007812 0.40234 0.41016 0.39844 1.0703-0.007813 1.4727zm7.9883 9.3516c-0.20313 0.19922-0.46875 0.30078-0.73047 0.30078-0.26953 0-0.53906-0.10547-0.74219-0.30859l-1.3438-1.3594c-0.40234-0.41016-0.39844-1.0703 0.007813-1.4727 0.41016-0.40625 1.0703-0.39844 1.4727 0.007813l1.3438 1.3594c0.40234 0.41016 0.39844 1.0703-0.007812 1.4727z"/><path d="m51.004 76.23c-4.1836 0-8.3672-1.5898-11.551-4.7773l-1.582-1.582-9.0312 9.0234 1.5859 1.5859c5.4922 5.5 12.801 8.5312 20.574 8.5312 7.5703 0 14.695-2.8789 20.141-8.1055l-9.0469-9.0469c-3.1133 2.9023-7.0977 4.3711-11.09 4.3711zm-13.406 1.1094-1.3438 1.3594c-0.20312 0.20703-0.47266 0.30859-0.74219 0.30859-0.26562 0-0.52734-0.10156-0.73047-0.30078-0.41016-0.40234-0.41406-1.0625-0.007812-1.4727l1.3438-1.3594c0.40625-0.41016 1.0625-0.41406 1.4727-0.007812 0.41016 0.40234 0.41406 1.0625 0.007812 1.4727zm13.441 5.7578c0 0.57422-0.46484 1.043-1.043 1.043-0.57422 0-1.043-0.46484-1.043-1.043v-1.9102c0-0.57422 0.46484-1.043 1.043-1.043 0.57422 0 1.043 0.46484 1.043 1.043zm12.836-6.543 1.3438 1.3594c0.40234 0.41016 0.39844 1.0703-0.007812 1.4727-0.20313 0.19922-0.46875 0.30078-0.73047 0.30078-0.26953 0-0.53906-0.10547-0.74219-0.30859l-1.3438-1.3594c-0.40234-0.41016-0.39844-1.0703 0.007813-1.4727 0.41016-0.40625 1.0703-0.39844 1.4727 0.007813z"/></svg>`,
 };
 
 const KITCHEN = `<svg class="bg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
@@ -365,6 +378,10 @@ const ORNAMENT = `<svg viewBox="0 0 400 460" aria-hidden="true">
     <path transform="translate(0 -30)" d="M200 250C222 250 240 268 240 290C240 342 220 378 178 400C175 395 171 391 168 386C194 368 204 350 204 330C182 330 160 312 160 290C160 268 178 250 200 250Z" fill="#fff"/>
     <g class="glint"><polygon transform="translate(256 148) scale(.55)" fill="#fff" points="${BURST}"/></g></g>
 </svg>`;
+
+// Fork and knife for the table (Noun Project, Styfico).
+const FORK = '<svg viewBox="15 4 34 92" aria-hidden="true"><path d="m44.5 5c1.9336 0 3.5 1.5664 3.5 3.5v26c0 3.3164-1.6328 6.4961-4.5391 8.8398-1.5078 1.2148-3.293 2.1523-5.2344 2.7734l0.67188 42.387c0.054687 3.5742-2.8242 6.5-6.3984 6.5s-6.4531-2.9258-6.3984-6.5l0.66797-42.387c-1.9414-0.62109-3.7227-1.5586-5.2305-2.7734-2.9062-2.3438-4.5391-5.5234-4.5391-8.8398v-26c0-1.9336 1.5664-3.5 3.5-3.5s3.5 1.5664 3.5 3.5v21.5h5v-21.5c0-1.9336 1.5664-3.5 3.5-3.5s3.5 1.5664 3.5 3.5v21.5h5v-21.5c0-1.9336 1.5664-3.5 3.5-3.5z"/></svg>';
+const KNIFE = '<svg viewBox="60 4 24 92" aria-hidden="true"><path d="m83 63h-0.054688l-0.0625 25.625c-0.007812 3.5234-2.8672 6.375-6.3906 6.375-3.5703 0-6.4453-2.9219-6.3906-6.4922l0.47656-30.574c-5.7852-5.2227-9.5781-13.992-9.5781-23.934 0-16.016 9.8516-29 22-29z"/></svg>';
 
 const TV = `<svg viewBox="0 0 600 440" aria-hidden="true">
   <path d="M260 26 L196 -44 M340 26 L410 -50" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>

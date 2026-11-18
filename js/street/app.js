@@ -412,7 +412,6 @@ obCity.addEventListener('change', () => {
   if (obCity.value && obCity.value !== 'other') pending = wx.useOffice(obCity.value);
   if (obCity.value === 'other') obOther.focus();
 });
-ob.addEventListener('cancel', e => { if (!wx.getLoc()) e.preventDefault(); });
 $('#onboard-form').addEventListener('submit', async e => {
   e.preventDefault();
   const name = $('#ob-name').value.trim();
@@ -422,7 +421,6 @@ $('#onboard-form').addEventListener('submit', async e => {
     try { pending = await wx.searchCity(obOther.value.trim(), state.lang); } catch (x) { pending = null; }
     if (!pending) return obStatus.textContent = t('ob_nocity');
   }
-  if (!pending) return obStatus.textContent = t('ob_need');
   if (name) localStorage.sp_name = name;
   ob.close(); wx.refresh();
   if (!localStorage.sp_walked) { localStorage.sp_walked = '1'; toast(t('walk')); }
@@ -440,7 +438,7 @@ load('flake').then(wx.setFlake).catch(() => {});
 wx.tune({ soft: true });
 life = initLife({ world, houses, els, GROUND, W, state, view: () => ({ x0: cam.x - vw / 2 / cam.z, x1: cam.x + vw / 2 / cam.z }) });
 // Ask the browser for the location straight away; the city picker is the fallback. The name is asked on the first post.
-if (!wx.getLoc() && !demo) wx.geolocate(state.lang, t('somewhere')).then(() => wx.refresh()).catch(() => openOnboard());
+if (!wx.getLoc() && !demo) wx.geolocate(state.lang, t('somewhere')).then(() => wx.refresh()).catch(() => wx.refresh());
 addEventListener('pagehide', () => { localStorage.sp_x = Math.round(cam.x); });
 badges(); setInterval(badges, 60000);
 if (state.today === 24 && state.opened.has(24)) document.body.classList.add('finale');

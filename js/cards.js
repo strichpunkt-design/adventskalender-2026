@@ -2,7 +2,7 @@
 import { illu } from './illu.js';
 import { DOORS } from './content.js';
 import { ui, L, t, h, btn } from './ui.js';
-import { doorTypes, ART } from './doors.js';
+import { doorTypes, ART, ART_RUN } from './doors.js';
 import * as store from './store.js';
 
 let cleanups = [];
@@ -19,7 +19,7 @@ export function render(d, o) {
   const main = h('div', { class: 'c-main' }, h('p', { class: 'kicker' }, L(d.kicker)));
   main.append(h('h2', { id: 'card-title' }, L(d.title)));
   for (const p of L(d.body) || []) main.append(h('p', {}, p));
-  if (d.art && ART[d.art]) { head.classList.add('staged'); head.append(h('div', { class: 'stage art-' + d.art, html: ART[d.art] })); }
+  if (d.art && ART[d.art]) { head.classList.add('staged'); const st = h('div', { class: 'stage art-' + d.art, html: ART[d.art] }); head.append(st); if (ART_RUN[d.art]) ART_RUN[d.art](st); }
   (TYPES[d.type] || (() => {}))(main, d, o, head, DOORS);
   if (d.todo) main.append(todo(d));
   const lay = LAYOUT[d.type] || '';
@@ -29,7 +29,7 @@ export function render(d, o) {
 }
 
 // Visual doors give the picture two thirds; the TV fills the whole card.
-const LAYOUT = { anim: 'lay-wide', meme: 'lay-wide', recipes: 'lay-wide', niete: 'lay-wide', elfom: 'lay-wide', diy: 'lay-wide', tv: 'lay-full' };
+const LAYOUT = { anim: 'lay-wide', meme: 'lay-wide', recipes: 'lay-wide', niete: 'lay-wide', elfom: 'lay-wide', diy: 'lay-wide', dinner: 'lay-wide', tv: 'lay-full' };
 
 // On a laptop, everything to read should fit without scrolling: shrink the type step by step if needed.
 // Doors with long lists (walls, forms) may still scroll once the type is as small as it may get.

@@ -1,5 +1,5 @@
 // Location, weather, clock and the sky that reacts to them.
-const OFFICES = { Stuttgart: [48.78, 9.18], Berlin: [52.52, 13.41], Hamburg: [53.55, 9.99] };
+const OFFICES = { Stuttgart: [48.78, 9.18], Berlin: [52.52, 13.41], Hamburg: [53.55, 9.99], Basel: [47.56, 7.59] };
 const qs = new URLSearchParams(location.search);
 const STAR = '20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4';
 const CLOUD = '<rect x="10" y="46" width="180" height="40" rx="20"/><circle cx="62" cy="46" r="28"/><circle cx="112" cy="36" r="34"/><circle cx="152" cy="52" r="22"/>';
@@ -64,7 +64,8 @@ const kindOf = c => [71, 73, 75, 77, 85, 86].includes(c) ? 'snowy' : c >= 51 ? '
 
 export async function refresh() {
   const l = getLoc();
-  let kind = 'cloudy', night = new Date().getHours() >= 17 || new Date().getHours() < 8, wind = 10;
+  // Without a location (not allowed, or no city chosen) it simply snows.
+  let kind = l ? 'cloudy' : 'snowy', night = new Date().getHours() >= 17 || new Date().getHours() < 8, wind = 10;
   if (l) try {
     const j = await get(`https://api.open-meteo.com/v1/forecast?latitude=${l.lat}&longitude=${l.lon}&current=weather_code,is_day,wind_speed_10m`);
     kind = kindOf(j.current.weather_code); night = !j.current.is_day; wind = j.current.wind_speed_10m;
@@ -88,7 +89,7 @@ export function initSky(getLang) {
   const clock = document.getElementById('clock'), place = document.getElementById('place');
   const tick = () => {
     clock.textContent = new Date().toLocaleTimeString(getLang() === 'de' ? 'de-DE' : 'en-GB', { hour: '2-digit', minute: '2-digit' });
-    const l = getLoc(); place.textContent = l ? l.city : '…';
+    const l = getLoc(); place.textContent = l ? l.city : (getLang() === 'de' ? 'Nordpol' : 'North Pole');
   };
   tick(); setInterval(tick, 5000);
   setInterval(refresh, 15 * 60 * 1000);

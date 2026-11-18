@@ -189,15 +189,20 @@
 .rcard .btn.ghost{color:#000!important}.rcard .btn.line{background:transparent;color:#000;box-shadow:inset 0 0 0 1.5px #000}
 @media (max-width:599px){.rcard .cols{grid-template-columns:1fr}}
 
-/* ---------- Christmas dinner: plates on a long lilac table ---------- */
-.table{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:18px 12px;padding:22px 14px 30px;margin:16px 0 8px;background:var(--lilac)}
-.table .cloth{display:none}
-.plate.empty-seat{background:rgba(255,255,255,.4);box-shadow:none}
-.plate{position:relative;aspect-ratio:1;border-radius:50%;background:#fff;color:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16%;box-shadow:inset 0 0 0 8px #F3E6E0}
-.plate .dish{font-weight:900;font-stretch:125%;font-size:13px;line-height:1.15;text-transform:uppercase;word-break:break-word}
+/* ---------- Christmas dinner: a long lilac table with place settings ---------- */
+.c-head .stage.scroll{place-items:start center;overflow-y:auto;overscroll-behavior:contain}
+.longtable{width:min(88%,980px);margin:84px 0 70px;padding:34px 26px;background:var(--lilac);display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:30px 18px}
+.setting{display:flex;align-items:center;justify-content:center;gap:12px}
+.setting .cut{flex:none;width:20px}.setting .cut svg{display:block;width:100%;height:auto;fill:#000}
+.setting .cut:last-child{width:15px}
+.plate{position:relative;width:150px;aspect-ratio:1;border-radius:50%;background:#fff;color:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;box-shadow:inset 0 0 0 10px var(--blush)}
+.setting.free .plate{background:rgba(255,255,255,.45);box-shadow:none}
+.setting.free .cut{opacity:.35}
+.plate .dish{font-weight:900;font-stretch:125%;font-size:13px;line-height:1.15;text-transform:uppercase;hyphens:auto;-webkit-hyphens:auto;overflow-wrap:break-word}
 .plate .from{font-size:11px;margin-top:4px;opacity:.7}
 .plate .who{position:absolute;bottom:-8px;background:#000;color:#fff;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-stretch:125%;padding:3px 7px;rotate:-3deg}
-.plate .del{position:absolute;right:4px;top:4px;width:22px;height:22px;border-radius:50%;background:#000;color:#fff}
+.plate .del{position:absolute;right:6px;top:6px;width:22px;height:22px;border-radius:50%;background:#000;color:#fff}
+@media (max-width:899px){.longtable{margin:56px 0 40px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));padding:22px 12px}.plate{width:104px;padding:16px}}
 
 /* ---------- breakfast: one tile per studio ---------- */
 .studios{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0 20px}
@@ -265,7 +270,7 @@
 .stage .elfm .body{--kb:var(--blush)}
 .stage .elfm .nm{color:#000}
 .stage .cast{width:min(72%,400px);height:auto;animation:hover 4s ease-in-out infinite}
-.pretzel{width:min(80%,460px);animation:hover 4s ease-in-out infinite}
+.pretzel{width:min(66%,420px);fill:#000;animation:hover 4s ease-in-out infinite}
 @keyframes hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
 @media (min-width:900px){
   .c-main h2{font-size:calc(clamp(40px,4.2vw,76px) * var(--fit,1))}
@@ -285,15 +290,11 @@
 @keyframes disc{to{rotate:360deg}}
 /* Nikolaus: bites out of the chocolate, sweets around */
 .c-head .stage.art-nikolaus,.c-head .stage.art-pretzel{pointer-events:none}
-.niko{position:relative;width:min(54%,360px);animation:niko 8s infinite}
+.niko{position:relative;width:min(54%,360px);animation:niko 3s ease-in-out infinite}
 .niko img{display:block;width:100%;height:auto}
-@keyframes niko{0%,12%,15%,29%,32%,47%,50%,100%{rotate:0deg}13.5%,30.5%,48.5%{rotate:-4deg}}
-.niko .bite{position:absolute;width:19%;aspect-ratio:1;border-radius:50%;background:var(--ch,var(--lilac));translate:-50% -50%;scale:0;animation:bite 8s infinite cubic-bezier(.3,1.5,.5,1)}
-.niko .b1{left:60%;top:4%}.niko .b2{left:71%;top:10%;animation-delay:1.36s}.niko .b3{left:87%;top:13%;width:16%;animation-delay:2.8s}
-@keyframes bite{0%,12%{scale:0}14%,84%{scale:1}90%,100%{scale:0}}
-.niko .crumb{position:absolute;width:2.6%;aspect-ratio:1;background:#000;opacity:0;animation:crumb 8s infinite}
-.niko .c1{left:58%;top:8%;--dx:-30px}.niko .c2{left:64%;top:9%;--dx:20px}.niko .c3{left:72%;top:15%;--dx:26px;animation-delay:1.36s}.niko .c4{left:86%;top:18%;--dx:30px;animation-delay:2.8s}
-@keyframes crumb{0%,13%{opacity:0;transform:none}14%{opacity:1;transform:none}26%{opacity:0;transform:translate(var(--dx),140px) rotate(140deg)}100%{opacity:0}}
+@keyframes niko{0%,100%{rotate:-2deg}50%{rotate:2deg}}
+.niko .bite{position:absolute;width:34%;aspect-ratio:1;border-radius:50%;background:var(--ch,var(--lilac));translate:-50% -50%;scale:0}
+.niko .crumb{position:absolute;width:2.6%;aspect-ratio:1;background:#000;opacity:0}
 .bonbon{position:absolute;width:11%;translate:-50% -50%;animation:bon 4.5s ease-in-out infinite alternate}
 @keyframes bon{from{transform:rotate(var(--r)) translateY(0)}to{transform:rotate(calc(var(--r) * -1)) translateY(-16px)}}
 /* DIY: the finished ornament swings on its branch */
