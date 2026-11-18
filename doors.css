@@ -375,3 +375,9 @@ a.btn{text-decoration:none}
 }
 
 .pickrow select{width:100%;padding:10px 12px;border:0;border-radius:0;background:var(--cf,#fff);color:var(--cb,#000);font-size:15px;appearance:auto}
+
+/* plain play button: a lilac triangle */
+.screen .play,.tv-on{width:110px;height:110px;padding:0;background:none;border:0;cursor:pointer;display:block}
+.screen .play svg,.tv-on svg{display:block;width:100%;height:100%;transition:scale .2s}
+.screen .play:hover svg,.tv-on:hover svg{scale:1.08}
+.colouring svg [fill="white"]{transition:fill .6s}

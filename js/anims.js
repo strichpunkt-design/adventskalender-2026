@@ -52,7 +52,7 @@ const ball = L => svg(L({ de: 'Ein Strichpunkt wird zur Christbaumkugel', en: 'A
 const candles = n => L => svg(L({ de: `${n}. Advent: Strichpunkte werden Kerzen`, en: `Advent Sunday ${n}: semicolons turn into candles` }), `
   ${[[30, 3, 0, 7], [70, 4, 3.1, 9], [118, 2.5, 1.4, 6], [150, 3.5, 5.2, 8], [188, 2, 2.2, 6.5], [226, 4, 6.3, 9.5], [262, 3, .7, 7.5], [300, 2.5, 4.4, 6], [338, 4, 2.9, 8.5], [372, 3, 5.8, 7], [92, 2, 7.1, 5.5], [246, 2, 3.7, 6.8], [352, 2.5, 1.1, 6.2], [12, 2.5, 4.9, 7.8]]
     .map(([x, r, d, t]) => `<circle class="snow" cx="${x}" cy="0" r="${r}" fill="#fff" style="animation-delay:-${d}s;animation-duration:${t}s"/>`).join('')}
-  <text x="200" y="74" text-anchor="middle" font-family="Strichpunkt Sans,Archivo,sans-serif" font-weight="900" font-stretch="150%" font-size="34" fill="#fff" class="cd-w">${n}. ADVENT</text>
+  <text x="200" y="74" text-anchor="middle" font-family="Strichpunkt Sans,Archivo,sans-serif" font-weight="900" font-stretch="150%" font-size="34" fill="#fff" class="cd-w">${L({ de: `${n}. ADVENT`, en: `ADVENT ${n}` })}</text>
   <rect class="cd-w" x="36" y="410" width="328" height="12" fill="#B78CFF"/>
   ${[80, 160, 240, 320].map((cx, i) => {
     const lit = i < n, kt = [0, .12, .3, .8, .94, 1], a = 32 + i * 7;

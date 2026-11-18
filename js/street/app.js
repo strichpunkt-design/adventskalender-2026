@@ -384,6 +384,7 @@ function setLang(l) {
   document.querySelectorAll('[data-t]').forEach(e => { e.textContent = t(e.dataset.t); });
   $('#ob-name').placeholder = l === 'de' ? 'Jana' : 'Jane';
   $('#snd').setAttribute('aria-label', t('sound'));
+  $('#card-close').setAttribute('aria-label', l === 'de' ? 'Schließen' : 'Close');
   paint();
   if (state.card) cardBody.replaceChildren(render(DOORS[state.card - 1], cardOpts()));
 }

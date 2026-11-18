@@ -146,7 +146,7 @@ const D = [
     q: { options: { de: ['USA', 'Japan', 'Chile'], en: ['USA', 'Japan', 'Chile'] }, ok: 1,
          why: { de: 'Japan. Eine Werbekampagne von 1974 hat „Kentucky zu Weihnachten“ zur Tradition gemacht. Viele bestellen ihr Weihnachtsessen Wochen vorher.', en: 'Japan. A 1974 ad campaign turned “Kentucky for Christmas” into a tradition. Many people order their Christmas meal weeks ahead.' } } },
   // 22 · Tue
-  { type: 'colour', mode: 'image', kicker: { de: 'Zum Ausmalen', en: 'To colour in' }, title: { de: 'Unsere Weihnachtsstraße', en: 'Our Christmas street' },
+  { type: 'colour', mode: 'image', kicker: { de: 'Zum Ausmalen', en: 'To colour in' }, title: { de: 'Unsere Weihnachts\u00adstraße', en: 'Our Christmas street' },
     body: { de: ['Die ganze Straße auf einem Blatt: unsere Illustrationen, die Weihnachtsfiguren, Häuser, Lichter und Geschenke. Drucken, Stifte raus, Kaffee daneben.', 'Für die letzten Tage vor den Feiertagen. Oder für die Kinder zu Hause.'],
             en: ['The whole street on one sheet: our illustrations, the Christmas characters, houses, lights and presents. Print it, get your pens, coffee on the side.', 'For the last days before the holidays. Or for the kids at home.'] },
     ph: { de: 'Bildunterschrift (optional)', en: 'Caption (optional)' } },
