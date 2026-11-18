@@ -288,37 +288,87 @@ export function doorTypes({ wall, onCleanup }) {
       wall(el, d, 'image');
     },
 
-    // ---------- Knecht Ruprecht left only coal: draw with it for 30 seconds, then to the gallery ----------
+    // ---------- Knecht Ruprecht left only coal: everyone draws a Christmas tree with it in 30 seconds ----------
     charcoal(el, d, o, head) {
       const W = 800, H = 600, cv = h('canvas', { class: 'paper', width: W, height: H, 'aria-label': L({ de: 'Zeichenblatt', en: 'Drawing paper' }) }), g = cv.getContext('2d');
-      const clock = h('span', { class: 'clock' }, '30'), stick = h('div', { class: 'stick' });
-      const e1 = err();
-      let left = 30, timer = 0, drawing = false, done = false, used = false, last = null;
-      const blank = () => { g.globalAlpha = 1; g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); };
-      // Charcoal: many small, slightly transparent grains around the line, denser where you go slowly.
-      const grain = (x, y, r) => { for (let k = 0; k < 7; k++) { const a = Math.random() * 6.283, q = Math.random() * r; g.globalAlpha = 0.18 + Math.random() * 0.4; g.fillStyle = '#000'; g.fillRect(x + Math.cos(a) * q, y + Math.sin(a) * q * 0.7, 1 + Math.random() * 2.2, 1 + Math.random() * 2.2); } };
-      const line = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], dist = Math.hypot(dx, dy), r = Math.max(2.5, 7 - dist * 0.12); for (let s = 0; s <= dist; s += 1.5) grain(a[0] + dx * s / (dist || 1), a[1] + dy * s / (dist || 1), r); };
+      const clock = h('span', { class: 'clock' }, '30'), stick = h('div', { class: 'stick' }), e1 = err();
+      let left = 30, timer = 0, drawing = false, done = false, used = false, intro = true, last = null, bristles = [], raf = 0;
+      // Paper tooth: fine grain plus a softer, larger texture. Charcoal only sticks where the tooth lets it.
+      const S = 9, cw = Math.ceil(W / S) + 2, tooth = new Float32Array(W * H), soft = Array.from({ length: cw * (Math.ceil(H / S) + 2) }, Math.random);
+      for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+        const gx = x / S, gy = y / S, ix = gx | 0, iy = gy | 0, fx = gx - ix, fy = gy - iy, at = (a, b) => soft[(iy + b) * cw + ix + a];
+        const smooth = (at(0, 0) * (1 - fx) + at(1, 0) * fx) * (1 - fy) + (at(0, 1) * (1 - fx) + at(1, 1) * fx) * fy;
+        tooth[y * W + x] = 0.7 * Math.random() + 0.3 * smooth;
+      }
+      const dot = (x, y, density) => { const i = (y | 0) * W + (x | 0); if (x < 0 || y < 0 || x >= W || y >= H || tooth[i] > density) return; g.fillRect(x - 0.9, y - 0.9, 1.8 + Math.random() * 0.8, 1.8 + Math.random() * 0.8); };
+      const blank = () => { g.globalAlpha = 1; g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); g.fillStyle = '#111'; g.globalAlpha = 0.7; };
+      // Each stroke gets its own set of "bristles" across the stick: that gives the dry, streaky line.
+      const newStroke = () => { bristles = Array.from({ length: 26 }, (_, k) => ({ o: (k / 25 - 0.5) * 2, a: 0.5 + Math.random() * 0.45, gap: Math.random() * 0.3 })); };
+      const line = (a, b) => {
+        const dx = b[0] - a[0], dy = b[1] - a[1], dist = Math.hypot(dx, dy) || 1, nx = -dy / dist, ny = dx / dist;
+        const r = Math.max(6, 13 - dist * 0.12), press = Math.max(0.45, 1 - dist * 0.015);
+        for (let s = 0; s <= dist; s += 0.9) {
+          const x = a[0] + dx * s / dist, y = a[1] + dy * s / dist;
+          for (const br of bristles) if (Math.random() > br.gap) dot(x + nx * br.o * r + (Math.random() - 0.5) * 1.6, y + ny * br.o * r + (Math.random() - 0.5) * 1.6, br.a * press);
+        }
+      };
+      // The sheet starts with a message, written in charcoal from left to right.
+      const writeIntro = async () => {
+        try { await document.fonts.load('900 80px "Strichpunkt Sans"'); } catch (e) {}
+        const off = document.createElement('canvas'); off.width = W; off.height = H; const o2 = off.getContext('2d');
+        o2.translate(W / 2, H / 2); o2.rotate(-0.05); o2.textAlign = 'center'; o2.fillStyle = '#000';
+        o2.font = '900 96px "Strichpunkt Sans", Archivo, sans-serif'; o2.fillText(L({ de: 'HEUTE: KOHLE.', en: 'TODAY: COAL.' }), 0, -40);
+        o2.font = '400 38px "Strichpunkt Sans", Archivo, sans-serif'; o2.fillText(L({ de: 'Zeichne einen Weihnachtsbaum.', en: 'Draw a Christmas tree.' }), 0, 50);
+        o2.font = '400 26px "Strichpunkt Sans", Archivo, sans-serif'; o2.fillText(L({ de: 'Leg los, das Blatt wird sauber.', en: 'Start drawing, the sheet clears.' }), 0, 110);
+        const px = o2.getImageData(0, 0, W, H).data;
+        let x0 = 0;
+        const step = () => {
+          if (!intro) return;
+          const x1 = Math.min(W, x0 + 26);
+          for (let y = 0; y < H; y++) for (let x = x0; x < x1; x++) if (px[(y * W + x) * 4 + 3] > 120) dot(x, y, 0.78);
+          x0 = x1; if (x0 < W) raf = requestAnimationFrame(step);
+        };
+        step();
+      };
       const pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H]; };
       const stop = () => { clearInterval(timer); timer = 0; };
       const start = () => { if (timer || done) return; timer = setInterval(() => { left--; clock.textContent = left; if (left <= 0) { stop(); done = true; drawing = false; paper.classList.add('done'); } }, 1000); };
-      cv.addEventListener('pointerdown', e => { if (done) return; e.preventDefault(); cv.setPointerCapture(e.pointerId); drawing = used = true; last = pos(e); grain(...last, 4); start(); });
+      cv.addEventListener('pointerdown', e => {
+        if (done) return; e.preventDefault(); cv.setPointerCapture(e.pointerId);
+        if (intro) { intro = false; cancelAnimationFrame(raf); blank(); paper.classList.remove('intro'); }
+        drawing = used = true; last = pos(e); newStroke(); line(last, [last[0] + 0.5, last[1] + 0.5]); start();
+      });
       cv.addEventListener('pointermove', e => { const p = pos(e); stick.style.left = (p[0] / W * 100) + '%'; stick.style.top = (p[1] / H * 100) + '%'; if (!drawing) return; line(last, p); last = p; });
       cv.addEventListener('pointerup', () => { drawing = false; });
       cv.addEventListener('pointerleave', () => { drawing = false; });
-      onCleanup(stop);
-      const fresh = () => { stop(); blank(); left = 30; clock.textContent = '30'; done = used = false; paper.classList.remove('done'); e1.textContent = ''; send.disabled = false; };
-      const send = btn(L({ de: 'An die Galerie', en: 'To the gallery' }), async () => {
+      onCleanup(() => { stop(); cancelAnimationFrame(raf); });
+      const fresh = () => { stop(); blank(); intro = false; left = 30; clock.textContent = '30'; done = used = false; paper.classList.remove('done', 'intro'); e1.textContent = ''; send.disabled = false; };
+      const send = btn(L({ de: 'In den Wald hängen', en: 'Hang it in the forest' }), async () => {
         if (!used) return e1.textContent = L({ de: 'Erst zeichnen, dann aufhängen.', en: 'Draw first, then hang it.' });
         if (!needName(send)) return;
         stop(); done = true; paper.classList.add('done'); send.disabled = true;
-        try { await store.add(d.n, { kind: 'image', image: cv.toDataURL('image/jpeg', 0.75) }); e1.textContent = L({ de: 'Hängt in der Galerie.', en: 'It’s in the gallery.' }); }
+        try { await store.add(d.n, { kind: 'image', image: cv.toDataURL('image/jpeg', 0.8) }); e1.textContent = L({ de: 'Hängt im Kohle-Wald.', en: 'It’s in the charcoal forest.' }); }
         catch (x) { e1.textContent = t('failed'); send.disabled = false; }
       }, 'primary');
-      const paper = h('div', { class: 'sheet' }, cv, stick, clock);
+      const paper = h('div', { class: 'sheet intro' }, cv, stick, clock);
       stage(head, 'charcoal-bg tall', h('div', { class: 'easel' }, paper, h('div', { class: 'row' }, btn(L({ de: 'Neues Blatt', en: 'New sheet' }), fresh, 'line'), send), e1));
-      blank();
-      el.append(h('h3', { class: 'sub' }, L({ de: 'Galerie', en: 'Gallery' })));
-      wall(el, d, 'none');
+      blank(); writeIntro();
+      // The gallery: a compact forest of small framed drawings; tap one to see it large.
+      const forest = h('div', { class: 'forest' }), count = h('span', { class: 'lb' });
+      el.append(h('div', { class: 'row', style: 'justify-content:space-between;align-items:baseline;margin-top:22px' }, h('h3', { class: 'sub', style: 'margin:0' }, L({ de: 'Der Kohle-Wald', en: 'The charcoal forest' })), count), forest);
+      if (!store.isShared) el.append(h('p', { class: 'small', style: 'opacity:.5' }, t('local')));
+      const open = p => {
+        const ov = h('div', { class: 'overlay', onclick: e => { if (e.target === ov) ov.remove(); } }, h('div', { class: 'ov-in' },
+          h('div', { class: 'row', style: 'justify-content:space-between' }, h('span', { class: 'lb' }, p.name), h('button', { type: 'button', class: 'x-s', 'aria-label': L({ de: 'Schließen', en: 'Close' }), onclick: () => ov.remove() }, '×')),
+          h('img', { src: p.image, alt: '' }), store.isMine(p.id) && h('div', { class: 'row' }, btn(t('clear'), () => { store.remove(d.n, p.id).catch(() => {}); ov.remove(); }, 'line'))));
+        (el.closest('#card') || document.body).append(ov); onCleanup(() => ov.remove());
+      };
+      live(d.n, posts => {
+        const pics = posts.filter(p => p.kind === 'image' && p.image);
+        count.textContent = pics.length ? L({ de: `${pics.length} ${pics.length === 1 ? 'Baum' : 'Bäume'}`, en: `${pics.length} ${pics.length === 1 ? 'tree' : 'trees'}` }) : '';
+        forest.replaceChildren(...(pics.length ? pics.map((p, i) => h('button', { type: 'button', class: 'frame', style: `--r:${(i * 37 % 7) - 3}deg`, onclick: () => open(p) }, h('img', { src: p.image, alt: '', loading: 'lazy' }), h('span', {}, p.name)))
+          : [h('p', { class: 'empty' }, L({ de: 'Noch kein Baum. Pflanz den ersten.', en: 'No tree yet. Plant the first.' }))]));
+      });
     },
 
     // ---------- Elf Yourself: Office Management ----------
@@ -346,7 +396,7 @@ const BITES = [[62, 4], [86, 12], [40, 8], [70, 24], [44, 26], [18, 22], [88, 34
 export const ART_RUN = {
   // Every bite lands a little after the last; once he is gone, he comes back whole.
   nikolaus(stage) {
-    const T = 6500, bites = stage.querySelectorAll('.bite'), crumbs = stage.querySelectorAll('.crumb'), n = bites.length;
+    const T = 12000, bites = stage.querySelectorAll('.bite'), crumbs = stage.querySelectorAll('.crumb'), n = bites.length;
     // The last crumbs of chocolate vanish with the last bite.
     stage.querySelector('.niko img').animate([{ opacity: 1, offset: 0 }, { opacity: 1, offset: 0.72 }, { opacity: 0, offset: 0.76 }, { opacity: 0, offset: 0.9 }, { opacity: 1, offset: 0.95 }, { opacity: 1, offset: 1 }], { duration: T, iterations: Infinity });
     bites.forEach((b, i) => {

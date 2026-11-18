@@ -370,7 +370,6 @@ function closeCard(quiet) {
   cleanup();
   document.body.classList.remove('card-open');
   if (quiet === true) { card.hidden = true; return; }
-  sfx.play('close');
   grow(n, false).finished.then(() => { if (!state.card) card.hidden = true; }).catch(() => {});
   els[n].focus({ preventScroll: true });
   badges();
