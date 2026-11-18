@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Türchen-Mockups</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Strichpunkt+Sans:wdth,wght@100..150,400..900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#000;--paper:#fff;--lilac:#B78CFF;--blush:#F3E6E0;--g1:#EAEAEA;--g2:#CFCFCF;--g3:#8A8A8A;
+  --font:'Strichpunkt Sans','Archivo',system-ui,sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0}
+body{background:var(--g1);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased}
+button,input,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0}
+h1,h2,h3,.hx{font-weight:900;font-stretch:150%;text-transform:uppercase;line-height:.92;letter-spacing:-.01em;margin:0}
+.kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-stretch:125%;margin:0 0 10px}
+.btn{display:inline-block;padding:13px 20px;background:var(--ink);color:var(--paper);font-weight:900;font-stretch:150%;text-transform:uppercase;font-size:13px;letter-spacing:.02em}
+.btn.ghost{background:transparent;color:inherit;box-shadow:inset 0 0 0 2px currentColor}
+.btn.lilac{background:var(--lilac);color:var(--ink)}
+.note{font-size:12px;color:var(--g3);margin-top:12px}
+
+/* top bar */
+header{position:sticky;top:0;z-index:20;background:var(--ink);color:var(--paper);display:flex;align-items:center;gap:18px;padding:12px 16px;overflow-x:auto;scrollbar-width:none}
+header::-webkit-scrollbar{display:none}
+header .logo{font-weight:900;font-stretch:150%;font-size:13px;white-space:nowrap;text-transform:uppercase}
+header nav{display:flex;gap:6px}
+header nav a{color:var(--paper);text-decoration:none;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-stretch:125%;padding:8px 12px;white-space:nowrap;box-shadow:inset 0 0 0 1.5px #555}
+header nav a.on{background:var(--lilac);color:var(--ink);box-shadow:none}
+
+section.door{display:none;min-height:calc(100svh - 52px)}
+section.door.on{display:grid}
+.side{padding:40px 32px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+.side h2{font-size:clamp(34px,4.4vw,64px);margin-bottom:16px}
+.side p{margin:0 0 20px;max-width:34ch;font-size:17px}
+@media(min-width:900px){section.door{grid-template-columns:minmax(300px,30%) 1fr}}
+@media(max-width:899px){.side{padding:28px 16px 12px}}
+
+/* ---------- 1 MEME TREE ---------- */
+#meme{background:var(--blush)}
+.treebox{position:relative;align-self:center;justify-self:center;width:min(100%,640px);aspect-ratio:4/5;margin:12px 16px 32px}
+.treebox svg.tree{position:absolute;inset:0;width:100%;height:100%}
+.orn{position:absolute;width:15%;translate:-50% 0;transform-origin:50% 0;animation:sway 4s ease-in-out infinite;cursor:pointer}
+.orn:nth-child(odd){animation-duration:5s;animation-delay:-1.3s}
+.orn:hover{animation-duration:1s}
+@keyframes sway{0%,100%{rotate:-3deg}50%{rotate:3deg}}
+.orn .str{width:2px;height:18px;background:var(--ink);margin:0 auto}
+.orn .cap{width:22%;height:8px;background:var(--ink);margin:0 auto}
+.orn .fr{background:var(--paper);box-shadow:0 0 0 3px var(--ink);aspect-ratio:1;overflow:hidden;position:relative}
+.orn.round .fr{border-radius:50%}
+.orn .fr img{width:100%;height:100%;object-fit:cover;display:block}
+.orn .tag{position:absolute;left:62%;top:78%;background:var(--paper);box-shadow:0 0 0 2px var(--ink);font-size:10px;line-height:1.1;padding:4px 6px;white-space:nowrap;rotate:8deg;font-stretch:125%;text-transform:uppercase;letter-spacing:.04em}
+.orn .tag b{display:block;font-weight:900}
+.orn.win .fr{box-shadow:0 0 0 5px var(--lilac),0 0 0 8px var(--ink)}
+.meme{width:100%;height:100%;display:flex;flex-direction:column;justify-content:space-between;align-items:center;text-align:center;padding:8%;font-weight:900;font-stretch:150%;text-transform:uppercase;line-height:1;font-size:clamp(6px,1vw,9px)}
+.meme .em{font-size:3.2em;line-height:1}
+.orn .meme .bot{display:none}.orn .meme{justify-content:center;gap:6%;font-size:clamp(6px,.75vw,9px)}
+.lightbox .meme .em{font-size:5em}
+.lightbox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.86);display:none;place-items:center;padding:16px}
+.lightbox.on{display:grid}
+.lightbox .in{background:var(--paper);width:min(460px,100%);padding:16px;display:grid;gap:14px}
+.lightbox .big{aspect-ratio:1;box-shadow:0 0 0 2px var(--ink);overflow:hidden}
+.lightbox .big .meme{font-size:clamp(14px,3.6vw,22px)}
+.lightbox .big img{width:100%;height:100%;object-fit:contain;background:var(--ink)}
+.lightbox .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.lightbox label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-stretch:125%}
+.lightbox input[type=text]{width:100%;padding:12px;border:0;box-shadow:inset 0 0 0 2px var(--ink);margin-top:4px}
+.drop{aspect-ratio:16/9;box-shadow:inset 0 0 0 2px var(--ink);display:grid;place-items:center;text-align:center;font-size:13px;cursor:pointer;background:var(--g1);background-size:cover;background-position:center}
+.x{font-weight:900;font-size:22px;line-height:1}
+
+/* ---------- 2 ANIMATION ---------- */
+#anim{background:var(--ink);color:var(--paper)}
+#anim .note{color:#9a9a9a}
+.animstage{display:grid;place-items:center;padding:16px}
+.animstage svg{width:min(100%,560px);height:auto;overflow:visible}
+.A{animation-duration:9s;animation-iteration-count:infinite;animation-timing-function:cubic-bezier(.6,0,.3,1);transform-box:view-box}
+#a-head{transform-origin:200px 150px;animation-name:a-head}
+#a-body{transform-origin:200px 290px;animation-name:a-body}
+#a-tail{transform-origin:236px 300px;animation-name:a-tail}
+#a-hat{animation-name:a-hat}
+#a-face,#a-btns,#a-arms{animation-name:a-pop;transform-origin:200px 250px}
+#a-snow{animation-name:a-snow}
+#a-wob{transform-origin:200px 400px;animation-name:a-wob}
+@keyframes a-head{0%,14%{transform:none}30%,78%{transform:translateY(32px) scale(1.15)}92%,100%{transform:none}}
+@keyframes a-body{0%,14%{transform:none}30%,78%{transform:scale(1.75)}92%,100%{transform:none}}
+@keyframes a-tail{0%,12%{transform:none}24%,82%{transform:scale(0)}94%,100%{transform:none}}
+@keyframes a-hat{0%,28%{transform:translateY(-420px)}36%{transform:translateY(8px)}40%,74%{transform:none}84%,100%{transform:translateY(-420px)}}
+@keyframes a-pop{0%,32%{transform:scale(0);opacity:0}38%,74%{transform:scale(1);opacity:1}80%,100%{transform:scale(0);opacity:0}}
+@keyframes a-snow{0%,34%{opacity:0;transform:translateY(-60px)}42%{opacity:1}76%{opacity:1;transform:translateY(120px)}84%,100%{opacity:0;transform:translateY(160px)}}
+@keyframes a-wob{0%,40%{transform:none}46%{transform:rotate(-4deg)}52%{transform:rotate(4deg)}58%{transform:rotate(-3deg)}64%{transform:rotate(2deg)}70%,100%{transform:none}}
+.animstage .bar{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;justify-content:center}
+
+/* ---------- 3 RECIPE BOX ---------- */
+#recipe{background:var(--blush)}
+.kitchen{position:relative;min-height:640px;overflow:hidden}
+.kitchen svg.bg{position:absolute;inset:0;width:100%;height:100%}
+.card{position:absolute;left:5%;top:7%;width:min(560px,62%);background:var(--paper);box-shadow:0 0 0 2px var(--ink);rotate:-1.5deg;padding:26px 28px 22px;z-index:3}
+.card h3{padding-bottom:12px;margin:0 -28px;padding-left:28px;padding-right:28px;border-bottom:3px solid var(--lilac)}
+.card h3{font-size:clamp(26px,3vw,40px)}
+.card .by{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-stretch:125%;margin:8px 0 26px}
+.card .cols{display:grid;grid-template-columns:1fr 1.4fr;gap:22px;font-size:14px}
+.card .cols h4{margin:0 0 6px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-stretch:125%}
+.card ul,.card ol{margin:0;padding-left:18px}
+.card li{margin-bottom:4px}
+.card .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:22px;flex-wrap:wrap}
+.baked.on{background:var(--lilac);color:var(--ink)}
+.box{position:absolute;right:6%;bottom:21%;width:min(300px,30%);z-index:2}
+.box .tabs{display:flex;gap:4px;align-items:flex-end;padding:0 8%;height:80px}
+.box .tabs button{flex:1;background:var(--paper);box-shadow:0 0 0 2px var(--ink);height:100%;font-size:9px;letter-spacing:.06em;text-transform:uppercase;font-stretch:125%;padding:6px 3px;writing-mode:vertical-rl;rotate:180deg;text-align:left;transition:height .2s}
+.box .tabs button.on{height:115%;background:var(--lilac)}
+.box .tabs button.add{background:var(--ink);color:var(--paper)}
+.box .front{background:var(--lilac);box-shadow:0 0 0 2px var(--ink);height:120px;display:grid;place-items:center;font-weight:900;font-stretch:150%;text-transform:uppercase;font-size:clamp(14px,1.6vw,22px);position:relative}
+.box .front small{position:absolute;bottom:10px;font-size:10px;font-weight:400;letter-spacing:.08em}
+@media(max-width:899px){
+  .kitchen{min-height:900px}
+  .card{position:relative;left:auto;top:auto;width:auto;margin:24px 16px 0}
+  .card .cols{grid-template-columns:1fr}
+  .box{right:50%;translate:50% 0;bottom:6%;width:70%}
+}
+
+/* ---------- 4 QUIZ ---------- */
+#quiz{background:var(--paper)}
+.quizwrap{padding:40px 32px;max-width:860px;width:100%;align-self:center}
+.qnav{display:flex;align-items:center;gap:8px;margin-bottom:22px}
+.qnav i{width:28px;height:6px;background:var(--g2)}
+.qnav i.on{background:var(--ink)}.qnav i.done{background:var(--lilac)}
+.qnav span{margin-left:8px;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-stretch:125%}
+.quizwrap h2{font-size:clamp(26px,3.4vw,46px);margin-bottom:26px}
+.ans{display:grid;gap:10px}
+.ans button{position:relative;display:flex;align-items:center;gap:14px;text-align:left;padding:18px 18px;background:var(--paper);box-shadow:inset 0 0 0 2px var(--ink);font-size:17px;overflow:hidden}
+.ans button:hover:not(:disabled){background:var(--blush)}
+.ans button:disabled{cursor:default}
+.ans .l{flex:none;width:34px;height:34px;border-radius:50%;background:var(--ink);color:var(--paper);display:grid;place-items:center;font-weight:900;font-stretch:150%;position:relative;z-index:1}
+.ans .t{position:relative;z-index:1;flex:1}
+.ans .pc{position:relative;z-index:1;font-weight:900;font-stretch:150%;opacity:0;transition:opacity .4s .3s}
+.ans .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--g1);transition:width .9s cubic-bezier(.2,.7,.2,1)}
+.ans .ok .fill{background:var(--lilac)}
+.ans .bad .l{background:var(--paper);color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.ans .bad .t{text-decoration:line-through}
+.shown .pc{opacity:1}
+.res{margin-top:22px;padding:18px 20px;background:var(--ink);color:var(--paper);display:none}
+.res.on{display:block}
+.res h3{font-size:22px;margin-bottom:8px;color:var(--lilac)}
+.res p{margin:0 0 14px}
+.res .btn{background:var(--paper);color:var(--ink)}
+.slider{padding:10px 0}
+.big-n{font-weight:900;font-stretch:150%;font-size:clamp(44px,7vw,92px);line-height:1}
+.big-n small{font-size:.28em;letter-spacing:.06em;margin-left:8px}
+.range{position:relative;margin:26px 0 8px;height:60px}
+.range input{width:100%;margin:0;position:absolute;top:18px;-webkit-appearance:none;appearance:none;background:transparent}
+.range input::-webkit-slider-runnable-track{height:6px;background:var(--ink)}
+.range input::-moz-range-track{height:6px;background:var(--ink)}
+.range input::-webkit-slider-thumb{-webkit-appearance:none;width:34px;height:34px;border-radius:50%;background:var(--lilac);box-shadow:0 0 0 3px var(--ink);margin-top:-14px}
+.range input::-moz-range-thumb{width:28px;height:28px;border-radius:50%;background:var(--lilac);border:3px solid var(--ink)}
+.range .mk{position:absolute;top:0;translate:-50% 0;font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-stretch:125%;white-space:nowrap;opacity:0;transition:opacity .4s,left .9s cubic-bezier(.2,.7,.2,1);text-align:center}
+.range .mk::after{content:"";display:block;width:3px;height:38px;background:currentColor;margin:2px auto 0}
+.range .mk.ok{color:#000;font-weight:900}
+.range .mk.avg{color:var(--g3)}
+.range.shown .mk{opacity:1}
+.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--g3)}
+.end{text-align:left}
+.end .big-n{color:var(--ink)}
+.end .score{display:inline-block;background:var(--lilac);padding:6px 14px;rotate:-2deg;margin:14px 0 18px;font-weight:900;font-stretch:150%;text-transform:uppercase}
+
+/* ---------- 5 ELF ---------- */
+#elf{background:var(--blush)}
+.elfstage{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px 16px 40px;gap:18px}
+.troupe{display:flex;justify-content:center;align-items:flex-end;width:100%;max-width:900px}
+.elfm{position:relative;width:30%;max-width:280px;margin:0 1%;aspect-ratio:1;color:var(--lilac);--kb:var(--blush);animation:dance .9s cubic-bezier(.5,0,.5,1) infinite alternate;transform-origin:50% 100%}
+.elfm:nth-child(2){animation-delay:-.45s;width:34%}
+.elfm:nth-child(3){animation-duration:.8s}
+.elfm svg{position:absolute;inset:0;width:100%;height:100%}
+@keyframes dance{0%{transform:translateY(0) rotate(-6deg)}100%{transform:translateY(-12%) rotate(6deg)}}
+.face{position:absolute;left:48.6%;top:44.8%;width:22%;aspect-ratio:310/350;translate:-50% -50%;border-radius:50%;overflow:hidden;background:var(--g2);cursor:pointer;animation:nod .45s ease-in-out infinite alternate;box-shadow:0 0 0 3px var(--ink)}
+.face img{width:100%;height:100%;object-fit:cover;display:block}
+.bw .face img{filter:grayscale(1) contrast(1.35) brightness(1.06)}
+.face.empty{display:grid;place-items:center;font-size:clamp(9px,1.2vw,12px);font-weight:900;font-stretch:150%;text-transform:uppercase;text-align:center;line-height:1}
+@keyframes nod{0%{rotate:-10deg}100%{rotate:10deg}}
+.names{display:flex;justify-content:center;gap:4%;width:100%;max-width:900px}
+.names span{width:30%;text-align:center;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-stretch:125%}
+.elfbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.paused .elfm,.paused .face{animation-play-state:paused}
+</style>
+</head>
+<body>
+<header>
+  <span class="logo">Advent 2026 · Mockups</span>
+  <nav id="tabs">
+    <a href="#meme">Meme-Baum</a>
+    <a href="#anim">Animation</a>
+    <a href="#recipe">Rezeptbox</a>
+    <a href="#quiz">Quiz</a>
+    <a href="#elf">Elf Yourself</a>
+  </nav>
+</header>
+
+<!-- 1 MEME TREE -->
+<section class="door" id="meme">
+  <div class="side">
+    <p class="kicker">Tür 8 · Mitmachen</p>
+    <h2>Meme des Jahres</h2>
+    <p>Häng dein liebstes Weihnachtsmeme an den Baum. Tipp auf eine Kugel zum Ansehen und Mitlachen. Das lustigste Meme bekommt an Heiligabend den Stern.</p>
+    <div><button class="btn" id="hang">Meme aufhängen</button></div>
+    <p class="note">9 Memes hängen schon · Mockup: Platzhalter-Memes, nichts wird gespeichert.</p>
+  </div>
+  <div class="treebox" id="treebox">
+    <svg class="tree" viewBox="0 0 400 500" aria-hidden="true">
+      <polygon points="200,70 290,190 110,190" fill="#000"/>
+      <polygon points="200,130 320,290 80,290" fill="#000"/>
+      <polygon points="200,210 360,410 40,410" fill="#000"/>
+      <rect x="176" y="410" width="48" height="56" fill="#000"/>
+      <rect x="120" y="466" width="160" height="14" fill="#000"/>
+      <polygon id="star" points="200,10 212,40 244,41 219,60 228,91 200,73 172,91 181,60 156,41 188,40" fill="none" stroke="#000" stroke-width="4" stroke-linejoin="round"/>
+    </svg>
+  </div>
+</section>
+
+<!-- 2 ANIMATION -->
+<section class="door" id="anim">
+  <div class="side">
+    <p class="kicker">Tür 5 · Wochenende · Animation</p>
+    <h2>Strich&shy;punkt wird Schnee&shy;mann</h2>
+    <p>Kurze Loops aus unseren eigenen Zeichen statt der Straßenfiguren: schwarz, weiß, ein Hauch Lila. Jede Animation gibt es als GIF für Slack und Teams.</p>
+    <p class="note">Weitere Ideen für die Reihe: das Auge zwinkert zum Stern · das Logo als Schneekugel · Buchstaben schneien · eine Tür fliegt auf.</p>
+  </div>
+  <div class="animstage">
+    <div style="display:flex;flex-direction:column;align-items:center;width:100%">
+      <svg id="semi" viewBox="0 0 400 460" aria-label="Ein Strichpunkt verwandelt sich in einen Schneemann">
+        <g id="a-snow" class="A" fill="#fff">
+          <circle cx="60" cy="40" r="5"/><circle cx="120" cy="10" r="4"/><circle cx="330" cy="30" r="6"/><circle cx="290" cy="90" r="4"/>
+          <circle cx="40" cy="150" r="4"/><circle cx="360" cy="170" r="5"/><circle cx="90" cy="230" r="6"/><circle cx="320" cy="250" r="4"/>
+          <circle cx="30" cy="300" r="5"/><circle cx="370" cy="320" r="4"/><circle cx="150" cy="60" r="3"/><circle cx="250" cy="0" r="4"/>
+        </g>
+        <g id="a-wob" class="A">
+          <g id="a-arms" class="A" stroke="#fff" stroke-width="7" stroke-linecap="round" fill="none">
+            <path d="M140 270 L70 230 M95 244 L80 214"/><path d="M260 270 L330 230 M305 244 L322 214"/>
+          </g>
+          <g id="a-body" class="A">
+            <circle cx="200" cy="290" r="40" fill="#fff"/>
+            <path id="a-tail" class="A" d="M236 300 C236 340 222 372 186 396 L176 384 C196 366 204 346 202 328 Z" fill="#fff"/>
+          </g>
+          <g id="a-btns" class="A" fill="#000"><circle cx="200" cy="262" r="7"/><circle cx="200" cy="292" r="7"/><circle cx="200" cy="322" r="7"/></g>
+          <g id="a-head" class="A"><circle cx="200" cy="150" r="40" fill="#fff"/></g>
+          <g id="a-face" class="A">
+            <circle cx="186" cy="176" r="5" fill="#000"/><circle cx="214" cy="176" r="5" fill="#000"/>
+            <polygon points="200,186 238,194 200,198" fill="#B78CFF"/>
+          </g>
+          <g id="a-hat" class="A">
+            <rect x="160" y="124" width="80" height="12" fill="#B78CFF"/>
+            <rect x="172" y="76" width="56" height="50" fill="#B78CFF"/>
+            <rect x="172" y="112" width="56" height="8" fill="#000"/>
+          </g>
+        </g>
+      </svg>
+      <div class="bar">
+        <button class="btn lilac" id="gif">Als GIF laden</button>
+        <button class="btn ghost" id="again">Nochmal</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 RECIPE BOX -->
+<section class="door" id="recipe">
+  <div class="side">
+    <p class="kicker">Tür 9 · Mitmachen</p>
+    <h2>Die Rezept&shy;box</h2>
+    <p>Leg dein Lieblingsrezept in die Rezeptbox. Jede Karte trägt deinen Namen. Wer es nachbackt, drückt „Hab ich gebacken“.</p>
+    <p class="note">Tipp auf die Reiter in der Box, um zwischen Rezepten zu wechseln. Mockup: drei Beispielrezepte.</p>
+  </div>
+  <div class="kitchen">
+    <svg class="bg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+      <defs><pattern id="tiles" width="50" height="50" patternUnits="userSpaceOnUse"><rect width="50" height="50" fill="#F3E6E0"/><path d="M50 0V50H0" fill="none" stroke="#fff" stroke-width="3"/></pattern></defs>
+      <rect width="1000" height="700" fill="url(#tiles)"/>
+      <!-- shelf with jars -->
+      <rect x="560" y="150" width="380" height="12" fill="#000"/>
+      <rect x="590" y="80" width="62" height="70" fill="#fff" stroke="#000" stroke-width="3"/><rect x="586" y="70" width="70" height="14" fill="#000"/>
+      <text x="621" y="122" text-anchor="middle" font-family="Strichpunkt Sans,sans-serif" font-weight="900" font-size="12">MEHL</text>
+      <rect x="676" y="96" width="54" height="54" fill="#fff" stroke="#000" stroke-width="3"/><rect x="672" y="86" width="62" height="13" fill="#B78CFF"/>
+      <text x="703" y="128" text-anchor="middle" font-family="Strichpunkt Sans,sans-serif" font-weight="900" font-size="11">ZIMT</text>
+      <rect x="752" y="72" width="70" height="78" fill="#fff" stroke="#000" stroke-width="3"/><rect x="748" y="62" width="78" height="14" fill="#000"/>
+      <text x="787" y="118" text-anchor="middle" font-family="Strichpunkt Sans,sans-serif" font-weight="900" font-size="11">ZUCKER</text>
+      <circle cx="880" cy="122" r="26" fill="#B78CFF" stroke="#000" stroke-width="3"/>
+      <!-- oven -->
+      <rect x="700" y="250" width="240" height="250" fill="#000"/>
+      <rect x="730" y="300" width="180" height="120" fill="#B78CFF"/>
+      <rect x="742" y="380" width="156" height="8" fill="#000"/>
+      <g fill="#F3E6E0"><circle cx="775" cy="368" r="11"/><circle cx="815" cy="368" r="11"/><circle cx="855" cy="368" r="11"/></g>
+      <g fill="#fff"><circle cx="745" cy="275" r="8"/><circle cx="775" cy="275" r="8"/><circle cx="805" cy="275" r="8"/></g>
+      <!-- counter -->
+      <rect y="500" width="1000" height="200" fill="#000"/>
+      <rect y="500" width="1000" height="14" fill="#fff"/>
+      <!-- rolling pin + cookies -->
+      <g transform="translate(90 470) rotate(-8)"><rect x="0" y="0" width="200" height="30" rx="15" fill="#fff" stroke="#000" stroke-width="3"/><rect x="-30" y="9" width="32" height="12" fill="#000"/><rect x="198" y="9" width="32" height="12" fill="#000"/></g>
+      <polygon points="380,452 388,474 412,474 393,488 400,510 380,496 360,510 367,488 348,474 372,474" fill="#F3E6E0" stroke="#000" stroke-width="3"/>
+      <polygon points="450,462 456,478 473,478 459,488 464,504 450,494 436,504 441,488 427,478 444,478" fill="#B78CFF" stroke="#000" stroke-width="3"/>
+    </svg>
+
+    <article class="card" id="rcard"></article>
+
+    <div class="box">
+      <div class="tabs" id="rtabs"></div>
+      <div class="front">Rezeptbox<small id="rcount"></small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 QUIZ -->
+<section class="door" id="quiz">
+  <div class="side" style="background:var(--lilac)">
+    <p class="kicker">Tür 3 · Quiz · 1 von 5</p>
+    <h2>Weih&shy;nachts&shy;quiz</h2>
+    <p>Eine Frage pro Tür, eine Antwort pro Person. Danach siehst du, wie viele Kolleg:innen richtig lagen. An Heiligabend gibt es deine Gesamtwertung.</p>
+    <p class="note" style="color:#000">Mockup: drei Fragen zum Durchklicken, die Prozente sind ausgedacht.</p>
+  </div>
+  <div class="quizwrap" id="qz"></div>
+</section>
+
+<!-- 5 ELF -->
+<section class="door" id="elf">
+  <div class="side">
+    <p class="kicker">Tür 24 · Heiligabend</p>
+    <h2>Elf<br>Yourself</h2>
+    <p class="kicker" style="background:var(--lilac);align-self:flex-start;padding:6px 10px;margin:-4px 0 16px">Office Management</p>
+    <p>Das OM tanzt uns in die Feiertage. Tipp auf ein leeres Gesicht und wähl ein Foto zum Ausprobieren. Es bleibt in deinem Browser, nichts wird hochgeladen.</p>
+    <p class="note">Foto: Ellen Schuler, von sp.design. Für die echte Tür fragen wir alle vorher.</p>
+  </div>
+  <div class="elfstage" id="elfstage">
+    <div class="troupe bw" id="troupe"></div>
+    <div class="names" id="names"></div>
+    <div class="elfbar">
+      <button class="btn" id="music">Musik an</button>
+      <button class="btn ghost" id="bw">Foto: Original</button>
+      <button class="btn ghost" id="pause">Pause</button>
+    </div>
+    <input type="file" accept="image/*" id="elffile" hidden>
+  </div>
+</section>
+
+<div class="lightbox" id="lb"><div class="in" id="lbin"></div></div>
+
+<script type="module">
+const $ = (s, r = document) => r.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => { const e = document.createElement(tag); for (const [k, v] of Object.entries(attrs)) { if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (k === 'html') e.innerHTML = v; else e.setAttribute(k, v); } for (const k of kids.flat()) if (k != null) e.append(k); return e; };
+
+/* tabs */
+let audio = null;
+function route() {
+  const id = (location.hash || '#meme').slice(1);
+  document.querySelectorAll('section.door').forEach(s => s.classList.toggle('on', s.id === id));
+  document.querySelectorAll('#tabs a').forEach(a => a.classList.toggle('on', a.hash === '#' + id));
+  if (id !== 'elf') stopMusic();
+}
+addEventListener('hashchange', route); route();
+
+/* ---------- 1 MEME TREE ---------- */
+const memes = [
+  { name: 'Jana', laughs: 23, bg: '#B78CFF', em: '🎅', top: 'Ich am 23.12.', bot: '„Nur eine kleine Änderung noch“' },
+  { name: 'Tim', laughs: 17, bg: '#fff', em: '🍪', top: 'Diät-Plan', bot: 'vs. Plätzchendose im Büro' },
+  { name: 'Lea', laughs: 31, bg: '#F3E6E0', em: '🦌', top: 'Kunde:', bot: '„Kann das Logo mehr Weihnachten?“' },
+  { name: 'Ben', laughs: 9, bg: '#EAEAEA', em: '🎄', top: 'Final_v3', bot: 'Final_v3_wirklich_final.pdf' },
+  { name: 'Mia', laughs: 14, bg: '#fff', em: '🔔', top: 'Out of Office', bot: 'ab 18.12. gedanklich' },
+  { name: 'Sam', laughs: 6, bg: '#B78CFF', em: '☃️', top: 'Ich', bot: 'wenn das WLAN im Homeoffice schneit' },
+  { name: 'Ella', laughs: 12, bg: '#F3E6E0', em: '🎁', top: 'Wichteln', bot: 'mit Budget 5 €, Erwartung 50 €' },
+  { name: 'Noah', laughs: 4, bg: '#EAEAEA', em: '⭐', top: 'Kerning', bot: 'W e i h n a c h t e n' },
+  { name: 'Ida', laughs: 19, bg: '#fff', em: '🧦', top: 'Moodboard', bot: '200 Bilder, alle Socken' },
+];
+// slot positions in % of the tree box (x centre, y top)
+const slots = [[50, 24], [36, 42], [64, 41], [24, 60], [50, 58], [76, 61], [14, 80], [38, 79], [62, 80], [86, 81], [50, 40], [30, 92]];
+const tb = $('#treebox');
+const memeArt = m => m.img ? h('img', { src: m.img, alt: '' }) : h('div', { class: 'meme', style: `background:${m.bg}` }, h('span', {}, m.top), h('span', { class: 'em' }, m.em), h('span', { class: 'bot' }, m.bot));
+function drawTree() {
+  tb.querySelectorAll('.orn').forEach(o => o.remove());
+  const top = Math.max(...memes.map(m => m.laughs));
+  memes.forEach((m, i) => {
+    const [x, y] = slots[i % slots.length];
+    const o = h('div', { class: 'orn' + (i % 3 === 1 ? '' : ' round') + (m.laughs === top ? ' win' : ''), style: `left:${x}%;top:${y}%`, onclick: () => openMeme(m) },
+      h('div', { class: 'str' }), h('div', { class: 'cap' }), h('div', { class: 'fr' }, memeArt(m)),
+      h('div', { class: 'tag' }, h('b', {}, m.name), '😂 ' + m.laughs));
+    tb.append(o);
+  });
+  $('#star').setAttribute('fill', '#B78CFF');
+}
+const lb = $('#lb'), lbin = $('#lbin');
+lb.addEventListener('click', e => { if (e.target === lb) lb.classList.remove('on'); });
+function openMeme(m) {
+  lbin.replaceChildren(
+    h('div', { class: 'row' }, h('span', { class: 'kicker', style: 'margin:0' }, 'Von ' + m.name), h('button', { class: 'x', onclick: () => lb.classList.remove('on') }, '×')),
+    h('div', { class: 'big' }, memeArt(m)),
+    m.cap ? h('p', { style: 'margin:0' }, m.cap) : null,
+    h('div', { class: 'row' }, h('button', { class: 'btn lilac', onclick: e => { if (m.mine) return; m.mine = 1; m.laughs++; e.target.textContent = '😂 Gelacht · ' + m.laughs; drawTree(); } }, '😂 Lustig · ' + m.laughs), h('span', { class: 'note', style: 'margin:0' }, 'Ein Lacher pro Person')));
+  lb.classList.add('on');
+}
+$('#hang').onclick = () => {
+  let file = null;
+  const inp = h('input', { type: 'file', accept: 'image/*', hidden: '' });
+  const drop = h('div', { class: 'drop', onclick: () => inp.click() }, 'Bild wählen oder hierher ziehen');
+  const pick = f => { if (!f) return; file = URL.createObjectURL(f); drop.style.backgroundImage = `url(${file})`; drop.textContent = ''; };
+  inp.onchange = () => pick(inp.files[0]);
+  drop.ondragover = e => e.preventDefault(); drop.ondrop = e => { e.preventDefault(); pick(e.dataTransfer.files[0]); };
+  const nm = h('input', { type: 'text', value: 'Nathalia', maxlength: 24 }), cap = h('input', { type: 'text', placeholder: 'Bildunterschrift (optional)' });
+  lbin.replaceChildren(
+    h('div', { class: 'row' }, h('h3', { style: 'font-size:22px' }, 'Meme aufhängen'), h('button', { class: 'x', onclick: () => lb.classList.remove('on') }, '×')),
+    drop, inp, h('label', {}, 'Dein Name', nm), h('label', {}, 'Bildunterschrift', cap),
+    h('button', { class: 'btn', onclick: () => { if (!file) { drop.textContent = 'Erst ein Bild wählen'; return; } memes.push({ name: nm.value || 'Anonym', laughs: 0, img: file, cap: cap.value }); drawTree(); lb.classList.remove('on'); } }, 'An den Baum hängen'));
+  lb.classList.add('on');
+};
+drawTree();
+
+/* ---------- 2 ANIMATION ---------- */
+$('#again').onclick = () => { const s = $('#semi'); const c = s.cloneNode(true); s.replaceWith(c); };
+$('#gif').onclick = e => { e.target.textContent = 'Kommt in der echten Tür'; setTimeout(() => e.target.textContent = 'Als GIF laden', 1800); };
+
+/* ---------- 3 RECIPE BOX ---------- */
+const recipes = [
+  { t: 'Vanillekipferl', by: 'Ellen · Stuttgart', baked: 12,
+    z: ['250 g Mehl', '200 g kalte Butter', '100 g gemahlene Mandeln', '80 g Zucker', '2 Eigelb', 'Vanillezucker und Puderzucker zum Wälzen'],
+    s: ['Alles schnell zu einem glatten Teig kneten, 30 Minuten kalt stellen.', 'Fingerdicke Rollen formen, in kurze Stücke schneiden und zu Hörnchen biegen.', 'Bei 175 °C Ober-/Unterhitze 10–12 Minuten hell backen.', 'Noch warm in Vanille- und Puderzucker wälzen.'] },
+  { t: 'Zimtsterne', by: 'Markus · Berlin', baked: 7,
+    z: ['3 Eiweiß', '250 g Puderzucker', '1 TL Zimt', '300 g gemahlene Mandeln'],
+    s: ['Eiweiß steif schlagen, Puderzucker einrieseln lassen. 4 EL davon für die Glasur beiseitestellen.', 'Mandeln und Zimt unterheben, Teig über Nacht kühlen.', 'Zwischen Backpapier 1 cm dick ausrollen, Sterne ausstechen, mit Glasur bestreichen.', 'Bei 150 °C 10–12 Minuten backen, die Glasur bleibt weiß.'] },
+  { t: 'Spitzbuben', by: 'Peter · Hamburg', baked: 4,
+    z: ['300 g Mehl', '200 g Butter', '100 g Zucker', '1 Ei', '1 Prise Salz', 'Johannisbeergelee, Puderzucker'],
+    s: ['Mürbeteig kneten und 1 Stunde kühlen.', 'Dünn ausrollen, Kreise ausstechen; bei der Hälfte ein kleines Loch in die Mitte.', 'Bei 180 °C 8–10 Minuten backen.', 'Böden mit Gelee bestreichen, Deckel mit Puderzucker drauf.'] },
+];
+let ri = 0;
+function drawRecipe() {
+  const r = recipes[ri];
+  $('#rcard').replaceChildren(
+    h('h3', {}, r.t), h('p', { class: 'by' }, 'Eingelegt von ' + r.by),
+    h('div', { class: 'cols' },
+      h('div', {}, h('h4', {}, 'Zutaten'), h('ul', {}, r.z.map(x => h('li', {}, x)))),
+      h('div', {}, h('h4', {}, 'So geht’s'), h('ol', {}, r.s.map(x => h('li', {}, x))))),
+    h('div', { class: 'foot' },
+      h('button', { class: 'btn ghost baked' + (r.mine ? ' on' : ''), onclick: () => { r.mine = !r.mine; r.baked += r.mine ? 1 : -1; drawRecipe(); } }, (r.mine ? '✓ ' : '') + 'Hab ich gebacken · ' + r.baked),
+      h('button', { class: 'btn', onclick: () => { ri = (ri + 1) % recipes.length; drawRecipe(); } }, 'Nächstes Rezept →')));
+  $('#rtabs').replaceChildren(...recipes.map((x, i) => h('button', { class: i === ri ? 'on' : '', onclick: () => { ri = i; drawRecipe(); } }, x.t)),
+    h('button', { class: 'add', onclick: e => { e.target.textContent = 'Formular folgt'; } }, '+ Rezept'));
+  $('#rcount').textContent = recipes.length + ' Rezepte';
+}
+drawRecipe();
+
+/* ---------- 4 QUIZ ---------- */
+const qs = [
+  { q: 'Wie nennen sich die Einbrecher Harry und Marv in „Kevin – Allein zu Haus“ selbst?', a: ['Die nassen Banditen', 'Die klebrigen Banditen', 'Die Weihnachtsknacker'], ok: 0, pc: [46, 38, 16],
+    why: 'Marv lässt in jedem Haus das Wasser laufen, das ist ihr Markenzeichen. Die „klebrigen Banditen“ kommen erst in Teil 2.' },
+  { slider: true, q: 'Schätzfrage: Wie viele Nadeln hat ein 1,70 Meter hoher Weihnachtsbaum im Schnitt?', min: 0, max: 400000, step: 5000, ok: 180000, avg: 95000,
+    why: 'Rund 180.000 Nadeln. Die meisten Kolleg:innen haben deutlich zu wenig geschätzt.' },
+  { q: 'In welchem Land isst man an Weihnachten traditionell frittiertes Hähnchen von KFC?', a: ['USA', 'Japan', 'Chile'], ok: 1, pc: [21, 71, 8],
+    why: 'Japan. Eine Werbekampagne von 1974 hat „Kentucky for Christmas“ zur Tradition gemacht, viele bestellen Wochen vorher.' },
+];
+let qi = 0, score = 0;
+const fmt = n => n.toLocaleString('de-DE');
+function nav() { return h('div', { class: 'qnav' }, [0, 1, 2, 3, 4].map(i => h('i', { class: i < qi ? 'done' : i === qi ? 'on' : '' })), h('span', {}, `Frage ${Math.min(qi + 1, 5)} / 5`)); }
+function result(ok, why) {
+  return h('div', { class: 'res on' }, h('h3', {}, ok ? 'Richtig!' : 'Knapp daneben'), h('p', {}, why),
+    h('button', { class: 'btn', onclick: () => { qi++; drawQ(); } }, qi < qs.length - 1 ? 'Nächste Tür →' : 'Zur Auswertung →'));
+}
+function drawQ() {
+  const box = $('#qz');
+  if (qi >= qs.length) {
+    box.replaceChildren(h('div', { class: 'end' }, h('p', { class: 'kicker' }, 'Heiligabend · Deine Wertung'), h('div', { class: 'big-n' }, `${score + 2}/5`), h('div', { class: 'score' }, score + 2 >= 4 ? 'Weihnachtsprofi' : 'Glühwein-Anfänger:in'),
+      h('p', {}, 'So sieht die Auswertung an Tür 24 aus (die zwei fehlenden Fragen sind hier als richtig angenommen). 38 % der Kolleg:innen haben 4 oder mehr.'),
+      h('button', { class: 'btn ghost', onclick: () => { qi = 0; score = 0; drawQ(); } }, 'Von vorn')));
+    return;
+  }
+  const q = qs[qi];
+  if (q.slider) {
+    const val = h('div', { class: 'big-n' }, fmt(100000), h('small', {}, 'NADELN'));
+    const rng = h('input', { type: 'range', min: q.min, max: q.max, step: q.step, value: 100000 });
+    const pos = v => (v - q.min) / (q.max - q.min) * 100 + '%';
+    const mOk = h('div', { class: 'mk ok', style: `left:${pos(q.ok)}` }, 'Richtig: ' + fmt(q.ok));
+    const mAvg = h('div', { class: 'mk avg', style: `left:${pos(q.avg)}` }, 'Ø Team: ' + fmt(q.avg));
+    const wrap = h('div', { class: 'range' }, mAvg, mOk, rng);
+    rng.oninput = () => val.firstChild.textContent = fmt(+rng.value);
+    const go = h('button', { class: 'btn', onclick: () => {
+      rng.disabled = true; go.remove(); wrap.classList.add('shown');
+      const ok = Math.abs(+rng.value - q.ok) <= 40000; if (ok) score++;
+      box.append(result(ok, `Du hast ${fmt(+rng.value)} geschätzt. ${q.why}`));
+    } }, 'Schätzung abgeben');
+    box.replaceChildren(nav(), h('h2', {}, q.q), h('div', { class: 'slider' }, val, wrap, h('div', { class: 'ticks' }, h('span', {}, '0'), h('span', {}, '200.000'), h('span', {}, '400.000'))), go);
+    return;
+  }
+  const btns = q.a.map((t, i) => h('button', { onclick: () => answer(i) }, h('span', { class: 'fill' }), h('span', { class: 'l' }, 'ABC'[i]), h('span', { class: 't' }, t), h('span', { class: 'pc' }, q.pc[i] + ' %')));
+  const ans = h('div', { class: 'ans' }, btns);
+  function answer(i) {
+    btns.forEach((b, j) => { b.disabled = true; if (j === q.ok) b.classList.add('ok'); else if (j === i) b.classList.add('bad'); });
+    ans.classList.add('shown');
+    requestAnimationFrame(() => btns.forEach((b, j) => b.querySelector('.fill').style.width = q.pc[j] + '%'));
+    if (i === q.ok) score++;
+    $('#qz').append(h('p', { class: 'note' }, `${q.pc[q.ok]} % der Kolleg:innen lagen richtig.`), result(i === q.ok, q.why));
+  }
+  box.replaceChildren(nav(), h('h2', {}, q.q), ans);
+}
+drawQ();
+
+/* ---------- 5 ELF ---------- */
+const crew = [{ name: '?', img: null }, { name: 'Ellen', img: 'ellen.jpg' }, { name: '?', img: null }];
+let target = 0;
+const troupe = $('#troupe'), file = $('#elffile');
+const elfSvg = await fetch('../assets/xmas/elf.svg').then(r => r.text()).catch(() => '');
+function drawElves() {
+  troupe.replaceChildren(...crew.map((c, i) => {
+    const face = h('div', { class: 'face' + (c.img ? '' : ' empty'), title: 'Foto wählen', onclick: () => { target = i; file.click(); } }, c.img ? h('img', { src: c.img, alt: c.name }) : 'Foto?');
+    return h('div', { class: 'elfm', html: elfSvg }, face);
+  }));
+  $('#names').replaceChildren(...crew.map(c => h('span', {}, c.img ? c.name : 'Tippen für Foto')));
+}
+file.onchange = () => { const f = file.files[0]; if (!f) return; crew[target] = { name: 'Du', img: URL.createObjectURL(f) }; file.value = ''; drawElves(); };
+$('#bw').onclick = e => { const on = troupe.classList.toggle('bw'); e.target.textContent = on ? 'Foto: Original' : 'Foto: Schwarzweiß'; };
+$('#pause').onclick = e => { const p = $('#elfstage').classList.toggle('paused'); e.target.textContent = p ? 'Weiter' : 'Pause'; };
+audio = new Audio('../assets/sound/music.mp3'); audio.loop = true;
+function stopMusic() { if (!audio) return; audio.pause(); const b = $('#music'); if (b) b.textContent = 'Musik an'; }
+$('#music').onclick = e => { if (audio.paused) { audio.play().catch(() => {}); e.target.textContent = 'Musik aus'; } else stopMusic(); };
+drawElves();
+</script>
+</body>
+</html>
