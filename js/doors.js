@@ -311,9 +311,7 @@ export function doorTypes({ wall, onCleanup }) {
     diy(el, d, o, head) {
       stage(head, '', h('div', { class: 'chain', html: CHAIN() }));
       el.append(h('ol', { class: 'steps-s' }, L(d.steps).map(s => h('li', {}, s))),
-        h('div', { class: 'row', style: 'margin:6px 0 10px' }, h('a', { class: 'btn primary', href: ASSET(L({ de: 'diy/papierkette.pdf', en: 'diy/paper-chain.pdf' })), target: '_blank', rel: 'noopener' }, L({ de: 'Vorlage drucken (A4)', en: 'Print the template (A4)' }))),
-        h('h3', { class: 'sub' }, L({ de: 'Zeig deine Kette', en: 'Show your chain' })));
-      wall(el, d, 'image');
+        h('div', { class: 'row', style: 'margin:6px 0 10px' }, h('a', { class: 'btn primary', href: ASSET(L({ de: 'diy/papierkette.pdf', en: 'diy/paper-chain.pdf' })), target: '_blank', rel: 'noopener' }, L({ de: 'Vorlage drucken (A4)', en: 'Print the template (A4)' }))));
     },
 
     // ---------- Knecht Ruprecht left only coal: everyone draws a Christmas tree with it in 30 seconds ----------
