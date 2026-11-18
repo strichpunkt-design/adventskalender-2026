@@ -126,7 +126,7 @@ export function doorTypes({ wall, onCleanup }) {
           const [x, y] = pts[i];
           tb.append(h('button', { type: 'button', class: 'orn' + (i % 3 === 1 ? '' : ' round') + (m === best ? ' win' : '') + (sm ? ' sm' : ''), style: `left:${x / 4}%;top:${y / 5}%;width:${size / 4}%`, 'aria-label': m.name, onclick: () => open(m) },
             h('i', { class: 'str' }), h('i', { class: 'cap' }), h('span', { class: 'fr' }, media(m.image)),
-            !sm && h('span', { class: 'tag' }, h('b', {}, m.name), '😂 ' + count(m.id))));
+            !sm && h('span', { class: 'mtag' }, h('b', {}, m.name), '😂 ' + count(m.id))));
         });
         if (big) requestAnimationFrame(() => { st.scrollLeft = (st.scrollWidth - st.clientWidth) / 2; });
       };
@@ -406,9 +406,9 @@ export function doorTypes({ wall, onCleanup }) {
       const play = h('button', { type: 'button', class: 'play' }, h('span', { html: burst() }), L({ de: 'Abspielen, mit Ton', en: 'Play, with sound' }));
       const box = h('div', { class: 'screen' }, video, cv, play);
       stage(head, 'dark tall', box);
-      const people = d.people.map(p => ({ name: p.name, src: ASSET('elf/' + p.file + '.jpg') }));
-      const img = src => { const im = new Image(); im.src = src; return im; };
-      const faces = [img(people[0].src), img(people[1].src)], chosen = [0, 1];
+      const src = file => ASSET('elf/team/' + file + '.jpg');
+      const img = s => { const im = new Image(); im.src = s; return im; };
+      const faces = d.start.map(f => img(src(f)));
       let track = null, raf = 0, own = [];
       fetch(ASSET('elf/dance.json')).then(r => r.json()).then(t => { track = t; draw(); }).catch(() => {});
       const fit = () => { const r = box.getBoundingClientRect(), k = devicePixelRatio || 1; cv.width = r.width * k; cv.height = r.height * k; };
@@ -436,20 +436,26 @@ export function doorTypes({ wall, onCleanup }) {
       });
       box.addEventListener('click', e => { if (e.target === play || play.contains(e.target)) return; if (video.paused) play.click(); else { video.pause(); box.classList.remove('on'); if (o.hush) o.hush(false); } });
       onCleanup(() => { cancelAnimationFrame(raf); video.pause(); ro.disconnect(); own.forEach(u => u && URL.revokeObjectURL(u)); if (o.hush) o.hush(false); });
-      // Who dances: per elf, one of Office Management or your own photo (stays in the browser).
+      // Who dances: per elf, anyone from the website with a photo, or your own photo (stays in the browser).
       const file = h('input', { type: 'file', accept: 'image/*', hidden: true });
       let target = 0;
       const rows = h('div', { class: 'cast-pick' });
-      const pick = (i, k) => { chosen[i] = k; faces[i] = img(people[k].src); faces[i].onload = draw; drawRows(); };
-      const drawRows = () => rows.replaceChildren(...[0, 1].map(i => h('div', { class: 'pickrow' }, h('span', { class: 'lb' }, i ? L({ de: 'Elf rechts', en: 'Right elf' }) : L({ de: 'Elf links', en: 'Left elf' })),
-        h('div', { class: 'chips' }, people.map((p, k) => h('button', { type: 'button', class: chosen[i] === k ? 'on' : '', onclick: () => pick(i, k) }, p.name)),
-          h('button', { type: 'button', class: chosen[i] === 'own' ? 'on' : '', onclick: () => { target = i; file.click(); } }, L({ de: 'Eigenes Foto', en: 'Your photo' }))))));
+      const setFace = (i, s) => { faces[i] = img(s); faces[i].onload = draw; };
+      fetch(ASSET('elf/team.json')).then(r => r.json()).then(team => {
+        const studios = [...new Set(team.map(p => p.location))];
+        rows.replaceChildren(...[0, 1].map(i => {
+          const sel = h('select', { 'aria-label': i ? L({ de: 'Elf rechts', en: 'Right elf' }) : L({ de: 'Elf links', en: 'Left elf' }) },
+            studios.map(st => h('optgroup', { label: st }, team.filter(p => p.location === st).map(p => h('option', { value: p.file, selected: p.file === d.start[i] }, p.name)))),
+            h('option', { value: 'own' }, L({ de: 'Eigenes Foto …', en: 'Your own photo …' })));
+          sel.addEventListener('change', () => { if (sel.value === 'own') { target = i; file.click(); } else setFace(i, src(sel.value)); });
+          return h('label', { class: 'pickrow' }, h('span', { class: 'lb' }, i ? L({ de: 'Elf rechts', en: 'Right elf' }) : L({ de: 'Elf links', en: 'Left elf' })), sel);
+        }));
+      }).catch(() => {});
       file.addEventListener('change', () => {
         const f = file.files[0]; if (!f) return;
         if (own[target]) URL.revokeObjectURL(own[target]);
-        own[target] = URL.createObjectURL(f); faces[target] = img(own[target]); faces[target].onload = draw; chosen[target] = 'own'; file.value = ''; drawRows();
+        own[target] = URL.createObjectURL(f); setFace(target, own[target]); file.value = '';
       });
-      drawRows();
       el.append(rows, file, h('p', { class: 'small', style: 'opacity:.6' }, L({ de: 'Am besten ein Foto von vorn, Gesicht in der Mitte. Es bleibt in deinem Browser, nichts wird hochgeladen.', en: 'Best with a photo from the front, face in the middle. It stays in your browser, nothing is uploaded.' })));
     },
   };
