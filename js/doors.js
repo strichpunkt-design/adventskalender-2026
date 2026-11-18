@@ -3,6 +3,7 @@
 import { h, btn, L, t, ls, needName } from './ui.js';
 import { ANIMS, BURST } from './anims.js';
 import * as store from './store.js';
+import { media } from './cards.js';
 
 const ASSET = p => new URL('../assets/' + p, import.meta.url).href;
 const svgCache = {};
@@ -106,7 +107,7 @@ export function doorTypes({ wall, onCleanup }) {
       let big = false, posts = [], laughs = [];
       const zoom = btn(L({ de: 'Baum vergrößern', en: 'Enlarge the tree' }), () => { big = !big; zoom.textContent = big ? L({ de: 'Ganzer Baum', en: 'Whole tree' }) : L({ de: 'Baum vergrößern', en: 'Enlarge the tree' }); layout(); }, 'line');
       el.append(h('div', { class: 'row' }, zoom));
-      wall(el, d, 'image', { board: false });
+      wall(el, d, 'image', { board: false, moving: true });
       // Pack n ornaments into the tree triangle (viewBox 400x500) on a hex grid, as large as they can be.
       const grid = dd => { const pts = []; for (let k = 0, y = 112; y <= 400; k++, y += dd * 0.866) { const hw = 160 * (y - 70) / 340 - dd * 0.3, off = k % 2 ? dd / 2 : 0; for (let j = -20; j <= 20; j++) { const x = 200 + j * dd + off; if (Math.abs(x - 200) <= hw) pts.push([x, y]); } } return pts; };
       const pack = n => { let lo = 6, hi = 120; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; grid(m).length >= n ? lo = m : hi = m; } const p = grid(lo); return { dd: lo, pts: Array.from({ length: n }, (_, i) => p[Math.floor(i * p.length / n)]) }; };
@@ -123,7 +124,7 @@ export function doorTypes({ wall, onCleanup }) {
         memes.forEach((m, i) => {
           const [x, y] = pts[i];
           tb.append(h('button', { type: 'button', class: 'orn' + (i % 3 === 1 ? '' : ' round') + (m === best ? ' win' : '') + (sm ? ' sm' : ''), style: `left:${x / 4}%;top:${y / 5}%;width:${size / 4}%`, 'aria-label': m.name, onclick: () => open(m) },
-            h('i', { class: 'str' }), h('i', { class: 'cap' }), h('span', { class: 'fr' }, h('img', { src: m.image, alt: '', loading: 'lazy' })),
+            h('i', { class: 'str' }), h('i', { class: 'cap' }), h('span', { class: 'fr' }, media(m.image)),
             !sm && h('span', { class: 'tag' }, h('b', {}, m.name), '😂 ' + count(m.id))));
         });
         if (big) requestAnimationFrame(() => { st.scrollLeft = (st.scrollWidth - st.clientWidth) / 2; });
@@ -132,7 +133,7 @@ export function doorTypes({ wall, onCleanup }) {
         const key = 'sp_laugh_' + m.id, n = votes(laughs, 'laugh:' + m.id).length;
         const ov = h('div', { class: 'overlay', onclick: e => { if (e.target === ov) ov.remove(); } }, h('div', { class: 'ov-in' },
           h('div', { class: 'row', style: 'justify-content:space-between' }, h('span', { class: 'lb' }, m.name), h('button', { type: 'button', class: 'x-s', 'aria-label': L({ de: 'Schließen', en: 'Close' }), onclick: () => ov.remove() }, '×')),
-          h('img', { src: m.image, alt: '' }), m.body && h('p', {}, m.body),
+          media(m.image), m.body && h('p', {}, m.body),
           h('div', { class: 'row' }, btn((ls.get(key) ? '😂 ' + L({ de: 'Gelacht', en: 'Laughed' }) : '😂 ' + L({ de: 'Lustig', en: 'Funny' })) + ' · ' + n, async e => {
             if (ls.get(key)) return; ls.set(key, '1'); e.currentTarget.disabled = true;
             try { await store.add(d.n, { kind: 'vote', body: 'laugh:' + m.id }); } catch (x) { ls.del(key); }
@@ -150,7 +151,7 @@ export function doorTypes({ wall, onCleanup }) {
       live(d.from, posts => {
         const memes = posts.filter(p => p.kind === 'image' && p.image), count = id => votes(posts, 'laugh:' + id).length;
         const top = memes.sort((a, b) => count(b.id) - count(a.id)).slice(0, 3);
-        box.replaceChildren(...(top.length ? top.map((m, i) => h('figure', { class: i ? '' : 'first' }, h('span', { class: 'place' }, String(i + 1)), h('img', { src: m.image, alt: '' }), h('figcaption', {}, h('b', {}, m.name), ` · 😂 ${count(m.id)}`, m.body ? h('span', {}, m.body) : null)))
+        box.replaceChildren(...(top.length ? top.map((m, i) => h('figure', { class: i ? '' : 'first' }, h('span', { class: 'place' }, String(i + 1)), media(m.image), h('figcaption', {}, h('b', {}, m.name), ` · 😂 ${count(m.id)}`, m.body ? h('span', {}, m.body) : null)))
           : [h('p', { class: 'empty' }, L({ de: 'Am Baum hängt noch nichts. Tür 8 wartet.', en: 'Nothing on the tree yet. Door 8 is waiting.' }))]));
       });
     },

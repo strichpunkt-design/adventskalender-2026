@@ -54,14 +54,16 @@ export async function add(door, { kind = 'text', body = '', url = '', image = nu
   const name = (localStorage.sp_name || 'Anonym').slice(0, 24);
   const id = uuid();
   if (!isShared) {
+    if (image instanceof Blob) image = await asDataUrl(image);
     localStorage.sp_wall = JSON.stringify([{ id, door, name, kind, body, url, image, created_at: new Date().toISOString() }, ...local()]);
   } else {
     const c = await client();
     let img = null;
     if (image) {
-      const blob = await (await fetch(image)).blob();
-      const path = `${door}/${id}.jpg`;
-      const up = await c.storage.from('wall').upload(path, blob, { contentType: 'image/jpeg' });
+      const blob = image instanceof Blob ? image : await (await fetch(image)).blob();
+      const ext = { 'image/gif': 'gif', 'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov' }[blob.type] || 'jpg';
+      const path = `${door}/${id}.${ext}`;
+      const up = await c.storage.from('wall').upload(path, blob, { contentType: blob.type || 'image/jpeg' });
       if (up.error) throw up.error;
       img = c.storage.from('wall').getPublicUrl(path).data.publicUrl;
     }
@@ -93,6 +95,19 @@ export function subscribe(door, cb) {
   }).catch(() => {});
   return () => { subs.get(door).delete(cb); if (ch) sb.removeChannel(ch); };
 }
+
+const asDataUrl = blob => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(blob); });
+
+// GIFs and videos stay as they are (up to 8 MB; in test mode only 1.5 MB fits in the browser). Photos are shrunk to a JPEG.
+export const MOVING = ['image/gif', 'video/mp4', 'video/webm', 'video/quicktime'];
+export async function prepare(file) {
+  if (MOVING.includes(file.type)) {
+    if (file.size > (isShared ? 8 : 1.5) * 1024 * 1024) { const e = new Error('too big'); e.code = 'big'; throw e; }
+    return file;
+  }
+  return shrink(file);
+}
+export const isVideo = src => /^data:video\//.test(src) || /\.(mp4|webm|mov)(\?|$)/i.test(src);
 
 // Shrinks a picked image in the browser before it is stored.
 export async function shrink(file, max = isShared ? 1000 : 480) {

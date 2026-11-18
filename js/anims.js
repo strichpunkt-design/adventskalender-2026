@@ -3,10 +3,16 @@
 // the rest moves with CSS from doors.css. Drawn on black, in white with lilac accents.
 export const C0 = 'M200 250C222 250 240 268 240 290C240 342 220 378 178 400C175 395 171 391 168 386C194 368 204 350 204 330C182 330 160 312 160 290C160 268 178 250 200 250Z';
 export const BURST = '20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4';
+const BELL = 'M118 398C146 380 146 330 146 296C146 246 172 220 200 220C228 220 254 246 254 296C254 330 254 380 282 398C230 412 170 412 118 398Z';
 const sm = (attr, vals, kt, dur) => `<animate attributeName="${attr}" dur="${dur}s" repeatCount="indefinite" values="${vals.join(';')}" keyTimes="${kt.join(';')}" calcMode="spline" keySplines="${Array(kt.length - 1).fill('.6 0 .3 1').join(';')}"/>`;
 const svg = (label, body) => `<svg class="an" viewBox="0 0 400 460" role="img" aria-label="${label}">${body}</svg>`;
 
-// Snowman: the comma loses its tail and becomes the body, the dot the head; a hat drops in.
+// A parcel: lilac box, black ribbon and bow.
+const PARCEL = (x, y, w, hh) => `<rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="#B78CFF"/><rect x="${x + w / 2 - 3}" y="${y}" width="6" height="${hh}" fill="#000"/><rect x="${x}" y="${y + hh / 2 - 3}" width="${w}" height="6" fill="#000"/><path d="M${x + w / 2} ${y} l-11 -9 l0 9z M${x + w / 2} ${y} l11 -9 l0 9z" fill="#000"/>`;
+// Parcels fall in one after the other while the snowman stands (x, y, width, height, start %).
+const PARCELS = [[284, 316, 56, 44, 38], [290, 272, 44, 40, 44], [48, 326, 50, 34, 50], [340, 330, 34, 30, 56], [96, 334, 30, 26, 61], [298, 236, 32, 32, 66]];
+
+// Snowman: the comma loses its tail and becomes the body, the dot the head; a hat drops in. Then parcels arrive.
 const snowman = L => svg(L({ de: 'Ein Strichpunkt wird zum Schneemann', en: 'A semicolon turns into a snowman' }), `
   <g id="a-snow" class="A" fill="#fff">
     <circle cx="60" cy="40" r="5"/><circle cx="120" cy="10" r="4"/><circle cx="330" cy="30" r="6"/><circle cx="290" cy="90" r="4"/>
@@ -25,7 +31,8 @@ const snowman = L => svg(L({ de: 'Ein Strichpunkt wird zum Schneemann', en: 'A s
     <g id="a-head" class="A"><circle cx="200" cy="150" r="40" fill="#fff"/></g>
     <g id="a-face" class="A"><circle cx="186" cy="176" r="5" fill="#000"/><circle cx="214" cy="176" r="5" fill="#000"/><polygon points="200,186 238,194 200,198" fill="#B78CFF"/></g>
     <g id="a-hat" class="A"><rect x="160" y="124" width="80" height="12" fill="#B78CFF"/><rect x="172" y="76" width="56" height="50" fill="#B78CFF"/><rect x="172" y="112" width="56" height="8" fill="#000"/></g>
-  </g>`);
+  </g>
+  ${PARCELS.map(([x, y, w, hh, at], i) => `<style>@keyframes pk${i}{0%,${at}%{transform:translateY(-520px);opacity:1}${at + 4}%{transform:translateY(6px)}${at + 6}%,80%{transform:none;opacity:1}86%,100%{transform:translateY(40px);opacity:0}}</style><g style="animation:pk${i} 9s infinite cubic-bezier(.5,0,.7,1)">${PARCEL(x, y, w, hh)}</g>`).join('')}`);
 
 // Bauble: the semicolon turns over, the comma becomes the hook, the dot the bauble.
 // The string hangs from the tip of the comma's tail, which ends up at (210, 140).
@@ -36,7 +43,9 @@ const ball = L => svg(L({ de: 'Ein Strichpunkt wird zur Christbaumkugel', en: 'A
     <g id="b-dot"><circle cx="200" cy="150" r="40" fill="#fff"/></g>
     <g clip-path="url(#b-clip)"><g id="b-band"><rect x="90" y="270" width="220" height="38" fill="#B78CFF"/><rect x="90" y="318" width="220" height="8" fill="#B78CFF"/></g></g>
     <g id="b-comma"><path d="${C0}" fill="#fff"/></g>
-  </g>`);
+  </g>
+  ${[[40, -14, 0], [334, 12, .25], [86, 20, .5], [300, -18, .75], [26, 8, 1], [356, -8, 1.2], [130, 16, 1.4]].map(([x, r, dl], i) =>
+    `<g class="letter" style="--r:${r}deg;animation-delay:${dl}s"><g transform="translate(${x} 0) rotate(${r})"><rect x="-22" y="-15" width="44" height="30" fill="#fff"/><path d="M-22 -15 L0 3 L22 -15" fill="none" stroke="#000" stroke-width="3"/>${i === 3 ? '<rect x="8" y="-11" width="9" height="11" fill="#B78CFF"/>' : ''}</g></g>`).join('')}`);
 
 // Advent candles: the dot stretches into the candle, the comma upside down is the flame.
 // Small dots fall as snow the whole time.
@@ -60,14 +69,16 @@ const flake = L => svg(L({ de: 'Ein Strichpunkt wird zur Schneeflocke', en: 'A s
   </g>
   <defs><g id="sf-mini">${[0, 60, 120, 180, 240, 300].map(a => `<path d="${C0}" transform="translate(200 230) rotate(${a}) translate(0 50) rotate(-15) scale(.6) translate(0 -60) translate(-200 -230)"/>`).join('')}<circle cx="200" cy="230" r="24"/></g></defs>
   <g class="sf-fall" fill="#fff">${[[40, .14, 0, 7], [110, .1, 2.5, 6], [330, .16, 1.2, 8], [270, .09, 4, 5.5], [70, .11, 5.5, 7.5], [360, .1, 3.4, 6.5], [160, .08, 6.2, 5], [300, .13, .6, 9]].map(([x, sc, d, t]) =>
-    `<g class="sf-f" style="animation-delay:-${d}s;animation-duration:${t}s"><use href="#sf-mini" transform="translate(${x} 0) scale(${sc}) translate(-200 -230)"/></g>`).join('')}</g>`);
+    `<g class="sf-f" style="animation-delay:-${d}s;animation-duration:${t}s"><use href="#sf-mini" transform="translate(${x} 0) scale(${sc}) translate(-200 -230)"/></g>`).join('')}</g>
+  <g class="bells">${[[78, 96, -20, 0], [318, 352, 24, 1.3], [334, 110, 12, 2.4]].map(([x, y, r, dl]) =>
+    `<g class="bell" style="--r:${r}deg;animation-delay:-${dl}s"><g transform="translate(${x} ${y}) scale(.26) translate(-200 -310)"><path d="${BELL}" fill="#fff"/><circle cx="200" cy="414" r="18" fill="#B78CFF"/><circle cx="200" cy="204" r="13" fill="none" stroke="#fff" stroke-width="8"/></g></g>`).join('')}</g>`);
 
-// Reindeer: the dot grows into the head, the comma turns over into an antler and gets a twin, a lilac nose lights up.
+// Reindeer: the dot grows into the head, the comma turns over into an antler and gets a twin, a red nose lights up.
 const deer = L => svg(L({ de: 'Ein Strichpunkt wird zum Rentier', en: 'A semicolon turns into a reindeer' }), `
   <g id="r-al"><path d="${C0}" fill="#fff"/></g>
   <g id="r-ar"><path d="${C0}" fill="#fff"/></g>
   <g id="r-head"><circle cx="200" cy="150" r="40" fill="#fff"/></g>
   <circle class="r-f" cx="176" cy="288" r="8" fill="#000"/><circle class="r-f" cx="224" cy="288" r="8" fill="#000"/>
-  <circle id="r-nose" cx="200" cy="330" r="17" fill="#B78CFF"/>`);
+  <circle id="r-nose" cx="200" cy="330" r="17" fill="#E2231A"/>`);
 
 export const ANIMS = { snowman, ball, flake, deer, adv2: candles(2), adv3: candles(3), adv4: candles(4) };

@@ -30,6 +30,7 @@ export const T = {
   need_link: { de: 'Füg einen Link ein, der mit https:// beginnt.', en: 'Paste a link that starts with https://.' },
   need_draw: { de: 'Zeichne erst etwas.', en: 'Draw something first.' },
   need_img: { de: 'Wähl erst ein Bild.', en: 'Choose an image first.' },
+  too_big: { de: 'Die Datei ist zu groß.', en: 'That file is too big.' },
   failed: { de: 'Das hat nicht geklappt. Versuch es noch mal.', en: 'That didn’t work. Try again.' },
   local: { de: 'Testmodus: Beiträge bleiben nur in diesem Browser.', en: 'Test mode: posts stay in this browser only.' },
   again: { de: 'Noch mal', en: 'Again' },
@@ -86,8 +87,8 @@ const D = [
     ] },
   // 8 · Tue
   { type: 'meme', kicker: JOIN, title: { de: 'Meme des Jahres', en: 'Meme of the year' },
-    body: { de: ['Häng dein liebstes Weihnachtsmeme an den Baum. Tipp auf eine Kugel zum Ansehen und Mitlachen. Das lustigste Meme wird am 22. gekürt.'],
-            en: ['Hang your favourite Christmas meme on the tree. Tap a bauble to look and laugh along. The funniest one is crowned on the 22nd.'] },
+    body: { de: ['Häng dein liebstes Weihnachtsmeme an den Baum: Bild, GIF oder kurzes Video. Tipp auf eine Kugel zum Ansehen und Mitlachen. Das lustigste Meme wird am 22. gekürt.'],
+            en: ['Hang your favourite Christmas meme on the tree: picture, GIF or short video. Tap a bauble to look and laugh along. The funniest one is crowned on the 22nd.'] },
     ph: { de: 'Bildunterschrift (optional)', en: 'Caption (optional)' } },
   // 9 · Wed
   { type: 'quiz', qi: 2, kicker: QUIZ, title: { de: 'Wie heißen die Rentiere vom Weihnachtsmann?', en: 'What are Santa’s reindeer called?' },

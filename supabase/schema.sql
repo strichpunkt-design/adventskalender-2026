@@ -33,9 +33,9 @@ grant execute on function public.delete_post(uuid, text) to anon;
 -- Live updates.
 alter publication supabase_realtime add table public.posts;
 
--- Image uploads: public bucket, JPEG only, 1 MB each.
+-- Uploads: public bucket. Photos are shrunk to JPEG in the browser; GIFs and short videos (memes) up to 8 MB.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('wall', 'wall', true, 1048576, array['image/jpeg'])
-on conflict (id) do nothing;
+values ('wall', 'wall', true, 8388608, array['image/jpeg','image/gif','video/mp4','video/webm','video/quicktime'])
+on conflict (id) do update set file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
 create policy "wall upload" on storage.objects for insert to anon with check (bucket_id = 'wall');
 create policy "wall read" on storage.objects for select to anon using (bucket_id = 'wall');

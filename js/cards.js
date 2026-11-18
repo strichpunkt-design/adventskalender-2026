@@ -55,19 +55,19 @@ function todo(d) {
 }
 
 // ---------- shared wall: a form and the posts as notes on a dotted board ----------
-function wall(el, d, mode = d.mode, { board: showBoard = true } = {}) {
+function wall(el, d, mode = d.mode, { board: showBoard = true, moving = false } = {}) {
   const err = h('p', { class: 'err', role: 'alert' });
   let img = null;
   if (mode !== 'none') {
     const who = !localStorage.sp_name && h('input', { maxlength: 24, placeholder: t('ob_name'), 'aria-label': t('ob_name'), autocomplete: 'given-name' });
     const ta = h('textarea', { maxlength: 280, placeholder: L(d.ph) || '', 'aria-label': L(d.ph) || L(d.title) });
     const url = mode === 'link' && h('input', { type: 'url', placeholder: 'https://open.spotify.com/…', maxlength: 300, 'aria-label': 'Link' });
-    const file = mode === 'image' && h('input', { type: 'file', accept: 'image/*', hidden: true });
+    const file = mode === 'image' && h('input', { type: 'file', accept: moving ? 'image/*,video/mp4,video/webm,video/quicktime' : 'image/*', hidden: true });
     const fileBtn = file && btn(t('image'), () => file.click(), 'line');
     if (file) file.addEventListener('change', async () => {
       err.textContent = '';
-      try { img = await store.shrink(file.files[0]); fileBtn.textContent = '✓ ' + file.files[0].name.slice(0, 18); }
-      catch (e) { img = null; err.textContent = t('failed'); }
+      try { img = moving ? await store.prepare(file.files[0]) : await store.shrink(file.files[0]); fileBtn.textContent = '✓ ' + file.files[0].name.slice(0, 18); }
+      catch (e) { img = null; err.textContent = e.code === 'big' ? t('too_big') : t('failed'); }
     });
     const send = btn(t('post'), async () => {
       const body = ta.value.trim(), link = url ? url.value.trim() : '';
@@ -98,7 +98,7 @@ function wall(el, d, mode = d.mode, { board: showBoard = true } = {}) {
   const postEl = p => {
     const hash = [...p.id].reduce((a, c) => a * 31 + c.charCodeAt(0) | 0, 7);
     const e = h('div', { class: 'post', style: `--rot:${(hash % 9) - 4}deg;--dy:${(hash >> 4) % 13 - 6}px` });
-    if (p.image && /^(https:\/\/|data:image\/)/.test(p.image)) e.append(h('img', { src: p.image, alt: '', loading: 'lazy' }));
+    if (p.image && /^(https:\/\/|data:(image|video)\/)/.test(p.image)) e.append(media(p.image));
     if (p.url && /^https:\/\//.test(p.url)) {
       let host = p.url; try { host = new URL(p.url).hostname.replace(/^www\./, ''); } catch (x) {}
       e.append(h('a', { href: p.url, target: '_blank', rel: 'noopener noreferrer' }, '♪ ' + host), h('br'));
@@ -110,6 +110,14 @@ function wall(el, d, mode = d.mode, { board: showBoard = true } = {}) {
   };
   draw();
   onCleanup(store.subscribe(d.n, draw));
+}
+
+// A picture, GIF or video: videos play silently on a loop, like a GIF.
+export function media(src, cls = '') {
+  if (!store.isVideo(src)) return h('img', { src, alt: '', loading: 'lazy', class: cls });
+  const v = h('video', { src, loop: true, autoplay: true, playsinline: true, preload: 'metadata', class: cls });
+  v.muted = true; v.play().catch(() => {});
+  return v;
 }
 
 // ---------- door types ----------
