@@ -111,34 +111,43 @@ section.door.on{display:grid}
 .pick button{padding:8px 12px;box-shadow:inset 0 0 0 2px #fff;font-size:11px;letter-spacing:.06em;text-transform:uppercase;font-stretch:125%}
 .pick button.on{background:var(--lilac);color:#000;box-shadow:none}
 .T{transform-box:fill-box;transform-origin:center;animation-iteration-count:infinite;animation-timing-function:cubic-bezier(.6,0,.3,1)}
-/* 2 eye winks into a star */
-#e-eye{transform-origin:200px 230px;animation:e-blink 7s infinite cubic-bezier(.6,0,.3,1)}
-#e-pupil{animation:e-look 7s infinite cubic-bezier(.6,0,.3,1)}
-#e-star{transform-origin:200px 230px;animation:e-star 7s infinite cubic-bezier(.3,.7,.3,1)}
-.e-sp{transform-origin:200px 230px;animation:e-sp 7s infinite cubic-bezier(.1,.7,.3,1)}
-@keyframes e-look{0%,6%{transform:none}12%,20%{transform:translateX(-46px)}26%,32%{transform:translateX(46px)}38%,100%{transform:none}}
-@keyframes e-blink{0%,36%{transform:none}41%,74%{transform:scaleY(.05)}80%,100%{transform:none}}
-@keyframes e-star{0%,40%{transform:scale(0) rotate(0)}48%{transform:scale(1.25) rotate(120deg)}54%,66%{transform:scale(1) rotate(180deg)}74%,100%{transform:scale(0) rotate(300deg)}}
-@keyframes e-sp{0%,44%{transform:translate(0,0) scale(0);opacity:1}62%{transform:translate(var(--x),var(--y)) scale(1) rotate(160deg);opacity:1}70%,100%{transform:translate(var(--x),var(--y)) scale(0);opacity:0}}
-/* 3 snow globe */
-#g-globe{transform-origin:200px 410px;animation:g-shake 8s infinite cubic-bezier(.4,0,.4,1)}
-.g-f{animation:g-flake 8s infinite cubic-bezier(.3,.6,.4,1)}
-@keyframes g-shake{0%,16%{transform:none}19%{transform:rotate(-9deg)}22%{transform:rotate(8deg)}25%{transform:rotate(-6deg)}28%{transform:rotate(4deg)}31%,100%{transform:none}}
-@keyframes g-flake{0%,17%{transform:translate(0,0)}30%{transform:translate(var(--x),var(--y))}88%{transform:translate(calc(var(--x) * -.4),-4px)}94%,100%{transform:translate(0,0)}}
-/* 4 letters snow */
-.l-c{transform-box:fill-box;transform-origin:50% 100%;animation:l-fall 9s infinite cubic-bezier(.3,.5,.4,1)}
-@keyframes l-fall{0%{transform:translate(var(--x),-460px) rotate(var(--r));opacity:1}12%{transform:translate(calc(var(--x) * -.6),-300px) rotate(calc(var(--r) * -1))}22%{transform:translate(calc(var(--x) * .4),-140px) rotate(var(--r))}30%{transform:translate(0,0) rotate(0)}33%{transform:translate(0,0) scaleY(.85)}36%,82%{transform:none;opacity:1}92%{transform:scaleY(0);opacity:1}92.1%,100%{transform:translate(var(--x),-460px);opacity:0}}
-.l-s{animation:l-snow 9s linear infinite}
-@keyframes l-snow{from{transform:translateY(-40px)}to{transform:translateY(480px)}}
-/* 5 door bursts open */
-#d-leaf{transform-origin:150px 420px;animation:d-open 7s infinite cubic-bezier(.6,0,.3,1)}
-#d-house{transform-origin:200px 420px;animation:d-shake 7s infinite}
-#d-eye{transform-origin:200px 360px;animation:d-peek 7s infinite cubic-bezier(.6,0,.3,1)}
-.d-b{transform-origin:200px 360px;animation:d-burst 7s infinite cubic-bezier(.1,.7,.3,1)}
-@keyframes d-open{0%,16%{transform:none}20%{transform:scaleX(1.06)}30%,72%{transform:scaleX(-.42)}80%{transform:scaleX(1.03)}82%,100%{transform:none}}
-@keyframes d-shake{0%,80%{transform:none}82%{transform:translateX(-5px)}84%{transform:translateX(4px)}86%{transform:translateX(-2px)}88%,100%{transform:none}}
-@keyframes d-peek{0%,44%{transform:scaleY(0)}50%,56%{transform:none}58%{transform:scaleY(.08)}60%,66%{transform:none}70%,100%{transform:scaleY(0)}}
-@keyframes d-burst{0%,26%{transform:scale(0);opacity:1}46%{transform:translate(var(--x),var(--y)) scale(var(--s)) rotate(200deg);opacity:1}56%,100%{transform:translate(var(--x),var(--y)) scale(0) rotate(260deg);opacity:0}}
+/* bauble */
+#b-swing{transform-origin:200px -30px;animation:b-swing 8s infinite ease-in-out}
+#b-comma{transform-origin:200px 290px;animation:b-comma 8s infinite cubic-bezier(.6,0,.3,1)}
+#b-dot{transform-origin:200px 150px;animation:b-dot 8s infinite cubic-bezier(.6,0,.3,1)}
+#b-band{transform-origin:200px 290px;animation:b-band 8s infinite cubic-bezier(.6,0,.3,1)}
+#b-str{transform-origin:200px -30px;animation:b-str 8s infinite cubic-bezier(.6,0,.3,1)}
+@keyframes b-comma{0%,12%{transform:none}30%,80%{transform:translate(0,-100px) rotate(180deg) scale(.45)}94%,100%{transform:none}}
+@keyframes b-dot{0%,12%{transform:none}30%,80%{transform:translateY(150px) scale(2.5)}94%,100%{transform:none}}
+@keyframes b-band{0%,32%{transform:scaleX(0)}40%,76%{transform:none}82%,100%{transform:scaleX(0)}}
+@keyframes b-str{0%,28%{transform:scaleY(0)}36%,78%{transform:none}84%,100%{transform:scaleY(0)}}
+@keyframes b-swing{0%,40%{transform:none}48%{transform:rotate(9deg)}56%{transform:rotate(-7deg)}64%{transform:rotate(5deg)}71%{transform:rotate(-3deg)}76%,100%{transform:none}}
+/* candy cane: the dot rolls away */
+#c-dot{transform-origin:200px 150px;animation:c-dot 8s infinite cubic-bezier(.5,0,.4,1)}
+@keyframes c-dot{0%,14%{transform:none}32%,78%{transform:translateX(280px) rotate(600deg)}94%,100%{transform:none}}
+/* candles */
+.cd-c{transform-origin:200px 290px;animation:cd-c 9s infinite cubic-bezier(.6,0,.3,1)}
+.cd-c.off{animation-name:cd-off}
+.cd-fl{transform-origin:200px 290px;animation:cd-fl .45s ease-in-out infinite alternate}
+@keyframes cd-c{0%,12%{transform:none}30%,80%{transform:translateY(-142px) rotate(180deg)}94%,100%{transform:none}}
+@keyframes cd-off{0%,12%{transform:none}30%,80%{transform:translateY(-142px) rotate(180deg) scale(.3)}94%,100%{transform:none}}
+@keyframes cd-fl{from{transform:scale(.94,.9)}to{transform:scale(1.04,1.08)}}
+.cd-w{animation:cd-w 9s infinite}
+@keyframes cd-w{0%,24%{opacity:0}32%,80%{opacity:1}88%,100%{opacity:0}}
+/* fairy lights */
+.lt{transform-box:fill-box;transform-origin:50% 0;animation:lt 8s infinite cubic-bezier(.5,0,.3,1)}
+@keyframes lt{0%,28%{transform:scaleY(0)}36%,74%{transform:none}80%,100%{transform:scaleY(0)}}
+.lt ellipse{animation:lt-chase 1.2s infinite steps(1)}
+@keyframes lt-chase{0%{fill:#fff}50%{fill:#B78CFF}}
+/* bell */
+#bl-swing{transform-origin:200px 206px;animation:bl-swing 7s infinite ease-in-out}
+#bl-clap{transform-origin:200px 240px;animation:bl-clap 7s infinite ease-in-out}
+.bl-w{animation:bl-w 7s infinite}
+.bl-w.r{animation-name:bl-wr}
+@keyframes bl-swing{0%,32%{transform:none}38%{transform:rotate(16deg)}46%{transform:rotate(-16deg)}54%{transform:rotate(14deg)}62%{transform:rotate(-12deg)}70%{transform:rotate(6deg)}76%,100%{transform:none}}
+@keyframes bl-clap{0%,33%{transform:none}39%{transform:rotate(-14deg)}47%{transform:rotate(14deg)}55%{transform:rotate(-12deg)}63%{transform:rotate(10deg)}71%{transform:rotate(-4deg)}77%,100%{transform:none}}
+@keyframes bl-w{0%,44%,52%,60%,68%,100%{opacity:0}46%,62%{opacity:1}}
+@keyframes bl-wr{0%,36%,44%,52%,60%,100%{opacity:0}38%,54%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.an *{animation-play-state:paused!important}}
 
 /* ---------- 3 RECIPE BOX ---------- */
@@ -232,6 +241,19 @@ section.door.on{display:grid}
 .end .big-n{color:var(--ink)}
 .end .score{display:inline-block;background:var(--lilac);padding:6px 14px;rotate:-2deg;margin:14px 0 18px;font-weight:900;font-stretch:150%;text-transform:uppercase}
 
+/* ---------- TV ---------- */
+#tv{background:var(--blush)}
+.tvstage{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 16px 40px;gap:18px}
+.tvbox{position:relative;width:min(100%,820px)}
+.tvbox img,.tvbox svg{display:block;width:100%;height:auto;overflow:visible}
+.tvbox img{mix-blend-mode:multiply}
+.tvbox .scr{position:absolute;overflow:hidden;background:#000}
+.tvbox .scr iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.tvbox.photo .scr{left:9.84%;top:12.92%;width:59.54%;height:67.88%;border-radius:7% / 9%}
+.tvbox.flat{margin-top:60px}
+.tvbox.flat .scr{left:8.33%;top:11.36%;width:58.33%;height:68.18%;border-radius:4%}
+.tvbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+
 /* ---------- 5 ELF ---------- */
 #elf{background:var(--blush)}
 .elfstage{display:flex;flex-direction:column;justify-content:center;align-items:center;padding:24px 16px 40px;gap:18px}
@@ -260,6 +282,7 @@ section.door.on{display:grid}
     <a href="#anim">Animation</a>
     <a href="#recipe">Rezeptbox</a>
     <a href="#quiz">Quiz</a>
+    <a href="#tv">TV</a>
     <a href="#elf">Elf Yourself</a>
   </nav>
 </header>
@@ -294,7 +317,7 @@ section.door.on{display:grid}
     <p class="kicker" id="an-k">Tür 5 · Samstag · Animation</p>
     <h2 id="an-t">Strich&shy;punkt wird Schnee&shy;mann</h2>
     <p>Kurze Loops aus unseren eigenen Zeichen statt der Straßenfiguren: schwarz, weiß, ein Hauch Lila. Jede Animation gibt es als GIF für Slack und Teams.</p>
-    <p class="note">Fünf Animationen für die Wochenenden. Der sechste Wochenendtag (So, 20.) ist Knecht Ruprecht.</p>
+    <p class="note">Eine Animation pro Wochenendtag: samstags wird ein Strichpunkt-Zeichen zu etwas Weihnachtlichem, an den Adventssonntagen werden Strichpunkte zu Kerzen. Kugel, Zuckerstange und Glocke sind Reserve.</p>
     <div class="pick" id="an-pick"></div>
   </div>
   <div class="animstage">
@@ -327,56 +350,7 @@ section.door.on{display:grid}
         </g>
       </svg>
 
-      <svg class="an" id="an2" viewBox="0 0 400 460" aria-label="Das Strichpunkt-Auge zwinkert und wird zum Stern">
-        <g class="e-sp" style="--x:-150px;--y:-120px" fill="#fff"><polygon transform="translate(200 230) scale(.5)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g>
-        <g class="e-sp" style="--x:160px;--y:-90px" fill="#B78CFF"><polygon transform="translate(200 230) scale(.7)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g>
-        <g class="e-sp" style="--x:-130px;--y:130px" fill="#B78CFF"><polygon transform="translate(200 230) scale(.6)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g>
-        <g class="e-sp" style="--x:140px;--y:140px" fill="#fff"><polygon transform="translate(200 230) scale(.45)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g>
-        <g class="e-sp" style="--x:10px;--y:-180px" fill="#fff"><polygon transform="translate(200 230) scale(.35)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g>
-        <g id="e-eye">
-          <path transform="translate(56 142.4) scale(4)" d="M36 43.8C51.700 43.8 65.300 34.900 72 21.900 65.300 8.900 51.700 0 36 0 20.300 0 6.700 8.900 0 21.900 6.700 34.900 20.300 43.8 36 43.8Z" fill="#fff"/>
-          <g id="e-pupil"><circle cx="200" cy="230" r="53" fill="#000"/><circle cx="216" cy="214" r="12" fill="#B78CFF"/></g>
-        </g>
-        <g id="e-star"><polygon transform="translate(200 230) scale(4.2)" fill="#B78CFF" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g>
-      </svg>
-
-      <svg class="an" id="an3" viewBox="0 0 400 460" aria-label="Eine Schneekugel mit einem Strichpunkt-Haus wird geschüttelt">
-        <defs><clipPath id="g-clip"><circle cx="200" cy="230" r="126"/></clipPath></defs>
-        <g id="g-globe">
-          <g clip-path="url(#g-clip)">
-            <rect x="60" y="320" width="280" height="60" fill="#fff"/>
-            <path d="M156 320 V262 a44 44 0 0 1 88 0 V320 Z" fill="#B78CFF"/>
-            <path d="M184 320 V296 a16 16 0 0 1 32 0 V320 Z" fill="#000"/>
-            <g transform="translate(182 246) scale(.5)"><path d="M36 43.8C51.700 43.8 65.300 34.900 72 21.900 65.300 8.900 51.700 0 36 0 20.300 0 6.700 8.900 0 21.900 6.700 34.900 20.300 43.8 36 43.8Z" fill="#000"/><circle cx="36" cy="21.9" r="11" fill="#fff"/></g>
-            <circle class="g-f" cx="96" cy="318" r="5" fill="#fff" style="--x:20px;--y:-190px"/><circle class="g-f" cx="118" cy="316" r="4" fill="#fff" style="--x:-10px;--y:-120px"/><circle class="g-f" cx="140" cy="318" r="6" fill="#fff" style="--x:30px;--y:-215px"/><circle class="g-f" cx="170" cy="317" r="4" fill="#fff" style="--x:-25px;--y:-170px"/><circle class="g-f" cx="205" cy="318" r="5" fill="#fff" style="--x:10px;--y:-230px"/><circle class="g-f" cx="232" cy="316" r="4" fill="#fff" style="--x:-30px;--y:-150px"/><circle class="g-f" cx="258" cy="318" r="6" fill="#fff" style="--x:15px;--y:-200px"/><circle class="g-f" cx="282" cy="317" r="4" fill="#fff" style="--x:-20px;--y:-130px"/><circle class="g-f" cx="304" cy="318" r="5" fill="#fff" style="--x:-35px;--y:-180px"/><circle class="g-f" cx="126" cy="317" r="3" fill="#fff" style="--x:40px;--y:-90px"/><circle class="g-f" cx="244" cy="318" r="3" fill="#fff" style="--x:25px;--y:-95px"/><circle class="g-f" cx="196" cy="317" r="3" fill="#fff" style="--x:-40px;--y:-110px"/><circle class="g-f" cx="150" cy="316" r="4" fill="#fff" style="--x:0px;--y:-160px"/><circle class="g-f" cx="270" cy="316" r="3" fill="#fff" style="--x:10px;--y:-60px"/>
-          </g>
-          <circle cx="200" cy="230" r="130" fill="none" stroke="#fff" stroke-width="8"/>
-          <path d="M120 112 A100 100 0 0 1 176 104" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>
-        </g>
-        <polygon points="110,412 290,412 268,356 132,356" fill="#fff"/>
-        <rect x="140" y="374" width="120" height="18" fill="#B78CFF"/>
-      </svg>
-
-      <svg class="an" id="an4" viewBox="0 0 400 460" aria-label="Buchstaben schneien vom Himmel und bilden Frohe Feste">
-        <circle class="l-s" cx="30" cy="0" r="3" fill="#fff" style="animation-delay:-1s;animation-duration:7s"/><circle class="l-s" cx="80" cy="0" r="4" fill="#fff" style="animation-delay:-4s;animation-duration:9s"/><circle class="l-s" cx="140" cy="0" r="3" fill="#fff" style="animation-delay:-2s;animation-duration:8s"/><circle class="l-s" cx="200" cy="0" r="2" fill="#fff" style="animation-delay:-6s;animation-duration:7s"/><circle class="l-s" cx="260" cy="0" r="4" fill="#fff" style="animation-delay:-3s;animation-duration:10s"/><circle class="l-s" cx="320" cy="0" r="3" fill="#fff" style="animation-delay:-5s;animation-duration:8s"/><circle class="l-s" cx="370" cy="0" r="2" fill="#fff" style="animation-delay:-0s;animation-duration:9s"/><circle class="l-s" cx="110" cy="0" r="2" fill="#fff" style="animation-delay:-7s;animation-duration:6s"/><circle class="l-s" cx="300" cy="0" r="2" fill="#fff" style="animation-delay:-1s;animation-duration:7s"/>
-        <rect x="20" y="398" width="360" height="6" fill="#fff"/>
-        <g font-family="Strichpunkt Sans, Archivo, sans-serif" font-weight="900" font-stretch="150%" font-size="62" text-anchor="middle">
-          <text class="l-c" x="80" y="318" fill="#fff" style="--x:40px;--r:-30deg;animation-delay:0.1s">F</text><text class="l-c" x="140" y="318" fill="#fff" style="--x:-30px;--r:25deg;animation-delay:0.6s">R</text><text class="l-c" x="200" y="318" fill="#fff" style="--x:20px;--r:-20deg;animation-delay:0.3s">O</text><text class="l-c" x="260" y="318" fill="#fff" style="--x:-40px;--r:35deg;animation-delay:0.9s">H</text><text class="l-c" x="320" y="318" fill="#fff" style="--x:30px;--r:-25deg;animation-delay:0.45s">E</text><text class="l-c" x="80" y="392" fill="#B78CFF" style="--x:-35px;--r:20deg;animation-delay:1.2s">F</text><text class="l-c" x="140" y="392" fill="#B78CFF" style="--x:25px;--r:-35deg;animation-delay:0.75s">E</text><text class="l-c" x="200" y="392" fill="#B78CFF" style="--x:-20px;--r:30deg;animation-delay:1.5s">S</text><text class="l-c" x="260" y="392" fill="#B78CFF" style="--x:35px;--r:-20deg;animation-delay:1.05s">T</text><text class="l-c" x="320" y="392" fill="#B78CFF" style="--x:-25px;--r:25deg;animation-delay:1.35s">E</text>
-        </g>
-      </svg>
-
-      <svg class="an" id="an5" viewBox="0 0 400 460" aria-label="Eine Haustür fliegt auf, Sterne fliegen heraus">
-        <g id="d-house">
-          <path d="M70 420 V170 a130 130 0 0 1 260 0 V420 Z" fill="#fff"/>
-          <rect x="166" y="150" width="68" height="40" fill="#000"/>
-          <text x="200" y="179" text-anchor="middle" font-family="Strichpunkt Sans, Archivo, sans-serif" font-weight="900" font-stretch="150%" font-size="26" fill="#fff">24</text>
-          <path d="M150 420 V300 a50 50 0 0 1 100 0 V420 Z" fill="#B78CFF"/>
-          <g id="d-eye"><path transform="translate(164 338) scale(1)" d="M36 43.8C51.700 43.8 65.300 34.900 72 21.900 65.300 8.900 51.700 0 36 0 20.300 0 6.700 8.900 0 21.900 6.700 34.900 20.300 43.8 36 43.8Z" fill="#000"/><circle cx="200" cy="359.9" r="10" fill="#fff"/></g>
-          <g class="d-b" style="--x:-170px;--y:-200px;--s:1.4;animation-delay:0s" fill="#B78CFF"><polygon transform="translate(200 360) scale(.9)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g><g class="d-b" style="--x:160px;--y:-230px;--s:1.1;animation-delay:0.05s" fill="#fff"><polygon transform="translate(200 360) scale(.9)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g><g class="d-b" style="--x:-190px;--y:-40px;--s:0.9;animation-delay:0.1s" fill="#fff"><polygon transform="translate(200 360) scale(.9)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g><g class="d-b" style="--x:180px;--y:-80px;--s:1.6;animation-delay:0.02s" fill="#B78CFF"><polygon transform="translate(200 360) scale(.9)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g><g class="d-b" style="--x:-60px;--y:-300px;--s:0.8;animation-delay:0.12s" fill="#fff"><polygon transform="translate(200 360) scale(.9)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g><g class="d-b" style="--x:80px;--y:-310px;--s:1.2;animation-delay:0.08s" fill="#B78CFF"><polygon transform="translate(200 360) scale(.9)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g><g class="d-b" style="--x:-120px;--y:-130px;--s:0.6;animation-delay:0.15s" fill="#B78CFF"><polygon transform="translate(200 360) scale(.9)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g><g class="d-b" style="--x:120px;--y:-160px;--s:0.7;animation-delay:0.18s" fill="#fff"><polygon transform="translate(200 360) scale(.9)" points="20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4"/></g>
-          <g id="d-leaf"><path d="M150 420 V300 a50 50 0 0 1 100 0 V420 Z" fill="#000" stroke="#fff" stroke-width="3"/><circle cx="234" cy="368" r="6" fill="#fff"/></g>
-        </g>
-        <rect x="40" y="420" width="320" height="8" fill="#fff"/>
-      </svg>
+      <div id="an-more"></div>
       <div class="bar">
         <button class="btn lilac" id="gif">Als GIF laden</button>
         <button class="btn ghost" id="again">Nochmal</button>
@@ -447,6 +421,24 @@ section.door.on{display:grid}
     <p class="note" style="color:#000">Mockup: drei Fragen zum Durchklicken, die Prozente sind ausgedacht.</p>
   </div>
   <div class="quizwrap" id="qz"></div>
+</section>
+
+<!-- TV -->
+<section class="door" id="tv">
+  <div class="side">
+    <p class="kicker">Tür 18 · Fernsehabend</p>
+    <h2>Weih&shy;nachts&shy;mann &amp; Co. KG</h2>
+    <p>Eine ganze Folge zum Mittagessen: „Strafe muss sein“, Folge 12, im Röhrenfernseher. Läuft direkt in der Tür.</p>
+    <p class="note">Video: offizieller TOGGO-Kanal auf YouTube, eingebettet ohne Cookies. Im echten Kalender pausiert die Musik, sobald das Video läuft.</p>
+  </div>
+  <div class="tvstage">
+    <div class="tvbox photo" id="tvbox"></div>
+    <div class="tvbar">
+      <button class="btn" data-tv="photo">Foto-Fernseher</button>
+      <button class="btn ghost" data-tv="flat">Flach gezeichnet</button>
+    </div>
+    <p class="note" style="text-align:center;max-width:52ch">Das Foto ist wahrscheinlich ein Stockbild: vor dem Livegang Lizenz klären. Die gezeichnete Variante folgt der Bildsprache des Kalenders.</p>
+  </div>
 </section>
 
 <!-- 5 ELF -->
@@ -579,19 +571,103 @@ $('#hang').onclick = () => {
 setCount(9);
 
 /* ---------- 2 ANIMATION ---------- */
+/* new animations: our own shapes turn into Christmas things */
+const C0 = 'M200 250C222 250 240 268 240 290C240 342 220 378 178 400C175 395 171 391 168 386C194 368 204 350 204 330C182 330 160 312 160 290C160 268 178 250 200 250Z';
+const BURST = '20,0 8.3,3.4 14.1,14.1 3.4,8.3 0,20 -3.4,8.3 -14.1,14.1 -8.3,3.4 -20,0 -8.3,-3.4 -14.1,-14.1 -3.4,-8.3 0,-20 3.4,-8.3 14.1,-14.1 8.3,-3.4';
+const sm = (attr, vals, kt, dur) => `<animate attributeName="${attr}" dur="${dur}s" repeatCount="indefinite" values="${vals.join(';')}" keyTimes="${kt.join(';')}" calcMode="spline" keySplines="${Array(kt.length - 1).fill('.6 0 .3 1').join(';')}"/>`;
+const svg = (id, label, body) => `<svg class="an" id="${id}" viewBox="0 0 400 460" aria-label="${label}">${body}</svg>`;
+
+// Santa hat: the comma's tail flops over into the hat, the dot jumps on as the pompom.
+const HAT = 'M200 160C226 160 244 176 250 200C270 206 300 226 304 262C300 266 294 266 290 262C282 232 262 240 276 330C230 336 170 336 124 330C140 260 170 170 200 160Z';
+const HAT2 = 'M200 160C228 158 248 176 254 202C278 214 306 246 300 284C294 288 288 288 284 282C284 246 262 244 276 330C230 336 170 336 124 330C140 260 170 170 200 160Z';
+const kH = [0, .12, .32, .48, .6, .76, .92, 1];
+const hat = svg('an-hat', 'Ein Strichpunkt wird zur Weihnachtsmütze', `
+  <path fill="#fff">${sm('d', [C0, C0, HAT, HAT2, HAT, HAT, C0, C0], kH, 8)}${sm('fill', ['#fff', '#fff', '#B78CFF', '#B78CFF', '#B78CFF', '#B78CFF', '#fff', '#fff'], kH, 8)}</path>
+  <rect y="316" height="30" rx="15" fill="#fff">${sm('x', [200, 200, 112, 112, 200, 200], [0, .3, .38, .74, .8, 1], 8)}${sm('width', [0, 0, 176, 176, 0, 0], [0, .3, .38, .74, .8, 1], 8)}</rect>
+  <circle fill="#fff">${sm('cx', [200, 200, 298, 293, 298, 298, 200, 200], kH, 8)}${sm('cy', [150, 150, 270, 292, 270, 270, 150, 150], kH, 8)}${sm('r', [40, 40, 20, 20, 20, 20, 40, 40], kH, 8)}</circle>`);
+
+// Bauble: the semicolon turns over, the comma becomes the hook, the dot the bauble.
+const ball = svg('an-ball', 'Ein Strichpunkt wird zur Christbaumkugel', `
+  <defs><clipPath id="b-clip"><circle cx="200" cy="300" r="100"/></clipPath></defs>
+  <g id="b-swing">
+    <rect id="b-str" x="198.5" y="-30" width="3" height="205" fill="#CFCFCF"/>
+    <g id="b-dot"><circle cx="200" cy="150" r="40" fill="#fff"/></g>
+    <g clip-path="url(#b-clip)"><g id="b-band"><rect x="90" y="270" width="220" height="38" fill="#B78CFF"/><rect x="90" y="318" width="220" height="8" fill="#B78CFF"/></g></g>
+    <g id="b-comma"><path d="${C0}" fill="#fff"/></g>
+  </g>`);
+
+// Candy cane: the comma stretches and curls into a cane, the dot rolls off like a snowball.
+const CANE = 'M204 146C242 146 272 176 272 214C272 300 272 380 272 430C266 438 242 438 236 430C236 380 236 300 236 214C236 170 172 170 172 250C140 262 136 146 204 146Z';
+const kC = [0, .14, .32, .78, .94, 1];
+const cane = svg('an-cane', 'Ein Strichpunkt wird zur Zuckerstange', `
+  <defs><clipPath id="c-clip"><path d="${CANE}"/></clipPath></defs>
+  <path fill="#fff">${sm('d', [C0, C0, CANE, CANE, C0, C0], kC, 8)}</path>
+  <g clip-path="url(#c-clip)" stroke="#B78CFF" stroke-width="13">${sm('opacity', [0, 0, 1, 1, 0, 0], [0, .32, .38, .74, .78, 1], 8)}
+    ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => `<line x1="120" x2="300" y1="${120 + k * 34}" y2="${60 + k * 34}"/>`).join('')}</g>
+  <g id="c-dot"><circle cx="200" cy="150" r="40" fill="#fff"/><circle cx="216" cy="136" r="9" fill="#B78CFF"/></g>`);
+
+// Advent candles: the Strich becomes the candle, the comma upside down the flame.
+const candles = n => svg('an-adv' + n, n + '. Advent: Strichpunkte werden Kerzen', `
+  <text x="200" y="74" text-anchor="middle" font-family="Strichpunkt Sans,Archivo,sans-serif" font-weight="900" font-stretch="150%" font-size="34" fill="#fff" class="cd-w">${n}. ADVENT</text>
+  <g class="cd-w"><rect x="36" y="410" width="328" height="12" fill="#B78CFF"/>${[52, 104, 148, 200, 252, 296, 348].map((x, k) => `<circle cx="${x}" cy="${k % 2 ? 428 : 404}" r="${k % 2 ? 6 : 8}" fill="#fff"/>`).join('')}</g>
+  ${[80, 160, 240, 320].map((cx, i) => {
+    const lit = i < n, kt = [0, .12, .3, .8, .94, 1];
+    const a = 32 + i * 7;
+    return `<style>@keyframes cd-f${n}${i}{0%,${a}%{fill:#fff}${a + 3}%,78%{fill:${lit ? '#B78CFF' : '#fff'}}84%,100%{fill:#fff}}</style>
+    <rect fill="#fff">${sm('x', [cx - 22, cx - 22, cx - 24, cx - 24, cx - 22, cx - 22], kt, 9)}${sm('y', [201, 201, 250, 250, 201, 201], kt, 9)}${sm('width', [44, 44, 48, 48, 44, 44], kt, 9)}${sm('height', [44, 44, 160, 160, 44, 44], kt, 9)}${sm('rx', [22, 22, 4, 4, 22, 22], kt, 9)}</rect>
+    <g transform="translate(${cx - 110} 140.5) scale(.55)"><g class="cd-c${lit ? '' : ' off'}"><g class="${lit ? 'cd-fl' : ''}" style="animation-delay:-${i * .17}s"><path d="${C0}" style="animation:cd-f${n}${i} 9s infinite"/></g></g></g>`;
+  }).join('')}`);
+
+// Fairy lights: the eye closes (as on locked days), the lashes hang down as a string of lights.
+const OPEN = 'M36 43.8C51.7 43.8 65.3 34.9 72 21.9C65.3 8.9 51.7 0 36 0C20.3 0 6.7 8.9 0 21.9C6.7 34.9 20.3 43.8 36 43.8Z';
+const SHUT = 'M36 32C51.7 32 65.3 24 72 16C65.3 21 51.7 26 36 26C20.3 26 6.7 21 0 16C6.7 24 20.3 32 36 32Z';
+const kE = [0, .16, .28, .78, .9, 1];
+const lashes = [6, 16, 26, 36, 46, 56, 66].map((x, i) => {
+  const y = 16 + 16 * (1 - ((x - 36) / 36) ** 2) - .5, dx = (x - 36) * .14, L = 10 + (3 - Math.abs(i - 3)) * 1.6;
+  return `<g class="lt"><line x1="${x}" y1="${y}" x2="${x + dx}" y2="${y + L}" stroke="#fff" stroke-width="1.6"/><rect x="${x + dx - 1.6}" y="${y + L - 1}" width="3.2" height="2.6" fill="#fff"/><ellipse cx="${x + dx}" cy="${y + L + 4.6}" rx="2.7" ry="3.8" fill="#fff" style="animation-delay:-${(i % 2) * .6}s"/></g>`;
+}).join('');
+const lights = svg('an-lights', 'Das Auge schließt sich, die Wimpern werden zur Lichterkette', `
+  <g transform="translate(56 120) scale(4)">
+    <path fill="#fff">${sm('d', [OPEN, OPEN, SHUT, SHUT, OPEN, OPEN], kE, 8)}</path>
+    <circle cx="36" fill="#000">${sm('cy', [21.9, 21.9, 29, 29, 21.9, 21.9], kE, 8)}${sm('r', [13.3, 13.3, 0, 0, 13.3, 13.3], kE, 8)}</circle>
+    <circle fill="#B78CFF">${sm('cx', [40, 40, 36, 36, 40, 40], kE, 8)}${sm('cy', [18, 18, 29, 29, 18, 18], kE, 8)}${sm('r', [3, 3, 0, 0, 3, 3], kE, 8)}</circle>
+    ${lashes}
+  </g>`);
+
+// Bell: our door arch flares into a bell, the door knob (the dot) becomes the clapper.
+const DOOR = 'M150 410C150 370 150 330 150 300C150 272 172 250 200 250C228 250 250 272 250 300C250 330 250 370 250 410C230 410 170 410 150 410Z';
+const BELL = 'M118 398C146 380 146 330 146 296C146 246 172 220 200 220C228 220 254 246 254 296C254 330 254 380 282 398C230 412 170 412 118 398Z';
+const kB = [0, .14, .3, .8, .94, 1];
+const bell = svg('an-bell', 'Eine Strichpunkt-Tür wird zur Glocke', `
+  <rect x="110" y="410" width="180" height="6" fill="#fff">${sm('opacity', [1, 1, 0, 0, 1, 1], kB, 7)}</rect>
+  <path class="bl-w" d="M92 250 a120 120 0 0 0 0 110 M70 232 a150 150 0 0 0 0 146" fill="none" stroke="#B78CFF" stroke-width="7" stroke-linecap="round"/>
+  <path class="bl-w r" d="M308 250 a120 120 0 0 1 0 110 M330 232 a150 150 0 0 1 0 146" fill="none" stroke="#B78CFF" stroke-width="7" stroke-linecap="round"/>
+  <g id="bl-swing">
+    <circle cx="200" cy="204" r="12" fill="none" stroke="#fff" stroke-width="6">${sm('opacity', [0, 0, 1, 1, 0, 0], kB, 7)}</circle>
+    <g id="bl-clap"><circle fill="#B78CFF">${sm('cx', [232, 232, 200, 200, 232, 232], kB, 7)}${sm('cy', [336, 336, 414, 414, 336, 336], kB, 7)}${sm('r', [9, 9, 17, 17, 9, 9], kB, 7)}</circle></g>
+    <path fill="#fff">${sm('d', [DOOR, DOOR, BELL, BELL, DOOR, DOOR], kB, 7)}</path>
+    <circle cx="232" cy="336" r="9" fill="#B78CFF">${sm('opacity', [1, 1, 0, 0, 1, 1], [0, .14, .17, .91, .94, 1], 7)}</circle>
+  </g>`);
+$('#an-more').outerHTML = hat + ball + cane + candles(2) + candles(3) + candles(4) + lights + bell;
 const ANIMS = [
-  ['Tür 5 · Samstag', 'Strich&shy;punkt wird Schnee&shy;mann', 'Schneemann'],
-  ['Tür 6 · Sonntag', 'Das Auge zwinkert', 'Zwinkern'],
-  ['Tür 12 · Samstag', 'Schnee&shy;kugel', 'Schneekugel'],
-  ['Tür 13 · Sonntag', 'Frohe Feste von oben', 'Buchstaben'],
-  ['Tür 19 · Samstag', 'Die Tür fliegt auf', 'Tür'],
+  ['an1', 'Sa 5.12.', 'Strich&shy;punkt wird Schnee&shy;mann', 'Schneemann'],
+  ['an-adv2', 'So 6.12. · 2. Advent', 'Zwei Kerzen brennen', '2. Advent'],
+  ['an-hat', 'Sa 12.12.', 'Strich&shy;punkt wird Weih&shy;nachts&shy;mütze', 'Mütze'],
+  ['an-adv3', 'So 13.12. · 3. Advent', 'Drei Kerzen brennen', '3. Advent'],
+  ['an-lights', 'Sa 19.12.', 'Das Auge wird Lichter&shy;kette', 'Lichterkette'],
+  ['an-adv4', 'So 20.12. · 4. Advent', 'Alle vier Kerzen brennen', '4. Advent'],
+  ['an-ball', 'Reserve', 'Strich&shy;punkt wird Christ&shy;baum&shy;kugel', 'Kugel'],
+  ['an-cane', 'Reserve', 'Strich&shy;punkt wird Zucker&shy;stange', 'Zuckerstange'],
+  ['an-bell', 'Reserve', 'Die Tür wird Glocke', 'Glocke'],
 ];
 let ai = 0;
 function showAnim(i) {
   ai = i;
-  document.querySelectorAll('.an').forEach((s, j) => { s.classList.toggle('on', j === i); if (j === i) { const c = s.cloneNode(true); s.replaceWith(c); } });
-  $('#an-k').textContent = ANIMS[i][0] + ' · Animation'; $('#an-t').innerHTML = ANIMS[i][1];
-  $('#an-pick').replaceChildren(...ANIMS.map((a, j) => h('button', { class: j === i ? 'on' : '', onclick: () => showAnim(j) }, (j + 1) + ' ' + a[2])));
+  const s = document.getElementById(ANIMS[i][0]), c = s.cloneNode(true);
+  document.querySelectorAll('.an').forEach(x => x.classList.remove('on'));
+  c.classList.add('on'); s.replaceWith(c);
+  $('#an-k').textContent = ANIMS[i][1] + ' · Animation'; $('#an-t').innerHTML = ANIMS[i][2];
+  $('#an-pick').replaceChildren(...ANIMS.map((a, j) => h('button', { class: j === i ? 'on' : '', onclick: () => showAnim(j) }, a[3])));
 }
 showAnim(0);
 $('#again').onclick = () => showAnim(ai);
@@ -714,6 +790,28 @@ function drawQ() {
 }
 drawQ();
 
+/* ---------- TV ---------- */
+const VID = 'bYMhOtF-mfc';
+const FLAT_TV = `<svg viewBox="0 0 600 440" aria-hidden="true">
+  <path d="M260 26 L196 -44 M340 26 L410 -50" stroke="#000" stroke-width="6" stroke-linecap="round"/>
+  <polygon transform="translate(410 -50) scale(.7)" fill="#B78CFF" points="${BURST}"/>
+  <rect x="236" y="12" width="128" height="16" fill="#000"/>
+  <rect x="20" y="26" width="560" height="356" rx="22" fill="#000"/>
+  <rect x="420" y="52" width="134" height="300" fill="#fff"/>
+  <circle cx="487" cy="114" r="34" fill="#000"/><rect x="483" y="84" width="8" height="34" fill="#fff"/>
+  <circle cx="487" cy="200" r="26" fill="#000"/><rect x="470" y="196" width="34" height="8" fill="#B78CFF"/>
+  ${[252, 268, 284, 300, 316, 332].map(y => `<rect x="440" y="${y}" width="94" height="6" fill="#000"/>`).join('')}
+  <rect x="80" y="382" width="70" height="40" fill="#000"/><rect x="450" y="382" width="70" height="40" fill="#000"/>
+</svg>`;
+function drawTV(kind) {
+  const box = $('#tvbox'); box.className = 'tvbox ' + kind;
+  const scr = h('div', { class: 'scr' }, h('iframe', { src: `https://www.youtube-nocookie.com/embed/${VID}?rel=0`, title: 'Weihnachtsmann & Co. KG, Folge 12: Strafe muss sein', allow: 'autoplay; encrypted-media; picture-in-picture; fullscreen', allowfullscreen: '' }));
+  box.innerHTML = kind === 'photo' ? '<img src="tv.jpg" alt="">' : FLAT_TV; box.append(scr);
+  document.querySelectorAll('[data-tv]').forEach(b => b.className = 'btn' + (b.dataset.tv === kind ? '' : ' ghost'));
+}
+document.querySelectorAll('[data-tv]').forEach(b => b.onclick = () => drawTV(b.dataset.tv));
+let tvDone = false;
+
 /* ---------- 5 ELF ---------- */
 const crew = [{ name: '?', img: null }, { name: 'Ellen', img: 'ellen.jpg' }, { name: '?', img: null }];
 let target = 0;
@@ -734,7 +832,7 @@ audio = new Audio('../assets/sound/music.mp3'); audio.loop = true;
 function stopMusic() { if (!audio) return; audio.pause(); const b = $('#music'); if (b) b.textContent = 'Musik an'; }
 $('#music').onclick = e => { if (audio.paused) { audio.play().catch(() => {}); e.target.textContent = 'Musik aus'; } else stopMusic(); };
 drawElves();
-window.redraw = id => { if (id === 'meme') drawTree(); if (id === 'recipe') drawBooks(); };
+window.redraw = id => { if (id === 'meme') drawTree(); if (id === 'recipe') drawBooks(); if (id === 'tv' && !tvDone) { tvDone = true; drawTV('photo'); } };
 window.redraw((location.hash || '#meme').slice(1));
 </script>
 </body>
