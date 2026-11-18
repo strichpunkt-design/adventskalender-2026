@@ -53,7 +53,7 @@ const D = [
     body: { de: ['So viele Pakete hat DHL in Deutschland an einem einzigen Tag Anfang Dezember 2024 sortiert. Doppelt so viele wie an einem normalen Tag.', 'Unser erstes Türchen kommt ohne Zustellung aus.'],
             en: ['That’s how many parcels DHL sorted in Germany on a single day in early December 2024. Twice as many as on a normal day.', 'Our first door needs no delivery.'] } },
   // 2 · Wed
-  { type: 'playlist', mode: 'link', spotify: '', kicker: JOIN, title: { de: 'Die Playlist', en: 'The playlist' },
+  { type: 'playlist', art: 'record', mode: 'link', spotify: '', kicker: JOIN, title: { de: 'Die Playlist', en: 'The playlist' },
     body: { de: ['Unsere gemeinsame Weihnachts-Playlist auf Spotify: Jede und jeder darf ein Lieblingslied reinpacken. Oder poste den Link hier und sag, warum genau dieser Song.'],
             en: ['Our shared Christmas playlist on Spotify: everyone gets to add a favourite song. Or post the link here and say why this one.'] },
     ph: { de: 'Warum dieser Song?', en: 'Why this song?' } },
@@ -62,7 +62,7 @@ const D = [
     q: { options: { de: ['Die nassen Banditen', 'Die klebrigen Banditen', 'Die Weihnachtsknacker'], en: ['The Wet Bandits', 'The Sticky Bandits', 'The Christmas Crackers'] }, ok: 0,
          why: { de: 'Marv lässt in jedem Haus das Wasser laufen. Das ist ihr Markenzeichen. Die „klebrigen Banditen“ kommen erst in Teil 2.', en: 'Marv leaves the water running in every house. That’s their trademark. The “Sticky Bandits” only arrive in part 2.' } } },
   // 4 · Fri
-  { type: 'pickup', kicker: { de: 'Zum Abholen', en: 'Pick-up' }, title: { de: 'Nikolaus kommt früher', en: 'Nikolaus comes early' },
+  { type: 'pickup', art: 'santa', kicker: { de: 'Zum Abholen', en: 'Pick-up' }, title: { de: 'Nikolaus kommt früher', en: 'Nikolaus comes early' },
     body: { de: ['Der 6. Dezember ist ein Sonntag. Darum liegt dein Schoko-Nikolaus schon heute bereit.'], en: ['December 6 is a Sunday. So your chocolate Nikolaus is ready today.'] },
     office: { de: c => `Hol ihn dir im Studio ${c} ab. Einer pro Person, auch wenn es schwerfällt.`, en: c => `Pick it up at the ${c} studio. One each, hard as that is.` },
     remote: { de: 'Nicht im Studio? Sag deinem Team Bescheid, dann legt jemand einen für dich zurück.', en: 'Not in a studio? Tell your team and someone will save one for you.' },
@@ -73,10 +73,9 @@ const D = [
             en: ['Germany has seven official Christmas post offices where children can send their wish lists. They have names like Himmelpfort (Heaven’s Gate), Engelskirchen (Angel Churches) and Nikolausdorf. Every letter with a return address gets a reply.'] } },
   // 6 · Sun
   { type: 'anim', anim: 'adv2', kicker: { de: 'Zweiter Advent', en: 'Second Sunday of Advent' }, title: { de: 'Zwei Kerzen', en: 'Two candles' },
-    body: { de: ['Aus zwei Strichpunkten werden Kerzen. Die anderen warten noch.'], en: ['Two semicolons become candles. The others are still waiting.'] },
-    todo: { de: 'Eine echte Kerze anzünden. Laptop zu.', en: 'Light a real candle. Laptop closed.' } },
+    body: { de: ['Aus zwei Strichpunkten werden Kerzen. Die anderen warten noch.'], en: ['Two semicolons become candles. The others are still waiting.'] }, },
   // 7 · Mon
-  { type: 'rsvp', kicker: { de: 'Frühstück', en: 'Breakfast' }, title: { de: 'Frühstück in allen Studios', en: 'Breakfast in every studio' },
+  { type: 'rsvp', art: 'pretzel', kicker: { de: 'Frühstück', en: 'Breakfast' }, title: { de: 'Frühstück in allen Studios', en: 'Breakfast in every studio' },
     body: { de: ['Der Tag nach Nikolaus beginnt gemeinsam: In jedem Studio gibt es Frühstück. Sag kurz, wo du dabei bist, damit genug Brötchen da sind.'],
             en: ['The day after Nikolaus starts together: breakfast in every studio. Let us know where you’ll join so there are enough rolls.'] },
     studios: [
@@ -112,8 +111,7 @@ const D = [
             en: ['Coca-Cola didn’t invent Santa’s red coat. Red Santas appeared in illustrations as early as the late 19th century. But its advertising from 1931 on shaped how he looks worldwide.', 'A brand gets strong when everyone shows the same thing.'] } },
   // 13 · Sun
   { type: 'anim', anim: 'adv3', kicker: { de: 'Dritter Advent', en: 'Third Sunday of Advent' }, title: { de: 'Drei Kerzen', en: 'Three candles' },
-    body: { de: ['Drei Kerzen brennen. Die vierte hält noch eine Woche durch.'], en: ['Three candles are burning. The fourth holds out one more week.'] },
-    todo: { de: 'Jemandem schreiben, an den du lange nicht gedacht hast.', en: 'Write to someone you haven’t thought of in a while.' } },
+    body: { de: ['Drei Kerzen brennen. Die vierte hält noch eine Woche durch.'], en: ['Three candles are burning. The fourth holds out one more week.'] }, },
   // 14 · Mon
   { type: 'niete', kicker: { de: 'Knecht Ruprecht', en: 'Knecht Ruprecht' }, title: { de: 'Heute: Kohle', en: 'Today: coal' },
     body: { de: ['Knecht Ruprecht war hier. Hinter diesem Türchen gibt es nur ein Stück Kohle.'], en: ['Knecht Ruprecht was here. Behind this door there is only a lump of coal.'] } },
@@ -136,12 +134,10 @@ const D = [
   // 19 · Sat
   { type: 'anim', anim: 'flake', kicker: FACT, title: { de: 'Jingle Bells im All', en: 'Jingle Bells in space' },
     body: { de: ['„Jingle Bells“ war das erste Lied, das aus dem Weltall übertragen wurde. Am 16. Dezember 1965 spielten die Astronauten Walter Schirra und Thomas Stafford es an Bord von Gemini 6 auf einer geschmuggelten Mundharmonika und kleinen Glöckchen.'],
-            en: ['“Jingle Bells” was the first song ever broadcast from space. On December 16, 1965, astronauts Walter Schirra and Thomas Stafford played it aboard Gemini 6 on a smuggled harmonica and small bells.'] },
-    todo: { de: 'Ein Lied summen, bis es jemand erkennt.', en: 'Hum a song until someone recognises it.' } },
+            en: ['“Jingle Bells” was the first song ever broadcast from space. On December 16, 1965, astronauts Walter Schirra and Thomas Stafford played it aboard Gemini 6 on a smuggled harmonica and small bells.'] }, },
   // 20 · Sun
   { type: 'anim', anim: 'adv4', kicker: { de: 'Vierter Advent', en: 'Fourth Sunday of Advent' }, title: { de: 'Alle vier Kerzen', en: 'All four candles' },
-    body: { de: ['Alle vier brennen. Noch vier Türen bis Heiligabend.'], en: ['All four are burning. Four more doors until Christmas Eve.'] },
-    todo: { de: 'Heute nichts gestalten. Nur schauen.', en: 'Design nothing today. Only look.' } },
+    body: { de: ['Alle vier brennen. Noch vier Türen bis Heiligabend.'], en: ['All four are burning. Four more doors until Christmas Eve.'] }, },
   // 21 · Mon
   { type: 'quiz', qi: 5, kicker: QUIZ, title: { de: 'In welchem Land isst man an Weihnachten traditionell frittiertes Hähnchen von KFC?', en: 'In which country is fried chicken from KFC a Christmas tradition?' },
     q: { options: { de: ['USA', 'Japan', 'Chile'], en: ['USA', 'Japan', 'Chile'] }, ok: 1,

@@ -2,7 +2,7 @@
 import { illu } from './illu.js';
 import { DOORS } from './content.js';
 import { ui, L, t, h, btn } from './ui.js';
-import { doorTypes } from './doors.js';
+import { doorTypes, ART } from './doors.js';
 import * as store from './store.js';
 
 let cleanups = [];
@@ -19,9 +19,32 @@ export function render(d, o) {
   const main = h('div', { class: 'c-main' }, h('p', { class: 'kicker' }, L(d.kicker)));
   main.append(h('h2', { id: 'card-title' }, L(d.title)));
   for (const p of L(d.body) || []) main.append(h('p', {}, p));
+  if (d.art && ART[d.art]) { head.classList.add('staged'); head.append(h('div', { class: 'stage art-' + d.art, html: ART[d.art] })); }
   (TYPES[d.type] || (() => {}))(main, d, o, head, DOORS);
   if (d.todo) main.append(todo(d));
-  return h('div', {}, head, main);
+  const lay = LAYOUT[d.type] || '';
+  const wrap = h('div', { class: `t-${d.type} ${lay}` }, head, main);
+  fitText(main);
+  return wrap;
+}
+
+// Visual doors give the picture two thirds; the TV fills the whole card.
+const LAYOUT = { anim: 'lay-wide', meme: 'lay-wide', recipes: 'lay-wide', niete: 'lay-wide', elfom: 'lay-wide', tv: 'lay-full' };
+
+// On a laptop, everything to read should fit without scrolling: shrink the type step by step if needed.
+// Doors with long lists (walls, forms) may still scroll once the type is as small as it may get.
+function fitText(main) {
+  if (!matchMedia('(min-width:900px)').matches) return;
+  let raf = 0;
+  const fit = () => {
+    raf = 0;
+    let f = 1; main.style.setProperty('--fit', 1);
+    while (main.scrollHeight > main.clientHeight + 2 && f > 0.62) { f -= 0.04; main.style.setProperty('--fit', f.toFixed(2)); }
+  };
+  const later = () => { if (!raf) raf = requestAnimationFrame(fit); };
+  later();
+  const mo = new MutationObserver(later); mo.observe(main, { childList: true, subtree: true });
+  addEventListener('resize', later); onCleanup(() => { mo.disconnect(); removeEventListener('resize', later); cancelAnimationFrame(raf); });
 }
 
 function todo(d) {

@@ -162,8 +162,9 @@ export function doorTypes({ wall, onCleanup }) {
       const st = stage(head, 'kitchen-bg tall', kitchen);
       loadSvg('xmas/ginger.svg').then(s => { ginger.querySelector('.bob').innerHTML = s; });
       const seed = { id: 'seed', name: 'Strichpunkt', ...d.seed };
-      let list = [seed], baked = [], cur = 0;
-      const stack = h('div', { class: 'stack' }); el.append(stack);
+      let list = [seed], baked = [], cur = 0, fresh = null;
+      const stack = h('div', { class: 'stack' });
+      if (matchMedia('(min-width:900px)').matches) kitchen.append(stack); else el.append(stack);
       const parse = p => { try { const r = JSON.parse(p.body); return { id: p.id, name: p.name, t: r.t, z: r.z || [], s: r.s || [] }; } catch (e) { return null; } };
       const rnd = i => { const x = Math.sin(i * 91.7 + 3.1) * 43758.5; return x - Math.floor(x); };
       const drawBooks = () => {
@@ -179,6 +180,8 @@ export function doorTypes({ wall, onCleanup }) {
         const planks = []; for (let i = 0; i < spines.length; i += per) planks.push(h('div', { class: 'plank' }, spines.slice(i, i + per)));
         books.replaceChildren(h('div', { class: 'lbl' }, L(list[cur].t)), ...planks);
       };
+      // The recipe someone just added opens straight away.
+      const show = () => { const i = fresh ? list.findIndex(r => r.id === fresh) : -1; if (i >= 0) { cur = i; fresh = null; } cur = Math.min(cur, list.length - 1); drawCard(); drawBooks(); };
       const drawCard = () => {
         const r = list[cur], nx = list[(cur + 1) % list.length], key = 'sp_baked_' + r.id, nb = votes(baked, 'baked:' + r.id).length;
         const front = h('article', { class: 'rcard' }, h('h3', {}, L(r.t)), h('p', { class: 'lb' }, L({ de: 'Eingelegt von ', en: 'Added by ' }) + r.name),
@@ -203,7 +206,7 @@ export function doorTypes({ wall, onCleanup }) {
         if (body.length > 2000) return e1.textContent = L({ de: 'Etwas kürzer, bitte.', en: 'A little shorter, please.' });
         if (!needName(send)) return;
         send.disabled = true;
-        try { await store.add(d.n, { kind: 'recipe', body }); ti.value = zi.value = si.value = ''; e1.textContent = ''; cur = 1; } catch (e) { e1.textContent = t('failed'); }
+        try { fresh = await store.add(d.n, { kind: 'recipe', body }); ti.value = zi.value = si.value = ''; e1.textContent = ''; show(); } catch (e) { e1.textContent = t('failed'); }
         send.disabled = false;
       }, 'primary');
       const form = h('div', { class: 'wall-form' }, h('h3', { class: 'sub' }, L({ de: 'Dein Rezept', en: 'Your recipe' })), ti, zi, si, h('div', { class: 'row' }, send), e1);
@@ -212,7 +215,7 @@ export function doorTypes({ wall, onCleanup }) {
       live(d.n, posts => {
         baked = posts.filter(p => p.kind === 'vote');
         list = [seed, ...posts.filter(p => p.kind === 'recipe').map(parse).filter(Boolean).reverse()];
-        cur = Math.min(cur, list.length - 1); drawCard(); drawBooks();
+        show();
       });
       const ro = new ResizeObserver(() => drawBooks()); ro.observe(st); onCleanup(() => ro.disconnect());
     },
@@ -305,13 +308,30 @@ export function doorTypes({ wall, onCleanup }) {
       onCleanup(() => own && URL.revokeObjectURL(own));
       loadSvg('xmas/elf.svg').then(draw);
       const col = btn(L({ de: 'Foto: Original', en: 'Photo: original' }), () => { const bw = troupe.classList.toggle('bw'); col.textContent = bw ? L({ de: 'Foto: Original', en: 'Photo: original' }) : L({ de: 'Foto: Schwarzweiß', en: 'Photo: black and white' }); }, 'line');
-      el.append(troupe, file, h('div', { class: 'row' }, col), h('p', { class: 'small', style: 'opacity:.6' }, L({ de: 'Tipp auf ein Gesicht und wähl ein eigenes Foto. Es bleibt in deinem Browser.', en: 'Tap a face and pick your own photo. It stays in your browser.' })));
-      for (let i = 0; i < 16; i++) head.append(h('span', { class: 'fall', html: burst(), style: `left:${Math.random() * 100}%;animation-delay:${-Math.random() * 5}s;animation-duration:${3 + Math.random() * 4}s;width:${14 + Math.random() * 22}px` }));
+      const st = stage(head, 'blush tall', troupe, file);
+      el.append(h('div', { class: 'row' }, col), h('p', { class: 'small', style: 'opacity:.6' }, L({ de: 'Tipp auf ein Gesicht und wähl ein eigenes Foto. Es bleibt in deinem Browser.', en: 'Tap a face and pick your own photo. It stays in your browser.' })));
+      for (let i = 0; i < 16; i++) st.append(h('span', { class: 'fall', html: burst(), style: `left:${Math.random() * 100}%;animation-delay:${-Math.random() * 5}s;animation-duration:${3 + Math.random() * 4}s;width:${14 + Math.random() * 22}px` }));
     },
   };
 }
 
 // ---------- drawings ----------
+// Pictures for the left column of simple doors (set with art: in content.js).
+export const ART = {
+  // A record that spins.
+  record: `<svg class="record" viewBox="-100 -100 200 200" aria-hidden="true"><g class="spin"><circle r="96" fill="#000"/>${[86, 78, 70, 62, 54, 46].map(r => `<circle r="${r}" fill="none" stroke="#3A3A3A" stroke-width="1.6"/>`).join('')}
+    <circle r="32" fill="#F3E6E0"/><circle cx="0" cy="-12" r="6" fill="#000"/><path transform="translate(0 4) scale(.28) translate(-200 -290)" d="M200 250C222 250 240 268 240 290C240 342 220 378 178 400C175 395 171 391 168 386C194 368 204 350 204 330C182 330 160 312 160 290C160 268 178 250 200 250Z" fill="#000"/><circle r="2.6" fill="#B78CFF"/></g>
+    <g class="arm"><rect x="78" y="-96" width="12" height="12" fill="#000"/><path d="M84 -90 L84 -10 L58 22" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/><rect x="50" y="16" width="16" height="10" fill="#000" transform="rotate(-40 58 21)"/></g></svg>`,
+  // Santa (Nikolaus) from the cast, big.
+  santa: `<img class="cast" src="${ASSET('xmas/santa.svg')}" alt="">`,
+  // A pretzel and a coffee for breakfast.
+  pretzel: `<svg class="pretzel" viewBox="0 0 240 200" aria-hidden="true"><g fill="none" stroke="#000" stroke-linecap="round">
+    <path d="M44 108 C44 172 196 172 196 108" stroke-width="30"/>
+    <path d="M44 110 C38 56 90 30 114 80 C124 102 138 128 164 152" stroke-width="19"/>
+    <path d="M196 110 C202 56 150 30 126 80 C116 102 102 128 76 152" stroke-width="19"/></g>
+    <g fill="#fff"><circle cx="70" cy="150" r="3"/><circle cx="96" cy="160" r="2.5"/><circle cx="120" cy="158" r="3"/><circle cx="146" cy="162" r="2.5"/><circle cx="174" cy="148" r="3"/><circle cx="58" cy="128" r="2.5"/><circle cx="184" cy="126" r="2.5"/><circle cx="56" cy="80" r="2.5"/><circle cx="184" cy="78" r="2.5"/></g></svg>`,
+};
+
 const KITCHEN = `<svg class="bg" viewBox="0 0 1000 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
   <defs><pattern id="tiles" width="50" height="50" patternUnits="userSpaceOnUse"><rect width="50" height="50" fill="#F3E6E0"/><path d="M50 0V50H0" fill="none" stroke="#fff" stroke-width="3"/></pattern></defs>
   <rect width="1000" height="700" fill="url(#tiles)"/>
