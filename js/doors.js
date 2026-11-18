@@ -179,9 +179,7 @@ export function doorTypes({ wall, onCleanup }) {
         let t = setTimeout(tick, 600); onCleanup(() => clearTimeout(t));
       }).catch(() => {});
       el.append(h('div', { class: 'row', style: 'margin:6px 0 10px' },
-          h('a', { class: 'btn primary', href: ASSET('diy/ausmalbild.pdf'), target: '_blank', rel: 'noopener' }, L({ de: 'Ausmalbild drucken (A4)', en: 'Print the colouring page (A4)' }))),
-        h('h3', { class: 'sub' }, L({ de: 'Zeig dein Bild', en: 'Show your picture' })));
-      wall(el, d, 'image');
+          h('a', { class: 'btn primary', href: ASSET('diy/ausmalbild.pdf'), target: '_blank', rel: 'noopener' }, L({ de: 'Ausmalbild drucken (A4)', en: 'Print the colouring page (A4)' }))));
     },
 
     // ---------- Recipe shelf in the kitchen ----------
