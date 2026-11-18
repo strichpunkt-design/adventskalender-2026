@@ -123,7 +123,7 @@ section.door.on{display:grid}
 @keyframes b-str{0%,28%{transform:scaleY(0)}36%,78%{transform:none}84%,100%{transform:scaleY(0)}}
 @keyframes b-swing{0%,40%{transform:none}48%{transform:rotate(9deg)}56%{transform:rotate(-7deg)}64%{transform:rotate(5deg)}71%{transform:rotate(-3deg)}76%,100%{transform:none}}
 /* candy cane: the dot rolls away */
-#c-hang{transform-origin:156px 256px;animation:c-swing 8s infinite ease-in-out}
+#c-hang{transform-origin:165px 244px;animation:c-swing 8s infinite ease-in-out}
 @keyframes c-swing{0%,36%{transform:none}44%{transform:rotate(14deg)}52%{transform:rotate(-11deg)}60%{transform:rotate(7deg)}68%{transform:rotate(-3deg)}74%,100%{transform:none}}
 /* candles */
 .cd-c{transform-origin:200px 290px;animation:cd-c 9s infinite cubic-bezier(.6,0,.3,1)}
@@ -144,15 +144,12 @@ section.door.on{display:grid}
 @keyframes sf{0%,14%{transform:rotate(0) translate(0,0) rotate(0) scale(1) translate(0,0)}34%,80%{transform:rotate(var(--a)) translate(0,50px) rotate(-15deg) scale(.6) translate(0,-60px)}96%,100%{transform:rotate(0) translate(0,0) rotate(0) scale(1) translate(0,0)}}
 #sf-dot{transform-origin:200px 150px;animation:sf-dot 8s infinite cubic-bezier(.6,0,.3,1)}
 @keyframes sf-dot{0%,14%{transform:none}34%,80%{transform:translateY(80px) scale(.6)}96%,100%{transform:none}}
+.sf-fall{animation:sf-win 8s infinite}
+@keyframes sf-win{0%,26%{opacity:0}36%,78%{opacity:1}88%,100%{opacity:0}}
+.sf-f{animation:sf-f 7s linear infinite}
+@keyframes sf-f{from{transform:translateY(-40px) rotate(0)}to{transform:translateY(500px) rotate(90deg)}}
 #sf-spin{transform-origin:200px 230px;animation:sf-spin 8s infinite cubic-bezier(.5,0,.5,1)}
 @keyframes sf-spin{0%,36%{transform:none}78%,100%{transform:rotate(60deg)}}
-/* music note */
-#n-flag{transform-origin:200px 290px;animation:n-flag 8s infinite cubic-bezier(.6,0,.3,1)}
-@keyframes n-flag{0%,14%{transform:none}32%,80%{transform:translate(40px,-104px) scale(-.6,.6)}94%,100%{transform:none}}
-#n-hop{transform-origin:200px 400px;animation:n-hop 8s infinite ease-in-out}
-@keyframes n-hop{0%,36%,42%,48%,54%,60%,66%,72%,100%{transform:none}39%,51%,63%{transform:translateY(-26px) rotate(-6deg)}45%,57%,69%{transform:translateY(-26px) rotate(6deg)}}
-.n-w{animation:n-w 8s infinite}
-@keyframes n-w{0%,36%{opacity:0}40%,72%{opacity:1}76%,100%{opacity:0}}
 /* reindeer */
 #r-head{transform-origin:200px 150px;animation:r-head 8s infinite cubic-bezier(.6,0,.3,1)}
 @keyframes r-head{0%,14%{transform:none}32%,80%{transform:translateY(150px) scale(1.75)}94%,100%{transform:none}}
@@ -166,20 +163,6 @@ section.door.on{display:grid}
 /* stocking */
 #s-jump{transform-origin:236px 386px;animation:s-jump 8s infinite ease-in-out}
 @keyframes s-jump{0%,44%{transform:none}48%{transform:translateY(-34px) rotate(-8deg)}52%{transform:none}55%{transform:translateY(-20px) rotate(6deg)}58%,100%{transform:none}}
-/* shooting star */
-#k-fly{animation:k-fly 8s infinite cubic-bezier(.5,0,.5,1)}
-@keyframes k-fly{0%,32%{transform:none}50%{transform:translate(330px,-300px)}50.1%{transform:translate(-360px,320px)}68%,100%{transform:none}}
-#k-star{transform-origin:290px 150px;animation:k-star 8s infinite cubic-bezier(.3,.7,.3,1)}
-@keyframes k-star{0%,22%{transform:scale(0) rotate(0)}30%,80%{transform:scale(1.5) rotate(180deg)}90%,100%{transform:scale(0) rotate(300deg)}}
-/* mistletoe kiss */
-#m-l{transform-origin:130px 340px;animation:m-l 8s infinite cubic-bezier(.6,0,.3,1)}
-#m-r{transform-origin:270px 340px;animation:m-r 8s infinite cubic-bezier(.6,0,.3,1)}
-@keyframes m-l{0%,18%{transform:none}30%,76%{transform:rotate(14deg)}90%,100%{transform:none}}
-@keyframes m-r{0%,18%{transform:none}30%,76%{transform:rotate(-14deg)}90%,100%{transform:none}}
-#m-heart{transform-origin:200px 108px;animation:m-heart 8s infinite cubic-bezier(.3,.7,.3,1)}
-@keyframes m-heart{0%,29%{transform:scale(0)}35%{transform:scale(1.25)}40%,48%,56%,64%{transform:none}44%,52%,60%{transform:scale(1.12)}72%{transform:none}78%,100%{transform:scale(0)}}
-#m-twig{transform-origin:200px 0;animation:m-twig 8s infinite ease-in-out}
-@keyframes m-twig{0%,100%{transform:rotate(-4deg)}50%{transform:rotate(4deg)}}
 @media (prefers-reduced-motion:reduce){.an *{animation-play-state:paused!important}}
 
 /* ---------- 3 RECIPE BOX ---------- */
@@ -629,8 +612,8 @@ const cane = svg('an-cane', 'Ein Strichpunkt wird zur Zuckerstange', `
   <g clip-path="url(#c-clip)" stroke="#B78CFF" stroke-width="13">${sm('opacity', [0, 0, 1, 1, 0, 0], [0, .32, .38, .74, .78, 1], 8)}
     ${[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(k => `<line x1="120" x2="300" y1="${120 + k * 34}" y2="${60 + k * 34}"/>`).join('')}</g>
   <g id="c-hang">
-    <rect x="154.5" y="256" width="3" height="28" fill="#CFCFCF">${sm('opacity', [0, 0, 1, 1, 0, 0], [0, .3, .34, .76, .8, 1], 8)}</rect>
-    <circle>${sm('cx', [200, 200, 156, 156, 200, 200], kC, 8)}${sm('cy', [150, 150, 306, 306, 150, 150], kC, 8)}${sm('r', [40, 40, 24, 24, 40, 40], kC, 8)}${sm('fill', ['#fff', '#fff', '#B78CFF', '#B78CFF', '#fff', '#fff'], kC, 8)}</circle>
+    <rect x="163.5" y="242" width="3" height="46" fill="#CFCFCF">${sm('opacity', [0, 0, 1, 1, 0, 0], [0, .3, .34, .76, .8, 1], 8)}</rect>
+    <circle>${sm('cx', [200, 200, 165, 165, 200, 200], kC, 8)}${sm('cy', [150, 150, 310, 310, 150, 150], kC, 8)}${sm('r', [40, 40, 23, 23, 40, 40], kC, 8)}${sm('fill', ['#fff', '#fff', '#B78CFF', '#B78CFF', '#fff', '#fff'], kC, 8)}</circle>
   </g>`);
 
 // Advent candles: the Strich becomes the candle, the comma upside down the flame.
@@ -660,18 +643,11 @@ const tree = svg('an-tree', 'Ein Strichpunkt wird zum Weihnachtsbaum', `
 const flake = svg('an-flake', 'Ein Strichpunkt wird zur Schneeflocke', `
   <g id="sf-spin">
     ${[0, 60, 120, 180, 240, 300].map(a => `<g class="sf" style="--a:${a}deg"><path d="${C0}" fill="#fff"/></g>`).join('')}
-    <g id="sf-dot"><circle cx="200" cy="150" r="40" fill="#fff">${sm('fill', ['#fff', '#fff', '#B78CFF', '#B78CFF', '#fff', '#fff'], [0, .2, .34, .8, .94, 1], 8)}</circle></g>
-  </g>`);
-
-// Music note: the dot drops into the note head, a stem grows, the comma flips over as the flag. Then it hops.
-const kN = [0, .14, .32, .8, .94, 1];
-const note = svg('an-note', 'Ein Strichpunkt wird zur Musiknote', `
-  <g class="n-w" fill="none" stroke="#B78CFF" stroke-width="7" stroke-linecap="round"><path d="M96 330 a50 50 0 0 1 0 -70 M74 352 a80 80 0 0 1 0 -114"/><path d="M304 260 a50 50 0 0 1 0 70 M326 238 a80 80 0 0 1 0 114"/></g>
-  <g id="n-hop">
-    <rect x="216" width="10" fill="#fff">${sm('y', [360, 360, 176, 176, 360, 360], kN, 8)}${sm('height', [0, 0, 190, 190, 0, 0], kN, 8)}</rect>
-    <g id="n-flag"><path d="${C0}" fill="#fff"/></g>
-    <ellipse fill="#fff">${sm('cx', [200, 200, 184, 184, 200, 200], kN, 8)}${sm('cy', [150, 150, 366, 366, 150, 150], kN, 8)}${sm('rx', [40, 40, 44, 44, 40, 40], kN, 8)}${sm('ry', [40, 40, 32, 32, 40, 40], kN, 8)}</ellipse>
-  </g>`);
+    <g id="sf-dot"><circle cx="200" cy="150" r="40" fill="#fff"/></g>
+  </g>
+  <defs><g id="sf-mini">${[0, 60, 120, 180, 240, 300].map(a => `<path d="${C0}" transform="translate(200 230) rotate(${a}) translate(0 50) rotate(-15) scale(.6) translate(0 -60) translate(-200 -230)"/>`).join('')}<circle cx="200" cy="230" r="24"/></g></defs>
+  <g class="sf-fall" fill="#fff">${[[40, .14, 0, 7], [110, .1, 2.5, 6], [330, .16, 1.2, 8], [270, .09, 4, 5.5], [70, .11, 5.5, 7.5], [360, .1, 3.4, 6.5], [160, .08, 6.2, 5], [300, .13, .6, 9]].map(([x, sc, d, t]) =>
+    `<g class="sf-f" style="animation-delay:-${d}s;animation-duration:${t}s"><use href="#sf-mini" transform="translate(${x} 0) scale(${sc}) translate(-200 -230)"/></g>`).join('')}</g>`);
 
 // Reindeer: the dot grows into the head, the comma turns over into an antler and gets a twin, a lilac nose lights up.
 const deer = svg('an-deer', 'Ein Strichpunkt wird zum Rentier', `
@@ -691,24 +667,7 @@ const sock = svg('an-sock', 'Ein Strichpunkt wird zum Nikolausstiefel', `
     <rect x="158" y="168" width="90" height="36" rx="8" fill="#fff">${sm('opacity', [0, 0, 1, 1, 0, 0], [0, .28, .32, .8, .86, 1], 8)}</rect>
   </g>`);
 
-// Shooting star: the comma stretches into a tail, the dot becomes the star at its head, and off it flies.
-const COMET = 'M290 120C306 120 320 134 320 150C320 176 120 330 70 360C68 358 67 356 66 354C120 322 236 190 264 166C261 161 260 156 260 150C260 134 274 120 290 120Z';
-const kK = [0, .14, .3, .8, .94, 1];
-const comet = svg('an-comet', 'Ein Strichpunkt wird zur Sternschnuppe', `
-  <g id="k-fly">
-    <path fill="#fff">${sm('d', [C0, C0, COMET, COMET, C0, C0], kK, 8)}</path>
-    <circle fill="#fff">${sm('cx', [200, 200, 290, 290, 200, 200], kK, 8)}${sm('cy', [150, 150, 150, 150, 150, 150], kK, 8)}${sm('r', [40, 40, 0, 0, 40, 40], kK, 8)}</circle>
-    <g id="k-star"><polygon transform="translate(290 150)" fill="#B78CFF" points="${BURST}"/></g>
-  </g>`);
-
-// Mistletoe: two semicolons lean in until their dots touch, a lilac heart pops up.
-const kiss = svg('an-kiss', 'Zwei Strichpunkte küssen sich unter dem Mistelzweig', `
-  <g id="m-twig"><rect x="198.5" y="-20" width="3" height="56" fill="#CFCFCF"/><ellipse cx="186" cy="46" rx="16" ry="8" fill="#B78CFF" transform="rotate(-30 186 46)"/><ellipse cx="214" cy="46" rx="16" ry="8" fill="#B78CFF" transform="rotate(30 214 46)"/><circle cx="200" cy="50" r="6" fill="#fff"/><circle cx="192" cy="58" r="5" fill="#fff"/><circle cx="208" cy="58" r="5" fill="#fff"/></g>
-  <g id="m-heart"><path d="M200 128 C176 112 164 98 164 86 C164 74 174 66 184 66 C192 66 198 72 200 78 C202 72 208 66 216 66 C226 66 236 74 236 86 C236 98 224 112 200 128Z" fill="#B78CFF"/></g>
-  <g id="m-l"><g transform="translate(-10 60) scale(.7)"><circle cx="200" cy="150" r="40" fill="#fff"/><path d="${C0}" fill="#fff"/></g></g>
-  <g id="m-r"><g transform="translate(410 60) scale(-.7 .7)"><circle cx="200" cy="150" r="40" fill="#fff"/><path d="${C0}" fill="#fff"/></g></g>
-  <rect x="60" y="346" width="280" height="6" fill="#fff"/>`);
-$('#an-more').outerHTML = hat + ball + cane + candles(2) + candles(3) + candles(4) + tree + flake + note + deer + sock + comet + kiss;
+$('#an-more').outerHTML = hat + ball + cane + candles(2) + candles(3) + candles(4) + tree + flake + deer + sock;
 const ANIMS = [
   ['an1', 'Sa 5.12.', 'Strich&shy;punkt wird Schnee&shy;mann', 'Schneemann'],
   ['an-adv2', 'So 6.12. · 2. Advent', 'Zwei Kerzen brennen', '2. Advent'],
@@ -719,11 +678,8 @@ const ANIMS = [
   ['an-cane', 'Extra', 'Strich&shy;punkt wird Zucker&shy;stange', 'Zuckerstange'],
   ['an-tree', 'Extra', 'Strich&shy;punkt wird Tannen&shy;baum', 'Tannenbaum'],
   ['an-flake', 'Extra', 'Strich&shy;punkt wird Schnee&shy;flocke', 'Schneeflocke'],
-  ['an-note', 'Extra', 'Strich&shy;punkt wird Musik&shy;note', 'Note'],
   ['an-deer', 'Extra', 'Strich&shy;punkt wird Rentier', 'Rentier'],
   ['an-sock', 'Extra', 'Strich&shy;punkt wird Nikolaus&shy;stiefel', 'Stiefel'],
-  ['an-comet', 'Extra', 'Strich&shy;punkt wird Stern&shy;schnuppe', 'Sternschnuppe'],
-  ['an-kiss', 'Extra', 'Kuss unterm Mistel&shy;zweig', 'Mistelzweig'],
 ];
 let ai = 0;
 function showAnim(i) {
