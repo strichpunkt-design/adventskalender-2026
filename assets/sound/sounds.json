@@ -1,8 +1,27 @@
 {
-  "open": { "file": "window.mp3", "from": 1.4, "for": 3.4 },
-  "santa": { "file": "hohoho.mp3", "from": 3.9, "for": 2.9 },
-  "music": { "file": "music.mp3", "loopFrom": 0.19, "loopTo": 10.857, "fade": 0.12 },
+  "open": {
+    "file": "window.mp3",
+    "from": 1.4,
+    "for": 3.4
+  },
+  "santa": {
+    "file": "hohoho.mp3",
+    "from": 3.9,
+    "for": 2.9
+  },
+  "music": {
+    "file": "music.mp3",
+    "loopFrom": 0.19,
+    "loopTo": 10.857,
+    "fade": 0.12
+  },
   "locked": "",
   "close": "",
-  "finale": ""
+  "finale": "",
+  "right": {
+    "file": "right.mp3"
+  },
+  "wrong": {
+    "file": "wrong.mp3"
+  }
 }

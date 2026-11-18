@@ -29,7 +29,7 @@ export function render(d, o) {
 }
 
 // Visual doors give the picture two thirds; the TV fills the whole card.
-const LAYOUT = { anim: 'lay-wide', meme: 'lay-wide', recipes: 'lay-wide', niete: 'lay-wide', elfom: 'lay-wide', tv: 'lay-full' };
+const LAYOUT = { anim: 'lay-wide', meme: 'lay-wide', recipes: 'lay-wide', niete: 'lay-wide', elfom: 'lay-wide', diy: 'lay-wide', tv: 'lay-full' };
 
 // On a laptop, everything to read should fit without scrolling: shrink the type step by step if needed.
 // Doors with long lists (walls, forms) may still scroll once the type is as small as it may get.

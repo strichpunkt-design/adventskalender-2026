@@ -43,12 +43,12 @@ export function doorTypes({ wall, onCleanup }) {
     },
 
     // ---------- Quiz: one question per door ----------
-    quiz(el, d) {
+    quiz(el, d, o) {
       const q = d.q, key = 'sp_quiz_' + d.n, box = h('div', { class: 'quiz' });
       el.append(h('div', { class: 'qnav' }, [1, 2, 3, 4, 5].map(i => h('i', { class: i < d.qi ? 'done' : i === d.qi ? 'on' : '' })), h('span', { class: 'lb' }, L({ de: `Frage ${d.qi} von 5`, en: `Question ${d.qi} of 5` }))), box);
       const fmt = v => Number(v).toLocaleString(L({ de: 'de-DE', en: 'en-GB' }));
       const right = v => q.slider ? Math.abs(+v - q.ok) <= q.tol : +v === q.ok;
-      const answer = async v => { ls.set(key, String(v)); try { await store.add(d.n, { kind: 'vote', body: String(v) }); } catch (e) {} draw(last); };
+      const answer = async v => { ls.set(key, String(v)); if (o.sfx) o.sfx(right(v) ? 'right' : 'wrong'); try { await store.add(d.n, { kind: 'vote', body: String(v) }); } catch (e) {} draw(last); };
       let last = [];
       const result = (mine, all) => {
         const ok = right(mine);
@@ -232,13 +232,16 @@ export function doorTypes({ wall, onCleanup }) {
         try { await store.add(d.n, { kind: 'text', body: (dish.value.trim() + '\n' + from.value.trim()).slice(0, 280) }); dish.value = from.value = ''; e1.textContent = ''; } catch (e) { e1.textContent = t('failed'); }
         send.disabled = false;
       }, 'primary');
-      el.append(h('div', { class: 'wall-form' }, dish, from, h('div', { class: 'row' }, send), e1), table);
+      const hint = h('p', { class: 'small', style: 'opacity:.7' });
+      el.append(h('div', { class: 'wall-form' }, dish, from, h('div', { class: 'row' }, send), e1), hint, table);
       if (!store.isShared) el.append(h('p', { class: 'small', style: 'opacity:.5' }, t('local')));
       live(d.n, posts => {
         const plates = posts.filter(p => p.kind === 'text').reverse();
         table.style.setProperty('--n', Math.max(4, plates.length));
+        const seats = Array.from({ length: Math.max(0, (plates.length < 6 ? 6 : plates.length % 2 ? 1 : 2) - (plates.length < 6 ? plates.length : 0)) }, () => h('div', { class: 'plate empty-seat', 'aria-hidden': 'true' }));
         table.replaceChildren(h('div', { class: 'cloth' }), ...(plates.length ? plates.map(p => { const [a, b] = p.body.split('\n'); return h('div', { class: 'plate' }, h('span', { class: 'dish' }, a), b && h('span', { class: 'from' }, b), h('span', { class: 'who' }, p.name), store.isMine(p.id) && h('button', { class: 'del', type: 'button', 'aria-label': t('clear'), onclick: () => store.remove(d.n, p.id).catch(() => {}) }, '×')); })
-          : [h('p', { class: 'empty' }, L({ de: 'Der Tisch ist noch leer. Deck den ersten Teller.', en: 'The table is still empty. Set the first plate.' }))]));
+          : []), ...seats);
+        hint.textContent = plates.length ? '' : L({ de: 'Noch sitzt niemand am Tisch. Schreib dein Gericht oben rein, dann steht es hier auf einem Teller.', en: 'Nobody at the table yet. Write your dish above and it appears here on a plate.' });
       });
     },
 
@@ -275,8 +278,9 @@ export function doorTypes({ wall, onCleanup }) {
     },
 
     // ---------- DIY: a Strichpunkt ornament for the tree ----------
-    diy(el, d) {
-      el.append(h('div', { class: 'steps' }, L(d.steps).map((s, i) => h('div', { class: 'step' }, h('span', { class: 'no' }, String(i + 1)), h('div', { class: 'pic', html: DIY_PICS[i] || '' }), h('p', {}, s)))),
+    diy(el, d, o, head) {
+      stage(head, '', h('div', { class: 'ornament', html: ORNAMENT }));
+      el.append(h('ol', { class: 'steps-s' }, L(d.steps).map(s => h('li', {}, s))),
         h('div', { class: 'row', style: 'margin:6px 0 10px' }, h('a', { class: 'btn primary', href: ASSET('diy/vorlage.svg'), target: '_blank', rel: 'noopener' }, L({ de: 'Vorlage drucken (A4)', en: 'Print the template (A4)' }))),
         h('h3', { class: 'sub' }, L({ de: 'Zeig deinen Anhänger', en: 'Show your ornament' })));
       wall(el, d, 'image');
@@ -318,12 +322,11 @@ export function doorTypes({ wall, onCleanup }) {
 // ---------- drawings ----------
 // Pictures for the left column of simple doors (set with art: in content.js).
 export const ART = {
-  // A record that spins.
-  record: `<svg class="record" viewBox="-100 -100 200 200" aria-hidden="true"><g class="spin"><circle r="96" fill="#000"/>${[86, 78, 70, 62, 54, 46].map(r => `<circle r="${r}" fill="none" stroke="#3A3A3A" stroke-width="1.6"/>`).join('')}
-    <circle r="32" fill="#F3E6E0"/><circle cx="0" cy="-12" r="6" fill="#000"/><path transform="translate(0 4) scale(.28) translate(-200 -290)" d="M200 250C222 250 240 268 240 290C240 342 220 378 178 400C175 395 171 391 168 386C194 368 204 350 204 330C182 330 160 312 160 290C160 268 178 250 200 250Z" fill="#000"/><circle r="2.6" fill="#B78CFF"/></g>
-    <g class="arm"><rect x="78" y="-96" width="12" height="12" fill="#000"/><path d="M84 -90 L84 -10 L58 22" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round"/><rect x="50" y="16" width="16" height="10" fill="#000" transform="rotate(-40 58 21)"/></g></svg>`,
-  // Santa (Nikolaus) from the cast, big.
-  santa: `<img class="cast" src="${ASSET('xmas/santa.svg')}" alt="">`,
+  // A chocolate Nikolaus: someone takes bites out of his hat and hand, sweets float around.
+  nikolaus: `<div class="niko"><img src="${ASSET('xmas/santa.svg')}" alt=""><i class="bite b1"></i><i class="bite b2"></i><i class="bite b3"></i>
+    <i class="crumb c1"></i><i class="crumb c2"></i><i class="crumb c3"></i><i class="crumb c4"></i></div>
+    ${[[8, 18, '#fff', -20, 0], [80, 12, '#000', 25, 1.2], [14, 70, '#F3E6E0', 10, 2.1], [84, 64, '#fff', -35, .6], [70, 86, '#000', 15, 1.7], [24, 88, '#fff', 40, 2.6]].map(([x, y, c, r, dl]) =>
+      `<svg class="bonbon" style="left:${x}%;top:${y}%;--r:${r}deg;animation-delay:-${dl}s" viewBox="0 0 60 30" aria-hidden="true"><polygon points="0,4 14,15 0,26" fill="${c}"/><polygon points="60,4 46,15 60,26" fill="${c}"/><ellipse cx="30" cy="15" rx="17" ry="13" fill="${c}"/></svg>`).join('')}`,
   // A pretzel and a coffee for breakfast.
   pretzel: `<svg class="pretzel" viewBox="0 0 240 200" aria-hidden="true"><g fill="none" stroke="#000" stroke-linecap="round">
     <path d="M44 108 C44 172 196 172 196 108" stroke-width="30"/>
@@ -353,6 +356,15 @@ const KITCHEN = `<svg class="bg" viewBox="0 0 1000 700" preserveAspectRatio="xMi
     <path d="M694 396 q-10 -14 0 -28 q10 -14 0 -28"/><path d="M716 392 q-10 -14 0 -28 q10 -14 0 -28" style="animation-delay:-.7s"/><path d="M738 396 q-10 -14 0 -28 q10 -14 0 -28" style="animation-delay:-1.4s"/>
     <path d="M824 444 q-8 -11 0 -22 q8 -11 0 -22" style="animation-delay:-.4s"/><path d="M844 444 q-8 -11 0 -22 q8 -11 0 -22" style="animation-delay:-1.1s"/>
   </g></svg>`;
+
+// DIY: the finished Strichpunkt ornament hanging from a fir branch.
+const ORNAMENT = `<svg viewBox="0 0 400 460" aria-hidden="true">
+  <g stroke="#000" stroke-width="7" stroke-linecap="round"><path d="M-40 60 C80 40 240 30 440 70"/>${[20, 60, 100, 140, 180, 220, 260, 300, 340, 380].map((x, i) => `<path d="M${x} ${52 - i * .2 + (i > 5 ? (i - 5) * 3 : 0)} l${i % 2 ? 22 : -22} ${i % 2 ? 26 : 30}"/>`).join('')}</g>
+  <g class="swing"><rect x="198.5" y="56" width="3" height="66" fill="#000"/>
+    <circle cx="200" cy="160" r="40" fill="#fff"/><rect x="198.5" y="198" width="3" height="24" fill="#000"/>
+    <path transform="translate(0 -30)" d="M200 250C222 250 240 268 240 290C240 342 220 378 178 400C175 395 171 391 168 386C194 368 204 350 204 330C182 330 160 312 160 290C160 268 178 250 200 250Z" fill="#fff"/>
+    <g class="glint"><polygon transform="translate(256 148) scale(.55)" fill="#fff" points="${BURST}"/></g></g>
+</svg>`;
 
 const TV = `<svg viewBox="0 0 600 440" aria-hidden="true">
   <path d="M260 26 L196 -44 M340 26 L410 -50" stroke="currentColor" stroke-width="6" stroke-linecap="round"/>

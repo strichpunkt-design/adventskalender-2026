@@ -108,7 +108,7 @@ async function loadFiles() {
   if (files) return;
   files = {};
   await ready;
-  for (const k of ['open', 'santa', 'locked', 'close', 'finale']) {
+  for (const k of ['open', 'santa', 'locked', 'close', 'finale', 'right', 'wrong']) {
     const e = entry(manifest[k]);
     if (e) try { files[k] = { buf: await ac().decodeAudioData(await (await fetch(new URL(e.file, DIR))).arrayBuffer()), from: e.from || 0, len: e.for }; } catch (x) {}
   }

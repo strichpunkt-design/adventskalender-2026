@@ -8,8 +8,8 @@
 .c-head.dark .tag{background:#fff;color:#000}
 .c-head.blush,.c-head.kitchen-bg{background:var(--blush);color:#000}
 @media (max-width:899px){.c-head.tall{height:64dvh}}
-.anim{width:100%;height:100%;display:grid;place-items:center;padding:10% 8% 12%}
-.anim svg{width:100%;height:100%;overflow:visible}
+.anim{position:absolute;inset:0;display:block;padding:7% 6% 9%}
+.anim svg{display:block;width:100%;height:100%;overflow:visible}
 @media (prefers-reduced-motion:reduce){.anim *{animation-play-state:paused!important}}
 
 /* snowman */
@@ -192,7 +192,7 @@
 /* ---------- Christmas dinner: plates on a long lilac table ---------- */
 .table{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:18px 12px;padding:22px 14px 30px;margin:16px 0 8px;background:var(--lilac)}
 .table .cloth{display:none}
-.table .empty{grid-column:1/-1;color:#000;margin:0}
+.plate.empty-seat{background:rgba(255,255,255,.4);box-shadow:none}
 .plate{position:relative;aspect-ratio:1;border-radius:50%;background:#fff;color:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:16%;box-shadow:inset 0 0 0 8px #F3E6E0}
 .plate .dish{font-weight:900;font-stretch:125%;font-size:13px;line-height:1.15;text-transform:uppercase;word-break:break-word}
 .plate .from{font-size:11px;margin-top:4px;opacity:.7}
@@ -264,10 +264,6 @@
 .stage .troupe{width:min(94%,900px);margin:0}
 .stage .elfm .body{--kb:var(--blush)}
 .stage .elfm .nm{color:#000}
-.c-head .stage.art-record,.c-head .stage.art-santa,.c-head .stage.art-pretzel{pointer-events:none}
-.record{width:min(78%,420px);overflow:visible}
-.record .spin{animation:rec 3.2s linear infinite;transform-box:view-box;transform-origin:0 0}
-@keyframes rec{to{transform:rotate(360deg)}}
 .stage .cast{width:min(72%,400px);height:auto;animation:hover 4s ease-in-out infinite}
 .pretzel{width:min(80%,460px);animation:hover 4s ease-in-out infinite}
 @keyframes hover{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
@@ -283,3 +279,29 @@
   .lay-full .c-main>*{grid-column:1}
   .lay-full .c-main>.tvbox{grid-column:2;grid-row:1 / span 6;max-width:none;width:min(100%,calc((100dvh - 200px) * 1.2));justify-self:center;margin:9% 0 0}
 }
+
+/* playlist: the illustration turns like a record */
+.t-playlist .c-head .illu{animation:disc 9s linear infinite}
+@keyframes disc{to{rotate:360deg}}
+/* Nikolaus: bites out of the chocolate, sweets around */
+.c-head .stage.art-nikolaus,.c-head .stage.art-pretzel{pointer-events:none}
+.niko{position:relative;width:min(54%,360px);animation:niko 8s infinite}
+.niko img{display:block;width:100%;height:auto}
+@keyframes niko{0%,12%,15%,29%,32%,47%,50%,100%{rotate:0deg}13.5%,30.5%,48.5%{rotate:-4deg}}
+.niko .bite{position:absolute;width:19%;aspect-ratio:1;border-radius:50%;background:var(--ch,var(--lilac));translate:-50% -50%;scale:0;animation:bite 8s infinite cubic-bezier(.3,1.5,.5,1)}
+.niko .b1{left:60%;top:4%}.niko .b2{left:71%;top:10%;animation-delay:1.36s}.niko .b3{left:87%;top:13%;width:16%;animation-delay:2.8s}
+@keyframes bite{0%,12%{scale:0}14%,84%{scale:1}90%,100%{scale:0}}
+.niko .crumb{position:absolute;width:2.6%;aspect-ratio:1;background:#000;opacity:0;animation:crumb 8s infinite}
+.niko .c1{left:58%;top:8%;--dx:-30px}.niko .c2{left:64%;top:9%;--dx:20px}.niko .c3{left:72%;top:15%;--dx:26px;animation-delay:1.36s}.niko .c4{left:86%;top:18%;--dx:30px;animation-delay:2.8s}
+@keyframes crumb{0%,13%{opacity:0;transform:none}14%{opacity:1;transform:none}26%{opacity:0;transform:translate(var(--dx),140px) rotate(140deg)}100%{opacity:0}}
+.bonbon{position:absolute;width:11%;translate:-50% -50%;animation:bon 4.5s ease-in-out infinite alternate}
+@keyframes bon{from{transform:rotate(var(--r)) translateY(0)}to{transform:rotate(calc(var(--r) * -1)) translateY(-16px)}}
+/* DIY: the finished ornament swings on its branch */
+.ornament{position:absolute;inset:0;display:block;padding:6% 6% 8%}
+.ornament svg{display:block;width:100%;height:100%;overflow:visible}
+.ornament .swing{transform-origin:200px 56px;animation:swing 4s ease-in-out infinite}
+@keyframes swing{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+.ornament .glint{animation:glint 4s infinite}
+@keyframes glint{0%,62%,100%{opacity:0}74%{opacity:1}}
+.steps-s{margin:6px 0 12px;padding-left:20px;font-size:15px;line-height:1.45}
+.steps-s li{margin-bottom:6px}

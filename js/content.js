@@ -53,7 +53,7 @@ const D = [
     body: { de: ['So viele Pakete hat DHL in Deutschland an einem einzigen Tag Anfang Dezember 2024 sortiert. Doppelt so viele wie an einem normalen Tag.', 'Unser erstes Türchen kommt ohne Zustellung aus.'],
             en: ['That’s how many parcels DHL sorted in Germany on a single day in early December 2024. Twice as many as on a normal day.', 'Our first door needs no delivery.'] } },
   // 2 · Wed
-  { type: 'playlist', art: 'record', mode: 'link', spotify: '', kicker: JOIN, title: { de: 'Die Playlist', en: 'The playlist' },
+  { type: 'playlist', mode: 'link', spotify: '', kicker: JOIN, title: { de: 'Die Playlist', en: 'The playlist' },
     body: { de: ['Unsere gemeinsame Weihnachts-Playlist auf Spotify: Jede und jeder darf ein Lieblingslied reinpacken. Oder poste den Link hier und sag, warum genau dieser Song.'],
             en: ['Our shared Christmas playlist on Spotify: everyone gets to add a favourite song. Or post the link here and say why this one.'] },
     ph: { de: 'Warum dieser Song?', en: 'Why this song?' } },
@@ -62,7 +62,7 @@ const D = [
     q: { options: { de: ['Die nassen Banditen', 'Die klebrigen Banditen', 'Die Weihnachtsknacker'], en: ['The Wet Bandits', 'The Sticky Bandits', 'The Christmas Crackers'] }, ok: 0,
          why: { de: 'Marv lässt in jedem Haus das Wasser laufen. Das ist ihr Markenzeichen. Die „klebrigen Banditen“ kommen erst in Teil 2.', en: 'Marv leaves the water running in every house. That’s their trademark. The “Sticky Bandits” only arrive in part 2.' } } },
   // 4 · Fri
-  { type: 'pickup', art: 'santa', kicker: { de: 'Zum Abholen', en: 'Pick-up' }, title: { de: 'Nikolaus kommt früher', en: 'Nikolaus comes early' },
+  { type: 'pickup', art: 'nikolaus', kicker: { de: 'Zum Abholen', en: 'Pick-up' }, title: { de: 'Nikolaus kommt früher', en: 'Nikolaus comes early' },
     body: { de: ['Der 6. Dezember ist ein Sonntag. Darum liegt dein Schoko-Nikolaus schon heute bereit.'], en: ['December 6 is a Sunday. So your chocolate Nikolaus is ready today.'] },
     office: { de: c => `Hol ihn dir im Studio ${c} ab. Einer pro Person, auch wenn es schwerfällt.`, en: c => `Pick it up at the ${c} studio. One each, hard as that is.` },
     remote: { de: 'Nicht im Studio? Sag deinem Team Bescheid, dann legt jemand einen für dich zurück.', en: 'Not in a studio? Tell your team and someone will save one for you.' },
