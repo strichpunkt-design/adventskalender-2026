@@ -4,6 +4,7 @@ import { h, btn, L, t, ls, needName } from './ui.js';
 import { ANIMS, BURST } from './anims.js';
 import * as store from './store.js';
 import { media } from './cards.js';
+import { ILLU } from './illu.js';
 
 const ASSET = p => new URL('../assets/' + p, import.meta.url).href;
 const svgCache = {};
@@ -282,10 +283,10 @@ export function doorTypes({ wall, onCleanup }) {
 
     // ---------- DIY: a Strichpunkt ornament for the tree ----------
     diy(el, d, o, head) {
-      stage(head, '', h('div', { class: 'ornament', html: ORNAMENT }));
+      stage(head, '', h('div', { class: 'chain', html: CHAIN() }));
       el.append(h('ol', { class: 'steps-s' }, L(d.steps).map(s => h('li', {}, s))),
-        h('div', { class: 'row', style: 'margin:6px 0 10px' }, h('a', { class: 'btn primary', href: ASSET('diy/vorlage.svg'), target: '_blank', rel: 'noopener' }, L({ de: 'Vorlage drucken (A4)', en: 'Print the template (A4)' }))),
-        h('h3', { class: 'sub' }, L({ de: 'Zeig deinen Anhänger', en: 'Show your ornament' })));
+        h('div', { class: 'row', style: 'margin:6px 0 10px' }, h('a', { class: 'btn primary', href: ASSET('diy/papierkette.pdf'), target: '_blank', rel: 'noopener' }, L({ de: 'Vorlage drucken (A4)', en: 'Print the template (A4)' }))),
+        h('h3', { class: 'sub' }, L({ de: 'Zeig deine Kette', en: 'Show your chain' })));
       wall(el, d, 'image');
     },
 
@@ -439,14 +440,19 @@ const KITCHEN = `<svg class="bg" viewBox="0 0 1000 700" preserveAspectRatio="xMi
     <path d="M824 444 q-8 -11 0 -22 q8 -11 0 -22" style="animation-delay:-.4s"/><path d="M844 444 q-8 -11 0 -22 q8 -11 0 -22" style="animation-delay:-1.1s"/>
   </g></svg>`;
 
-// DIY: the finished Strichpunkt ornament hanging from a fir branch.
-const ORNAMENT = `<svg viewBox="0 0 400 460" aria-hidden="true">
-  <g stroke="#000" stroke-width="7" stroke-linecap="round"><path d="M-40 60 C80 40 240 30 440 70"/>${[20, 60, 100, 140, 180, 220, 260, 300, 340, 380].map((x, i) => `<path d="M${x} ${52 - i * .2 + (i > 5 ? (i - 5) * 3 : 0)} l${i % 2 ? 22 : -22} ${i % 2 ? 26 : 30}"/>`).join('')}</g>
-  <g class="swing"><rect x="198.5" y="56" width="3" height="66" fill="#000"/>
-    <circle cx="200" cy="160" r="40" fill="#fff"/><rect x="198.5" y="198" width="3" height="24" fill="#000"/>
-    <path transform="translate(0 -30)" d="M200 250C222 250 240 268 240 290C240 342 220 378 178 400C175 395 171 391 168 386C194 368 204 350 204 330C182 330 160 312 160 290C160 268 178 250 200 250Z" fill="#fff"/>
-    <g class="glint"><polygon transform="translate(256 148) scale(.55)" fill="#fff" points="${BURST}"/></g></g>
-</svg>`;
+// DIY: a paper chain of "Open". Every second figure pair is mirrored, as an accordion fold makes it;
+// the outer hands meet at the folds. It hangs on a string and sways a little.
+const CHAIN = () => {
+  const o = ILLU.open, n = 7, gap = 0;
+  const units = Array.from({ length: n }, (_, i) => {
+    const x = i * (o.w + gap), mir = i % 2 ? ` translate(${o.w} 0) scale(-1 1)` : '';
+    return `<g class="cu" style="animation-delay:-${(i * .37).toFixed(2)}s"><g transform="translate(${x} 0)${mir}">${o.b}</g></g>`;
+  }).join('');
+  const joints = Array.from({ length: n + 1 }, (_, i) => i * (o.w + gap));
+  return `<svg viewBox="${o.w * .55} -120 ${o.w * 2.3} ${o.h + 240}" aria-hidden="true"><g class="sway">
+    <g fill="#fff">${units.replace(/currentColor/g, '#fff')}</g>
+    ${joints.map(x => `<polygon transform="translate(${x} 100) scale(2.2)" fill="#000" points="${BURST}"/>`).join('')}</g></svg>`;
+};
 
 // Fork and knife for the table (Noun Project, Styfico).
 const FORK = '<svg viewBox="15 4 34 92" aria-hidden="true"><path d="m44.5 5c1.9336 0 3.5 1.5664 3.5 3.5v26c0 3.3164-1.6328 6.4961-4.5391 8.8398-1.5078 1.2148-3.293 2.1523-5.2344 2.7734l0.67188 42.387c0.054687 3.5742-2.8242 6.5-6.3984 6.5s-6.4531-2.9258-6.3984-6.5l0.66797-42.387c-1.9414-0.62109-3.7227-1.5586-5.2305-2.7734-2.9062-2.3438-4.5391-5.5234-4.5391-8.8398v-26c0-1.9336 1.5664-3.5 3.5-3.5s3.5 1.5664 3.5 3.5v21.5h5v-21.5c0-1.9336 1.5664-3.5 3.5-3.5s3.5 1.5664 3.5 3.5v21.5h5v-21.5c0-1.9336 1.5664-3.5 3.5-3.5z"/></svg>';

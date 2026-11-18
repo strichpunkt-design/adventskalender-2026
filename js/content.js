@@ -122,10 +122,11 @@ const D = [
     q: { slider: true, min: 0, max: 800000, step: 10000, start: 300000, ok: 180000, tol: 50000, unit: { de: 'Nadeln', en: 'needles' },
          why: { de: 'Rund 180.000 Nadeln. Und gefühlt landen alle davon im Teppich.', en: 'Around 180,000 needles. And it feels like all of them end up in the carpet.' } } },
   // 16 · Wed
-  { type: 'diy', mode: 'image', kicker: { de: 'Basteln', en: 'Craft' }, title: { de: 'Strichpunkt für den Baum', en: 'A semicolon for the tree' },
-    body: { de: ['Ein Anhänger aus unserem Zeichen: Punkt und Komma aus Karton, an einem Faden. Dauert eine Kaffeepause.'], en: ['An ornament made from our sign: a dot and a comma cut from card, on a thread. Takes one coffee break.'] },
-    steps: { de: ['Vorlage drucken. Am besten auf festes Papier oder Karton.', 'Punkt und Komma ausschneiden. Wer mag, malt sie lila, schwarz oder weiß an.', 'Oben in den Punkt und oben in das Komma je ein kleines Loch stechen.', 'Einen Faden durchziehen: oben der Punkt, darunter mit etwas Abstand das Komma. Verknoten.', 'An den Baum hängen, Foto machen, hier posten.'],
-             en: ['Print the template, ideally on thick paper or card.', 'Cut out the dot and the comma. Paint them lilac, black or white if you like.', 'Punch a small hole at the top of the dot and at the top of the comma.', 'Thread them on: the dot on top, the comma below with a little gap. Tie a knot.', 'Hang it on the tree, take a photo, post it here.'] },
+  { type: 'diy', mode: 'image', kicker: { de: 'Basteln', en: 'Craft' }, title: { de: 'Hand in Hand', en: 'Hand in hand' },
+    body: { de: ['Eine Papierkette aus „Open“, einer unserer Werte-Illustrationen. Falten, einmal schneiden, auffalten: Alle halten sich an der Hand.'],
+            en: ['A paper chain made from “Open”, one of our value illustrations. Fold, cut once, unfold: everyone holds hands.'] },
+    steps: { de: ['Vorlage auf A4 quer drucken, am besten auf festes Papier.', 'Einen Streifen ausschneiden und an den gestrichelten Linien zickzack falten, wie eine Ziehharmonika. Die Figur liegt oben.', 'Entlang der Figur durch alle Lagen schneiden. Die Hände an den Falzkanten (lila markiert) nicht durchschneiden.', 'Auffalten. Für eine längere Kette mehrere Streifen mit Klebeband verbinden.', 'An den Baum, den Monitor oder ins Fenster hängen, Foto machen, hier posten.'],
+             en: ['Print the template on A4 landscape, ideally on thick paper.', 'Cut out one strip and fold it zigzag along the dashed lines, like an accordion. The figure stays on top.', 'Cut along the figure through all layers. Do not cut the hands at the folds (marked in lilac).', 'Unfold. Tape several strips together for a longer chain.', 'Hang it on the tree, the monitor or in the window, take a photo, post it here.'] },
     ph: { de: 'Bildunterschrift (optional)', en: 'Caption (optional)' } },
   // 17 · Thu
   { type: 'dinner', kicker: JOIN, title: { de: 'Was kommt bei dir auf den Tisch?', en: 'What’s on your table?' },

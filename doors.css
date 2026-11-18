@@ -314,6 +314,13 @@
 .niko .crumb{position:absolute;width:2.6%;aspect-ratio:1;background:#000;opacity:0}
 .bonbon{position:absolute;width:11%;translate:-50% -50%;animation:bon 4.5s ease-in-out infinite alternate}
 @keyframes bon{from{transform:rotate(var(--r)) translateY(0)}to{transform:rotate(calc(var(--r) * -1)) translateY(-16px)}}
+/* DIY: the paper chain hangs and sways */
+.chain{position:absolute;inset:0;display:block;padding:10% 0}
+.chain svg{display:block;width:100%;height:100%;overflow:visible}
+.chain .sway{transform-box:view-box;transform-origin:50% 0;animation:csway 6s ease-in-out infinite alternate}
+@keyframes csway{from{transform:rotate(-1.2deg) translateY(0)}to{transform:rotate(1.2deg) translateY(14px)}}
+.chain .cu{transform-box:fill-box;transform-origin:50% 12%;animation:cu 3.2s ease-in-out infinite alternate}
+@keyframes cu{from{transform:rotate(-2.2deg)}to{transform:rotate(2.2deg)}}
 /* DIY: the finished ornament swings on its branch */
 .ornament{position:absolute;inset:0;display:block;padding:6% 6% 8%}
 .ornament svg{display:block;width:100%;height:100%;overflow:visible}
@@ -323,3 +330,5 @@
 @keyframes glint{0%,62%,100%{opacity:0}74%{opacity:1}}
 .steps-s{margin:6px 0 12px;padding-left:20px;font-size:15px;line-height:1.45}
 .steps-s li{margin-bottom:6px}
+
+a.btn{text-decoration:none}
