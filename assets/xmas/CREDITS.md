@@ -9,3 +9,4 @@ Unless the originals were downloaded with a paid Noun Project licence, monkik mu
 - Fork and knife (Christmas dinner door): "cutlery" by Styfico, Noun Project.
 
 Noun Project icons need a credit to their creators unless they were downloaded with a paid licence.
+- Scissors (door 16, DIY): "Scissors" by David Khai from the Noun Project (noun_Scissors_1647583)

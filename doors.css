@@ -321,6 +321,19 @@
 @keyframes csway{from{transform:rotate(-1.2deg) translateY(0)}to{transform:rotate(1.2deg) translateY(14px)}}
 .chain .cu{transform-box:fill-box;transform-origin:50% 12%;animation:cu 3.2s ease-in-out infinite alternate}
 @keyframes cu{from{transform:rotate(-2.2deg)}to{transform:rotate(2.2deg)}}
+/* DIY: scissors cut along a dashed line under the chain; the line is gone behind them */
+.snip{position:absolute;left:0;right:0;top:80%;height:0}
+.snip .cutline{position:absolute;left:0;right:0;top:-1.5px;border-top:3px dashed #000;animation:cutline 8s linear infinite}
+.snip .scis{position:absolute;top:0;width:16%;translate:0 -50%;animation:scis 8s linear infinite}
+.snip svg{display:block;width:100%;height:auto;overflow:visible}
+.snip .bl-a,.snip .bl-b{transform-box:view-box;transform-origin:52.27px 47.73px;animation:.32s ease-in-out infinite alternate}
+.snip .bl-a{animation-name:bl-a}.snip .bl-b{animation-name:bl-b}
+@keyframes bl-a{from{transform:rotate(-4deg)}to{transform:rotate(17deg)}}
+@keyframes bl-b{from{transform:rotate(4deg)}to{transform:rotate(-17deg)}}
+@keyframes scis{0%{left:-16%}85%,100%{left:104%}}
+@keyframes cutline{0%{clip-path:inset(0 0 0 0)}85%{clip-path:inset(0 0 0 100%)}86%{clip-path:inset(0 0 0 100%);opacity:0}100%{clip-path:inset(0 0 0 0);opacity:1}}
+@media (max-width:899px){.t-diy .snip{top:76%}.t-diy .snip .scis{width:12%}.t-diy .c-head .tag{z-index:3}}
+@media (prefers-reduced-motion:reduce){.snip .scis{animation:none;left:42%}.snip .cutline,.snip .bl-a,.snip .bl-b{animation:none}}
 /* DIY: the finished ornament swings on its branch */
 .ornament{position:absolute;inset:0;display:block;padding:6% 6% 8%}
 .ornament svg{display:block;width:100%;height:100%;overflow:visible}
