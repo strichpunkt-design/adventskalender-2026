@@ -113,8 +113,9 @@ const D = [
   { type: 'anim', anim: 'adv3', kicker: { de: 'Dritter Advent', en: 'Third Sunday of Advent' }, title: { de: 'Drei Kerzen', en: 'Three candles' },
     body: { de: ['Drei Kerzen brennen. Die vierte hält noch eine Woche durch.'], en: ['Three candles are burning. The fourth holds out one more week.'] }, },
   // 14 · Mon
-  { type: 'niete', kicker: { de: 'Knecht Ruprecht', en: 'Knecht Ruprecht' }, title: { de: 'Heute: Kohle', en: 'Today: coal' },
-    body: { de: ['Knecht Ruprecht war hier. Hinter diesem Türchen gibt es nur ein Stück Kohle.'], en: ['Knecht Ruprecht was here. Behind this door there is only a lump of coal.'] } },
+  { type: 'charcoal', kicker: { de: 'Knecht Ruprecht', en: 'Knecht Ruprecht' }, title: { de: 'Heute: Kohle', en: 'Today: coal' },
+    body: { de: ['Knecht Ruprecht war da und hat nur Kohle dagelassen. Zum Glück ist Kohle ein Zeichenwerkzeug.', 'Du hast 30 Sekunden, sobald du ansetzt. Was dabei rauskommt, hängt in der Galerie.'],
+            en: ['Knecht Ruprecht came by and left only coal. Luckily, charcoal is a drawing tool.', 'You have 30 seconds from your first stroke. Whatever comes out hangs in the gallery.'] } },
   // 15 · Tue
   { type: 'quiz', qi: 4, kicker: QUIZ, title: { de: 'Schätzfrage: Wie viele Nadeln hat ein 1,70 Meter hoher Weihnachtsbaum im Schnitt?', en: 'Estimate: how many needles does a 1.70 metre Christmas tree have on average?' },
     q: { slider: true, min: 0, max: 800000, step: 10000, start: 300000, ok: 180000, tol: 50000, unit: { de: 'Nadeln', en: 'needles' },

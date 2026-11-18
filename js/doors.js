@@ -288,19 +288,37 @@ export function doorTypes({ wall, onCleanup }) {
       wall(el, d, 'image');
     },
 
-    // ---------- Knecht Ruprecht: today a lump of coal. Unless you knock. ----------
-    niete(el, d, o, head) {
-      let n = 0;
-      const coal = h('button', { type: 'button', class: 'coal', 'aria-label': L({ de: 'Kohle', en: 'Coal' }) });
-      const cookie = h('div', { class: 'cookie' });
-      const s = stage(head, 'coal-bg', coal, cookie, h('div', { class: 'puff', html: burst() }));
-      loadSvg('xmas/ginger.svg').then(x => { cookie.innerHTML = x; });
-      coal.addEventListener('click', () => {
-        n++; coal.classList.remove('knock'); void coal.offsetWidth; coal.classList.add('knock');
-        if (n === 5) { s.classList.add('won'); note.textContent = L({ de: 'Na gut. Einen Lebkuchen gibt’s doch.', en: 'Fine. One gingerbread after all.' }); }
-      });
-      const note = h('p', { class: 'small', style: 'opacity:.6' }, L({ de: 'Man sagt, er sei bestechlich. Klopf mal an die Kohle.', en: 'They say he can be bribed. Knock on the coal.' }));
-      el.append(note);
+    // ---------- Knecht Ruprecht left only coal: draw with it for 30 seconds, then to the gallery ----------
+    charcoal(el, d, o, head) {
+      const W = 800, H = 600, cv = h('canvas', { class: 'paper', width: W, height: H, 'aria-label': L({ de: 'Zeichenblatt', en: 'Drawing paper' }) }), g = cv.getContext('2d');
+      const clock = h('span', { class: 'clock' }, '30'), stick = h('div', { class: 'stick' });
+      const e1 = err();
+      let left = 30, timer = 0, drawing = false, done = false, used = false, last = null;
+      const blank = () => { g.globalAlpha = 1; g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); };
+      // Charcoal: many small, slightly transparent grains around the line, denser where you go slowly.
+      const grain = (x, y, r) => { for (let k = 0; k < 7; k++) { const a = Math.random() * 6.283, q = Math.random() * r; g.globalAlpha = 0.18 + Math.random() * 0.4; g.fillStyle = '#000'; g.fillRect(x + Math.cos(a) * q, y + Math.sin(a) * q * 0.7, 1 + Math.random() * 2.2, 1 + Math.random() * 2.2); } };
+      const line = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], dist = Math.hypot(dx, dy), r = Math.max(2.5, 7 - dist * 0.12); for (let s = 0; s <= dist; s += 1.5) grain(a[0] + dx * s / (dist || 1), a[1] + dy * s / (dist || 1), r); };
+      const pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H]; };
+      const stop = () => { clearInterval(timer); timer = 0; };
+      const start = () => { if (timer || done) return; timer = setInterval(() => { left--; clock.textContent = left; if (left <= 0) { stop(); done = true; drawing = false; paper.classList.add('done'); } }, 1000); };
+      cv.addEventListener('pointerdown', e => { if (done) return; e.preventDefault(); cv.setPointerCapture(e.pointerId); drawing = used = true; last = pos(e); grain(...last, 4); start(); });
+      cv.addEventListener('pointermove', e => { const p = pos(e); stick.style.left = (p[0] / W * 100) + '%'; stick.style.top = (p[1] / H * 100) + '%'; if (!drawing) return; line(last, p); last = p; });
+      cv.addEventListener('pointerup', () => { drawing = false; });
+      cv.addEventListener('pointerleave', () => { drawing = false; });
+      onCleanup(stop);
+      const fresh = () => { stop(); blank(); left = 30; clock.textContent = '30'; done = used = false; paper.classList.remove('done'); e1.textContent = ''; send.disabled = false; };
+      const send = btn(L({ de: 'An die Galerie', en: 'To the gallery' }), async () => {
+        if (!used) return e1.textContent = L({ de: 'Erst zeichnen, dann aufhängen.', en: 'Draw first, then hang it.' });
+        if (!needName(send)) return;
+        stop(); done = true; paper.classList.add('done'); send.disabled = true;
+        try { await store.add(d.n, { kind: 'image', image: cv.toDataURL('image/jpeg', 0.75) }); e1.textContent = L({ de: 'Hängt in der Galerie.', en: 'It’s in the gallery.' }); }
+        catch (x) { e1.textContent = t('failed'); send.disabled = false; }
+      }, 'primary');
+      const paper = h('div', { class: 'sheet' }, cv, stick, clock);
+      stage(head, 'charcoal-bg tall', h('div', { class: 'easel' }, paper, h('div', { class: 'row' }, btn(L({ de: 'Neues Blatt', en: 'New sheet' }), fresh, 'line'), send), e1));
+      blank();
+      el.append(h('h3', { class: 'sub' }, L({ de: 'Galerie', en: 'Gallery' })));
+      wall(el, d, 'none');
     },
 
     // ---------- Elf Yourself: Office Management ----------
