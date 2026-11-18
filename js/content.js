@@ -153,8 +153,8 @@ const D = [
     body: { de: ['Fünf Fragen in fünf Türen. So hast du abgeschnitten.'], en: ['Five questions behind five doors. Here’s how you did.'] } },
   // 24 · Thu
   { type: 'elfom', kicker: { de: 'Heiligabend', en: 'Christmas Eve' }, title: { de: 'Frohe Weihnachten', en: 'Merry Christmas' },
-    body: { de: ['Das Office Management tanzt uns in die Feiertage. 24 Türen, ein Team. Danke fürs Öffnen, Posten, Raten und Backen.', 'Laptop zu. Wir sehen uns 2027.'],
-            en: ['Office Management dances us into the holidays. 24 doors, one team. Thank you for opening, posting, guessing and baking.', 'Laptop closed. See you in 2027.'] },
+    body: { de: ['Das Office Management tanzt uns in die Feiertage. Wähl, wer tanzt, oder tanz selbst mit. 24 Türen, ein Team. Danke fürs Öffnen, Posten, Raten und Backen.', 'Laptop zu. Wir sehen uns 2027.'],
+            en: ['Office Management dances us into the holidays. Choose who dances, or join in yourself. 24 doors, one team. Thank you for opening, posting, guessing and baking.', 'Laptop closed. See you in 2027.'] },
     people: [{ name: 'Ellen', file: 'ellen' }, { name: 'Franziska', file: 'franziska' }, { name: 'Silke', file: 'silke' }] },
 ];
 

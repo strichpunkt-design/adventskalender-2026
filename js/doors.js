@@ -375,18 +375,57 @@ export function doorTypes({ wall, onCleanup }) {
 
     // ---------- Elf Yourself: Office Management ----------
     elfom(el, d, o, head) {
-      const troupe = h('div', { class: 'troupe bw' }), file = h('input', { type: 'file', accept: 'image/*', hidden: true });
-      const crew = d.people.map(p => ({ name: p.name, img: ASSET('elf/' + p.file + '.jpg') }));
-      let target = -1, own;
-      const draw = svg => troupe.replaceChildren(...crew.map((c, i) => h('div', { class: 'elfm' }, h('div', { class: 'body', html: svg }),
-        h('button', { type: 'button', class: 'face', 'aria-label': c.name, onclick: () => { target = i; file.click(); } }, h('img', { src: c.img, alt: c.name })), h('span', { class: 'lb nm' }, c.name))));
-      file.addEventListener('change', () => { const f = file.files[0]; if (!f || target < 0) return; if (own) URL.revokeObjectURL(own); own = URL.createObjectURL(f); crew[target] = { name: L({ de: 'Du', en: 'You' }), img: own }; file.value = ''; loadSvg('xmas/elf.svg').then(draw); });
-      onCleanup(() => own && URL.revokeObjectURL(own));
-      loadSvg('xmas/elf.svg').then(draw);
-      const col = btn(L({ de: 'Foto: Original', en: 'Photo: original' }), () => { const bw = troupe.classList.toggle('bw'); col.textContent = bw ? L({ de: 'Foto: Original', en: 'Photo: original' }) : L({ de: 'Foto: Schwarzweiß', en: 'Photo: black and white' }); }, 'line');
-      const st = stage(head, 'blush tall', troupe, file);
-      el.append(h('div', { class: 'row' }, col), h('p', { class: 'small', style: 'opacity:.6' }, L({ de: 'Tipp auf ein Gesicht und wähl ein eigenes Foto. Es bleibt in deinem Browser.', en: 'Tap a face and pick your own photo. It stays in your browser.' })));
-      for (let i = 0; i < 16; i++) st.append(h('span', { class: 'fall', html: burst(), style: `left:${Math.random() * 100}%;animation-delay:${-Math.random() * 5}s;animation-duration:${3 + Math.random() * 4}s;width:${14 + Math.random() * 22}px` }));
+      // The dance video plays; a face photo sits on each elf's head, following a head track measured once per frame.
+      const video = h('video', { src: ASSET('elf/dance.mp4'), playsinline: true, loop: true, preload: 'auto' });
+      const cv = h('canvas', { class: 'faces' }), g = cv.getContext('2d');
+      const play = h('button', { type: 'button', class: 'play' }, h('span', { html: burst() }), L({ de: 'Abspielen, mit Ton', en: 'Play, with sound' }));
+      const box = h('div', { class: 'screen' }, video, cv, play);
+      stage(head, 'dark tall', box);
+      const people = d.people.map(p => ({ name: p.name, src: ASSET('elf/' + p.file + '.jpg') }));
+      const img = src => { const im = new Image(); im.src = src; return im; };
+      const faces = [img(people[0].src), img(people[1].src)], chosen = [0, 1];
+      let track = null, raf = 0, own = [];
+      fetch(ASSET('elf/dance.json')).then(r => r.json()).then(t => { track = t; draw(); }).catch(() => {});
+      const fit = () => { const r = box.getBoundingClientRect(), k = devicePixelRatio || 1; cv.width = r.width * k; cv.height = r.height * k; };
+      // Face: an oval cut-out of the photo, a bit larger than the elf's own face so it covers it.
+      const draw = () => {
+        if (!track) return;
+        const f = Math.min(track.faces[0].length - 1, Math.floor(video.currentTime * track.fps));
+        g.clearRect(0, 0, cv.width, cv.height);
+        track.faces.forEach((tr, i) => {
+          const b = tr[f], im = faces[i];
+          if (!b || !im.complete || !im.naturalWidth) return;
+          const w = b[2] * cv.width * 1.22, hh = w * 1.16, x = b[0] * cv.width, y = b[1] * cv.height + w * .04;
+          g.save(); g.beginPath(); g.ellipse(x, y, w / 2, hh / 2, 0, 0, Math.PI * 2); g.clip();
+          const s = Math.max(w / im.naturalWidth, hh / im.naturalHeight);
+          g.drawImage(im, x - im.naturalWidth * s / 2, y - im.naturalHeight * s / 2, im.naturalWidth * s, im.naturalHeight * s);
+          g.restore();
+        });
+      };
+      const loop = () => { draw(); raf = requestAnimationFrame(loop); };
+      video.addEventListener('loadeddata', () => { fit(); draw(); });
+      const ro = new ResizeObserver(() => { fit(); draw(); }); ro.observe(box);
+      play.addEventListener('click', () => {
+        video.muted = false; video.play().then(() => { box.classList.add('on'); if (o.hush) o.hush(true); }).catch(() => {});
+        cancelAnimationFrame(raf); loop();
+      });
+      box.addEventListener('click', e => { if (e.target === play || play.contains(e.target)) return; if (video.paused) play.click(); else { video.pause(); box.classList.remove('on'); if (o.hush) o.hush(false); } });
+      onCleanup(() => { cancelAnimationFrame(raf); video.pause(); ro.disconnect(); own.forEach(u => u && URL.revokeObjectURL(u)); if (o.hush) o.hush(false); });
+      // Who dances: per elf, one of Office Management or your own photo (stays in the browser).
+      const file = h('input', { type: 'file', accept: 'image/*', hidden: true });
+      let target = 0;
+      const rows = h('div', { class: 'cast-pick' });
+      const pick = (i, k) => { chosen[i] = k; faces[i] = img(people[k].src); faces[i].onload = draw; drawRows(); };
+      const drawRows = () => rows.replaceChildren(...[0, 1].map(i => h('div', { class: 'pickrow' }, h('span', { class: 'lb' }, i ? L({ de: 'Elf rechts', en: 'Right elf' }) : L({ de: 'Elf links', en: 'Left elf' })),
+        h('div', { class: 'chips' }, people.map((p, k) => h('button', { type: 'button', class: chosen[i] === k ? 'on' : '', onclick: () => pick(i, k) }, p.name)),
+          h('button', { type: 'button', class: chosen[i] === 'own' ? 'on' : '', onclick: () => { target = i; file.click(); } }, L({ de: 'Eigenes Foto', en: 'Your photo' }))))));
+      file.addEventListener('change', () => {
+        const f = file.files[0]; if (!f) return;
+        if (own[target]) URL.revokeObjectURL(own[target]);
+        own[target] = URL.createObjectURL(f); faces[target] = img(own[target]); faces[target].onload = draw; chosen[target] = 'own'; file.value = ''; drawRows();
+      });
+      drawRows();
+      el.append(rows, file, h('p', { class: 'small', style: 'opacity:.6' }, L({ de: 'Am besten ein Foto von vorn, Gesicht in der Mitte. Es bleibt in deinem Browser, nichts wird hochgeladen.', en: 'Best with a photo from the front, face in the middle. It stays in your browser, nothing is uploaded.' })));
     },
   };
 }
