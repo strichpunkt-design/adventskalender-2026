@@ -5,8 +5,9 @@ create table if not exists public.posts (
   id uuid primary key,
   door int not null check (door between 1 and 24),
   name text not null check (char_length(name) between 1 and 24),
-  kind text not null default 'text' check (kind in ('text','link','image','vote','score','open')),
-  body text not null default '' check (char_length(body) <= 280),
+  kind text not null default 'text' check (kind in ('text','link','image','vote','score','open','recipe')),
+  -- Recipes need room for ingredients and steps; everything else stays short.
+  body text not null default '' check (char_length(body) <= case when kind = 'recipe' then 2000 else 280 end),
   url text not null default '' check (char_length(url) <= 300 and (url = '' or url like 'https://%')),
   image text check (image is null or image like 'https://%'),
   token text not null,

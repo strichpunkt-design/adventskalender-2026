@@ -1,4 +1,5 @@
 @import url("style.css");
+@import url("doors.css");
 /* Version 2: the window grows into a full layer; no day bar, a compass sticker instead. */
 #hint{left:50%;bottom:calc(20px + var(--safe-b));translate:-50% 0;rotate:-2deg;font-size:12px;padding:10px 16px;background:var(--bg);color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
 body[data-weather=rainy]:not([data-night]) #hint{background:var(--bg);color:var(--ink)}

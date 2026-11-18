@@ -3,7 +3,7 @@
 // assets/sound/ and name them in assets/sound/sounds.json (open, santa, locked, close, finale, music).
 // An entry is a file name, or { file, from, for } to play only a part of it (seconds).
 const DIR = new URL('../../assets/sound/', import.meta.url);
-let ctx, out, files = null, music = null, loopCfg = null, loopBuf = null, loopSrc = null, manifest = {}, gen = 0, timer = 0, playing = false, lastSanta = 0;
+let hushed = false, ctx, out, files = null, music = null, loopCfg = null, loopBuf = null, loopSrc = null, manifest = {}, gen = 0, timer = 0, playing = false, lastSanta = 0;
 const st = { on: localStorage.sp_sound !== '0' }; // on unless someone switched it off
 
 function ac() {
@@ -121,6 +121,8 @@ export const sfx = {
     if (st.on) { loadFiles(); this.play('open'); startMusic(); } else stopMusic();
     return st.on;
   },
+  // A video is playing: the music waits until it is closed.
+  hush(v) { hushed = v; if (v) stopMusic(); else if (st.on && !playing) startMusic(); },
   play(name) {
     if (!st.on) return;
     try {
@@ -133,5 +135,5 @@ export const sfx = {
   },
 };
 // If sound was left on last time, the music starts with the first tap (browsers require one).
-addEventListener('pointerdown', () => { if (st.on && !playing) { loadFiles(); startMusic(); } }, { passive: true });
+addEventListener('pointerdown', () => { if (st.on && !playing && !hushed) { loadFiles(); startMusic(); } }, { passive: true });
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopMusic(); });

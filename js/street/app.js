@@ -325,7 +325,7 @@ async function tapHouse(n) {
 }
 
 // ---------- card: only one open at a time ----------
-const cardOpts = () => { const c = (wx.getLoc() || {}).city || ''; return { lang: state.lang, city: c, office: wx.isOffice(c) }; };
+const cardOpts = () => { const c = (wx.getLoc() || {}).city || ''; return { lang: state.lang, city: c, office: wx.isOffice(c), hush: v => sfx.hush(v) }; };
 const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
 // The window itself grows into the full layer, and shrinks back into it.
 function grow(n, open) {
