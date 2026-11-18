@@ -142,7 +142,15 @@ export function doorTypes({ wall, onCleanup }) {
           }, 'primary'), store.isMine(m.id) && btn(t('clear'), () => { store.remove(d.n, m.id).catch(() => {}); ov.remove(); }, 'line'))));
         (el.closest('#card') || document.body).append(ov); onCleanup(() => ov.remove());
       };
-      live(d.n, p => { posts = p; laughs = p.filter(x => x.kind === 'vote'); layout(); });
+      const podium = h('div', { class: 'podium' });
+      el.append(h('h3', { class: 'sub' }, L({ de: 'Gerade vorn', en: 'Leading right now' })), podium);
+      const drawPodium = () => {
+        const memes = posts.filter(p => p.kind === 'image' && p.image), count = id => votes(laughs, 'laugh:' + id).length;
+        const top = memes.filter(m => count(m.id) > 0).sort((a, b) => count(b.id) - count(a.id)).slice(0, 3);
+        podium.replaceChildren(...(top.length ? top.map((m, i) => h('figure', { class: i ? '' : 'first' }, h('span', { class: 'place' }, String(i + 1)), media(m.image), h('figcaption', {}, h('b', {}, m.name), ` · 😂 ${count(m.id)}`)))
+          : [h('p', { class: 'empty' }, L({ de: 'Noch hat niemand gelacht. Tipp auf eine Kugel.', en: 'Nobody has laughed yet. Tap a bauble.' }))]));
+      };
+      live(d.n, p => { posts = p; laughs = p.filter(x => x.kind === 'vote'); layout(); drawPodium(); });
       const ro = new ResizeObserver(() => layout()); ro.observe(st); onCleanup(() => ro.disconnect());
     },
 
@@ -155,6 +163,25 @@ export function doorTypes({ wall, onCleanup }) {
         box.replaceChildren(...(top.length ? top.map((m, i) => h('figure', { class: i ? '' : 'first' }, h('span', { class: 'place' }, String(i + 1)), media(m.image), h('figcaption', {}, h('b', {}, m.name), ` · 😂 ${count(m.id)}`, m.body ? h('span', {}, m.body) : null)))
           : [h('p', { class: 'empty' }, L({ de: 'Am Baum hängt noch nichts. Tür 8 wartet.', en: 'Nothing on the tree yet. Door 8 is waiting.' }))]));
       });
+    },
+
+    // ---------- Colouring page: the Christmas street to print; on screen it colours itself in ----------
+    colour(el, d, o, head) {
+      const pic = h('div', { class: 'colouring' });
+      stage(head, 'paper-bg', pic);
+      fetch(ASSET('diy/ausmalbild.svg')).then(r => r.text()).then(svg => {
+        // its own styles are dropped and its class names renamed, so the calendar's styles cannot touch it (scoped in doors.css)
+        pic.innerHTML = svg.replace(/<style>[\s\S]*?<\/style>/, '').replace(/class="sh"/g, 'class="cp-s"').replace(/class="ln"/g, 'class="cp-l"');
+        const shapes = [...pic.querySelectorAll('.cp-s')].filter(() => Math.random() < 0.35);
+        const cols = ['#B78CFF', '#F3E6E0', '#CFCFCF', '#B78CFF', '#000'];
+        let i = 0;
+        const tick = () => { for (let k = 0; k < 6 && i < shapes.length; k++, i++) shapes[i].style.fill = cols[Math.floor(Math.random() * cols.length)]; if (i < shapes.length) t = setTimeout(tick, 60); };
+        let t = setTimeout(tick, 600); onCleanup(() => clearTimeout(t));
+      }).catch(() => {});
+      el.append(h('div', { class: 'row', style: 'margin:6px 0 10px' },
+          h('a', { class: 'btn primary', href: ASSET('diy/ausmalbild.pdf'), target: '_blank', rel: 'noopener' }, L({ de: 'Ausmalbild drucken (A4)', en: 'Print the colouring page (A4)' }))),
+        h('h3', { class: 'sub' }, L({ de: 'Zeig dein Bild', en: 'Show your picture' })));
+      wall(el, d, 'image');
     },
 
     // ---------- Recipe shelf in the kitchen ----------
