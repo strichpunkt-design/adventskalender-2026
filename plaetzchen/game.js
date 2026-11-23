@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import RAPIER from 'https://cdn.jsdelivr.net/npm/@dimforge/rapier3d-compat@0.14.0/rapier.es.js';
 import * as store from '../js/store.js';
 
@@ -27,7 +28,7 @@ const TXT = {
   yours: ['Dein Plätzchen', 'Your cookie'], post: ['An die Pinnwand', 'Pin it to the wall'], name: ['Dein Vorname', 'Your first name'],
   posted: ['Hängt an der Pinnwand', 'It’s on the wall'], no: ['Plätzchen Nr.', 'Cookie no.'], count: [n => `${n} Plätzchen bisher`, n => `${n} cookies so far`],
   empty: ['Noch keine Plätzchen. Deins wäre das erste.', 'No cookies yet. Yours could be the first.'], err: ['Hat nicht geklappt. Nochmal?', 'That didn’t work. Try again?'],
-  classic: ['Klassisch', 'Classic'], glaze: ['Welche Glasur?', 'Which glaze?'], none: ['Ohne', 'None'], lila: ['Lila', 'Lilac'], weiss: ['Weiß', 'White'], rosa: ['Rosa', 'Pink'], schoko: ['Schoko', 'Chocolate'], schwarz: ['Schwarz', 'Black'], weird: ['Schräg', 'Weird'], sending: ['Wird aufgehängt …', 'Pinning …'],
+  classic: ['Klassisch', 'Classic'], draw: ['Guss mit dem Finger zeichnen. Nochmal antippen zum Beenden.', 'Draw icing with your finger. Tap it again to stop.'], glaze: ['Welche Glasur?', 'Which glaze?'], none: ['Ohne', 'None'], lila: ['Lila', 'Lilac'], weiss: ['Weiß', 'White'], rosa: ['Rosa', 'Pink'], schoko: ['Schoko', 'Chocolate'], schwarz: ['Schwarz', 'Black'], weird: ['Schräg', 'Weird'], sending: ['Wird aufgehängt …', 'Pinning …'],
 };
 const t = (k, ...a) => { const v = TXT[k][EN ? 1 : 0]; return typeof v === 'function' ? v(...a) : v; };
 document.documentElement.lang = EN ? 'en' : 'de';
@@ -140,11 +141,12 @@ function makeObj(p) { const o = p.node.clone(); o.scale.setScalar(S); o.quaterni
 const N = 200, C = 0.1, X0 = -(N - 1) * C / 2;            // 20 × 20 cm around the middle
 const gx = i => X0 + i * C, cellOf = v => Math.round((v - X0) / C);
 const cookieH = new Float32Array(N * N), staticH = new Float32Array(N * N);
-let field = null, frost = null, staticTop = 0;
+let field = null, frost = null, staticTop = 0, cookieR = 0;
 const liquids = [];                                       // { mesh, ks, top, frozen, anim }
 const _a = new THREE.Vector3(), _b = new THREE.Vector3(), _c = new THREE.Vector3();
 // Highest point of a mesh in every grid cell.
-function raster(obj, H) {
+const GRID = { x0: X0, z0: X0, c: C, nx: N, nz: N };
+function raster(obj, H, g = GRID) {
   obj.updateMatrixWorld(true);
   obj.traverse(m => {
     if (!m.isMesh || m.isInstancedMesh) return;
@@ -154,13 +156,13 @@ function raster(obj, H) {
       _b.fromBufferAttribute(pos, ix ? ix.getX(t + 1) : t + 1).applyMatrix4(m.matrixWorld);
       _c.fromBufferAttribute(pos, ix ? ix.getX(t + 2) : t + 2).applyMatrix4(m.matrixWorld);
       const d = (_b.z - _c.z) * (_a.x - _c.x) + (_c.x - _b.x) * (_a.z - _c.z); if (Math.abs(d) < 1e-9) continue;
-      const i0 = Math.max(0, Math.ceil((Math.min(_a.x, _b.x, _c.x) - X0) / C)), i1 = Math.min(N - 1, Math.floor((Math.max(_a.x, _b.x, _c.x) - X0) / C));
-      const j0 = Math.max(0, Math.ceil((Math.min(_a.z, _b.z, _c.z) - X0) / C)), j1 = Math.min(N - 1, Math.floor((Math.max(_a.z, _b.z, _c.z) - X0) / C));
+      const i0 = Math.max(0, Math.ceil((Math.min(_a.x, _b.x, _c.x) - g.x0) / g.c)), i1 = Math.min(g.nx - 1, Math.floor((Math.max(_a.x, _b.x, _c.x) - g.x0) / g.c));
+      const j0 = Math.max(0, Math.ceil((Math.min(_a.z, _b.z, _c.z) - g.z0) / g.c)), j1 = Math.min(g.nz - 1, Math.floor((Math.max(_a.z, _b.z, _c.z) - g.z0) / g.c));
       for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
-        const x = gx(i), z = gx(j);
+        const x = g.x0 + i * g.c, z = g.z0 + j * g.c;
         const w1 = ((_b.z - _c.z) * (x - _c.x) + (_c.x - _b.x) * (z - _c.z)) / d, w2 = ((_c.z - _a.z) * (x - _c.x) + (_a.x - _c.x) * (z - _c.z)) / d, w3 = 1 - w1 - w2;
         if (w1 < -1e-4 || w2 < -1e-4 || w3 < -1e-4) continue;
-        const y = w1 * _a.y + w2 * _b.y + w3 * _c.y, k = i * N + j; if (y > H[k]) H[k] = y;
+        const y = w1 * _a.y + w2 * _b.y + w3 * _c.y, k = i * g.nz + j; if (y > H[k]) H[k] = y;
       }
     }
   });
@@ -201,7 +203,7 @@ function sheet(i0, i1, j0, j1, base, mat) {
   };
   return s;
 }
-const glossy = col => new THREE.MeshPhysicalMaterial({ color: col, roughness: .26, clearcoat: .7, clearcoatRoughness: .25, sheen: .3, sheenColor: new THREE.Color(0xffffff) });
+const glossy = col => new THREE.MeshPhysicalMaterial({ color: col, roughness: .3, clearcoat: .6, clearcoatRoughness: .3 });
 
 // ---------- the cookie and its glaze ----------
 async function setCookie(id) {
@@ -211,91 +213,126 @@ async function setCookie(id) {
   const b = new THREE.Box3().setFromObject(obj); obj.position.set(-(b.min.x + b.max.x) / 2, -b.min.y + 0.02, -(b.min.z + b.max.z) / 2); obj.updateMatrixWorld(true);
   cookieH.fill(0); raster(obj, cookieH);
   cookie = { obj }; rebuildStatic(); stackTop = staticTop;
+  const bb = new THREE.Box3().setFromObject(obj); cookieR = Math.max(bb.max.x - bb.min.x, bb.max.z - bb.min.z) / 2;
   goView('angle');
 }
 const GLAZES = [['none', null], ['lila', '#B78CFF'], ['weiss', '#F4F0E8'], ['rosa', '#F3B4C8'], ['schoko', '#3E2214'], ['schwarz', '#151515']];
+// The glaze is built on its own fine grid (0.5 mm), so the rim is smooth and rounded like real icing,
+// and its top is levelled instead of following every bump of the dough.
 function setGlaze(col) {
-  if (frost) { scene.remove(frost.mesh); frost = null; }
-  if (col) {
-    let top = 0; for (const v of cookieH) if (v > top) top = v;
-    // the flat top of the cookie, and how far each cell is from its edge (in cells)
-    const inside = new Uint8Array(N * N), dist = new Float32Array(N * N).fill(1e9);
-    let i0 = N, i1 = 0, j0 = N, j1 = 0;
-    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
-      const k = i * N + j; if (cookieH[k] > top - 0.3 && cookieH[k] > 0.1) { inside[k] = 1; i0 = Math.min(i0, i); i1 = Math.max(i1, i); j0 = Math.min(j0, j); j1 = Math.max(j1, j); } else dist[k] = 0;
+  if (frost) { scene.remove(frost.mesh); frost.mesh.geometry.dispose(); frost = null; }
+  if (col && cookie) {
+    const bb = new THREE.Box3().setFromObject(cookie.obj), FC = 0.05;
+    const g = { x0: bb.min.x - 0.3, z0: bb.min.z - 0.3, c: FC, nx: Math.ceil((bb.max.x - bb.min.x + 0.6) / FC) + 1, nz: Math.ceil((bb.max.z - bb.min.z + 0.6) / FC) + 1 };
+    const nx = g.nx, nz = g.nz, n = nx * nz, H = new Float32Array(n); raster(cookie.obj, H, g);
+    let top = 0; for (const v of H) if (v > top) top = v;
+    const ins = new Uint8Array(n), dist = new Float32Array(n);
+    for (let k = 0; k < n; k++) { ins[k] = H[k] > top - 0.3 && H[k] > 0.1; dist[k] = ins[k] ? 1e9 : 0; }
+    for (let pass = 0; pass < 2; pass++) for (let a = 1; a < nx - 1; a++) for (let b = 1; b < nz - 1; b++) {   // distance to the rim, in cells
+      const i = pass ? nx - 1 - a : a, j = pass ? nz - 1 - b : b, k = i * nz + j, s = pass ? 1 : -1;
+      dist[k] = Math.min(dist[k], dist[(i + s) * nz + j] + 1, dist[i * nz + j + s] + 1, dist[(i + s) * nz + j + s] + 1.414, dist[(i + s) * nz + j - s] + 1.414);
     }
-    for (let pass = 0; pass < 2; pass++) for (let i = 1; i < N - 1; i++) for (let j = 1; j < N - 1; j++) {   // two-pass distance
-      const ii = pass ? N - 1 - i : i, jj = pass ? N - 1 - j : j, k = ii * N + jj, s = pass ? 1 : -1;
-      dist[k] = Math.min(dist[k], dist[(ii + s) * N + jj] + 1, dist[ii * N + jj + s] + 1, dist[(ii + s) * N + jj + s] + 1.414, dist[(ii + s) * N + jj - s] + 1.414);
+    // a levelled base: the dough smoothed over ~3 mm
+    const blur = (src, r) => { let A = src;
+      for (const dir of [0, 1]) { const B = new Float32Array(n);
+        for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) { let s = 0, c = 0;
+          for (let d = -r; d <= r; d++) { const ii = dir ? i : i + d, jj = dir ? j + d : j; if (ii < 0 || jj < 0 || ii >= nx || jj >= nz) continue; const k = ii * nz + jj; if (!ins[k]) continue; s += A[k]; c++; }
+          B[i * nz + j] = c ? s / c : A[i * nz + j]; }
+        A = B; } return A; };
+    const base = blur(blur(H, 6), 6);
+    const T = 0.16, E = 0.28, th = new Float32Array(n);
+    for (let k = 0; k < n; k++) { const d = dist[k] * FC - 0.03; th[k] = !ins[k] || d <= 0 ? 0 : T * Math.sqrt(1 - (1 - Math.min(1, d / E)) ** 2); }
+    const pos = new Float32Array(n * 3), keep = new Uint8Array(n);
+    for (let i = 0; i < nx; i++) for (let j = 0; j < nz; j++) {
+      const k = i * nz + j; pos[k * 3] = g.x0 + i * FC; pos[k * 3 + 2] = g.z0 + j * FC;
+      if (th[k] > 0) { keep[k] = 1; pos[k * 3 + 1] = Math.max(base[k], H[k]) + th[k]; continue; }
+      let hi = H[k]; for (let da = -1; da <= 1; da++) for (let db = -1; db <= 1; db++) { const ii = i + da, jj = j + db; if (ii >= 0 && jj >= 0 && ii < nx && jj < nz && th[ii * nz + jj] > 0) hi = Math.max(hi, base[ii * nz + jj], H[ii * nz + jj]); }
+      pos[k * 3 + 1] = hi - 0.03;
     }
-    const T = 0.15, th = (i, j) => { const d = dist[i * N + j]; return d <= 0.5 ? 0 : T * Math.min(1, (d - 0.5) / 4) ** 0.45; };
-    const s = sheet(Math.max(0, i0 - 1), Math.min(N - 1, i1 + 1), Math.max(0, j0 - 1), Math.min(N - 1, j1 + 1), cookieH, glossy(col));
-    s.shape(th); scene.add(s.mesh);
+    const idx = [];
+    for (let i = 0; i < nx - 1; i++) for (let j = 0; j < nz - 1; j++) {
+      const v = i * nz + j, q = [v, v + 1, v + nz, v + nz + 1];
+      if (q.some(x => keep[x])) idx.push(v, v + 1, v + nz, v + 1, v + nz + 1, v + nz);
+    }
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setIndex(idx); geo.computeVertexNormals();
+    const mesh = new THREE.Mesh(geo, glossy(col)); mesh.castShadow = mesh.receiveShadow = true; scene.add(mesh);
+    // the same surface on the coarse physics grid
     const ks = [], tp = [];
-    for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) { const t = th(i, j); if (t > 0) { ks.push(i * N + j); tp.push(cookieH[i * N + j] + t); } }
-    frost = { mesh: s.mesh, ks: Int32Array.from(ks), top: Float32Array.from(tp) };
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      const fi = Math.round((gx(i) - g.x0) / FC), fj = Math.round((gx(j) - g.z0) / FC);
+      if (fi < 0 || fj < 0 || fi >= nx || fj >= nz) continue; const k = fi * nz + fj;
+      if (th[k] > 0) { ks.push(i * N + j); tp.push(pos[k * 3 + 1]); }
+    }
+    frost = { mesh, ks: Int32Array.from(ks), top: Float32Array.from(tp) };
   }
   rebuildStatic();
 }
 function clearAll() {
   while (drops.length) undo(true);
   if (frost) { scene.remove(frost.mesh); frost = null; }
-  if (cookie) { scene.remove(cookie.obj); cookie = null; }
+  if (cookie) { scene.remove(cookie.obj); cookie = null; } cookieR = 0; setPen(null);
   cookieH.fill(0); rebuildStatic(); stackTop = 1; $('#undo').disabled = true;
 }
 
-// ---------- pouring: icing and chocolate run over whatever is there ----------
-const LIQUID = { 'guss-lila': ['#B78CFF', 1.8, .22], 'guss-weiss': ['#F4F0E8', 1.8, .22], schoko: ['#3B1F12', 2.2, .16] };
-function pour(id, at) {
-  const [col, R, T] = LIQUID[id], ci = cellOf(at.x), cj = cellOf(at.z), rc = Math.ceil(R * 1.4 / C);
-  const i0 = Math.max(0, ci - rc), i1 = Math.min(N - 1, ci + rc), j0 = Math.max(0, cj - rc), j1 = Math.min(N - 1, cj + rc);
-  // what it runs over: the cookie and glaze, plus every topping lying in the way
-  const base = staticH.slice(), near = live.filter(l => Math.hypot(l.obj.position.x - at.x, l.obj.position.z - at.z) < R * 1.6);
-  near.forEach(l => raster(l.obj, base));
-  // Liquid does not climb into every gap: it lies over things like a soft blanket (widen, then smooth).
-  const W = i1 - i0 + 1, Hh = j1 - j0 + 1, at2 = (a, b) => (i0 + a) * N + (j0 + b);
-  let A = new Float32Array(W * Hh); for (let a = 0; a < W; a++) for (let b = 0; b < Hh; b++) A[a * Hh + b] = base[at2(a, b)];
-  const pass = (src, r, fn) => { const out = new Float32Array(src.length); for (let a = 0; a < W; a++) for (let b = 0; b < Hh; b++) {
-    let m = fn === 'max' ? -1e9 : 0, n = 0;
-    for (let da = -r; da <= r; da++) for (let db = -r; db <= r; db++) { const x = a + da, y = b + db; if (x < 0 || y < 0 || x >= W || y >= Hh) continue; const v = src[x * Hh + y]; if (fn === 'max') m = Math.max(m, v); else { m += v; n++; } }
-    out[a * Hh + b] = fn === 'max' ? m : m / n; } return out; };
-  A = pass(pass(pass(A, 3, 'max'), 3, 'avg'), 3, 'avg');
-  for (let a = 0; a < W; a++) for (let b = 0; b < Hh; b++) { const k = at2(a, b); base[k] = Math.max(base[k], A[a * Hh + b]); }
-  const p1 = Math.random() * 6, p2 = Math.random() * 6, p3 = Math.random() * 6;
-  const rim = a => R * (1 + .13 * Math.sin(3 * a + p1) + .08 * Math.sin(5 * a + p2) + .05 * Math.sin(8 * a + p3));
-  const th = g => (i, j) => {
-    const dx = gx(i) - at.x, dz = gx(j) - at.z, r = rim(Math.atan2(dz, dx)) * g, d = Math.hypot(dx, dz);
-    if (d >= r) return 0; const u = 1 - (d / r) ** 2; return T * Math.pow(u, .3) * (0.55 + 0.45 * g);
-  };
-  const s = sheet(i0, i1, j0, j1, base, glossy(col)); s.shape(th(.05)); scene.add(s.mesh);
-  const L = { mesh: s.mesh, ks: null, top: null, frozen: [], near };
-  L.anim = { t0: performance.now(), step: g => s.shape(th(g)), done: () => {
-    const ks = [], tp = [], f = th(1);
-    for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) { const t = f(i, j); if (t > 0) { ks.push(i * N + j); tp.push(base[i * N + j] + t); } }
-    L.ks = Int32Array.from(ks); L.top = Float32Array.from(tp);
-    // what is under the icing stays stuck in it
-    for (const l of near) if (l.body.isDynamic() && f(cellOf(l.obj.position.x), cellOf(l.obj.position.z)) > 0) { l.body.setBodyType(RAPIER.RigidBodyType.Fixed, false); L.frozen.push(l.body); }
-    rebuildStatic();
-  } };
-  liquids.push(L);
-  return L;
+// ---------- icing is drawn: a piped line that follows the finger over everything ----------
+const ICING = { 'guss-lila': ['#B78CFF', .19], 'guss-weiss': ['#F4F0E8', .19], schoko: ['#3B1F12', .16] };
+let stroke = null, pen = null;
+function strokeBegin(id) {
+  const [col, r] = ICING[id];
+  stroke = { id, r, pts: [], gap: false, mesh: new THREE.Mesh(new THREE.BufferGeometry(), glossy(col)) };
+  stroke.mesh.castShadow = stroke.mesh.receiveShadow = true; scene.add(stroke.mesh);
 }
-function runLiquids(now) {
-  for (const L of liquids) if (L.anim) {
-    const k = Math.min(1, (now - L.anim.t0) / 900), e = 1 - Math.pow(1 - k, 3);
-    L.anim.step(Math.max(.05, e));
-    if (k >= 1) { const a = L.anim; L.anim = null; a.done(); }
+function strokeAt(x, y) {
+  if (!stroke) return;
+  const p = surfaceAt(x, y, stroke.mesh); if (!p) return;
+  // icing only sticks to the cookie and what is on it; across the paper the line breaks and starts again
+  if (p.onPaper) { stroke.gap = true; return; }
+  if (stroke.gap && stroke.pts.length) { const id = stroke.id; strokeEnd(); strokeBegin(id); }
+  stroke.gap = false;
+  p.y += stroke.r * .5;
+  const last = stroke.pts[stroke.pts.length - 1];
+  if (last && last.distanceTo(p) < stroke.r * .7) return;
+  if (stroke.pts.length > 500) return;
+  stroke.pts.push(p);
+  const cap = q => new THREE.SphereGeometry(stroke.r, 16, 10).translate(q.x, q.y, q.z);
+  const pts = stroke.pts;
+  const g = pts.length < 2 ? cap(pts[0]) : mergeGeometries([new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'centripetal'), Math.min(900, pts.length * 4), stroke.r, 12, false), cap(pts[0]), cap(pts[pts.length - 1])]);
+  stroke.mesh.geometry.dispose(); stroke.mesh.geometry = g;
+}
+function strokeEnd() {
+  const s = stroke; stroke = null; if (!s) return;
+  if (!s.pts.length) { scene.remove(s.mesh); return; }
+  // what lies under the icing stays stuck in it
+  const frozen = [];
+  for (const l of live) {
+    if (!l.body.isDynamic()) continue; const b = l.obj.position;
+    if (s.pts.some(q => Math.hypot(q.x - b.x, q.z - b.z) < 0.8 && q.y > b.y)) { l.body.setBodyType(RAPIER.RigidBodyType.Fixed, false); frozen.push(l.body); }
   }
+  const tmp = staticH.slice(); raster(s.mesh, tmp);
+  const ks = [], tp = []; for (let k = 0; k < tmp.length; k++) if (tmp[k] > staticH[k] + 1e-4) { ks.push(k); tp.push(tmp[k]); }
+  const layer = { mesh: s.mesh, ks: Int32Array.from(ks), top: Float32Array.from(tp), frozen };
+  liquids.push(layer); drops.push({ bodies: [], objs: [], liquid: layer }); afterDrop(); rebuildStatic();
 }
+// Tapping an icing turns the finger into a piping bag until it is tapped again.
+function setPen(id) {
+  pen = id; controls.enabled = !pen;
+  document.querySelectorAll('.item').forEach(el => el.classList.toggle('on', el.dataset.id === pen));
+  const h = $('#hint'); h.textContent = pen ? t('draw') : t('hint'); h.classList.toggle('off', !pen && drops.length > 0);
+}
+canvas.addEventListener('pointerdown', e => { if (!pen) return; canvas.setPointerCapture(e.pointerId); strokeBegin(pen); strokeAt(e.clientX, e.clientY); });
+canvas.addEventListener('pointermove', e => { if (pen && stroke) strokeAt(e.clientX, e.clientY); });
+canvas.addEventListener('pointerup', () => { if (pen) strokeEnd(); });
+canvas.addEventListener('pointercancel', () => { if (pen) strokeEnd(); });
 
 // ---------- dropping toppings ----------
 const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
-const BOUNCE = { perlen: .25, linsen: .12, streusel: .08, hagel: .12, kirschen: .2, goldsterne: .05, kaffee: .1, popcorn: .08 };
+const BOUNCE = { perlen: .1, linsen: .04, kirschen: .06, kaffee: .03 };
 const solids = () => [...(cookie ? [cookie.obj] : []), ...(frost ? [frost.mesh] : []), ...liquids.map(l => l.mesh), ...live.map(l => l.obj), paper];
-function surfaceAt(x, y) {   // the first thing under the pointer: topping, icing, cookie or paper
+function surfaceAt(x, y, skip) {   // the first thing under the pointer: topping, icing, cookie or paper
   const r = canvas.getBoundingClientRect(); ndc.set((x - r.left) / r.width * 2 - 1, -((y - r.top) / r.height) * 2 + 1);
   ray.setFromCamera(ndc, camera);
-  const hit = ray.intersectObjects(solids(), true)[0];
+  const hit = ray.intersectObjects(solids().filter(o => o !== skip), true)[0];
+  if (hit) hit.point.onPaper = hit.object === paper;
   return hit ? hit.point : null;
 }
 function surfaceBelow(x, z) {
@@ -321,19 +358,18 @@ const gauss = () => Math.sqrt(-2 * Math.log(Math.random() + 1e-9)) * Math.cos(2 
 
 async function drop(id, at, yaw = Math.random() * Math.PI * 2) {
   if (id === 'puder') { drops.push({ bodies: [], objs: [dust(at)] }); afterDrop(); return; }
-  if (LIQUID[id]) { drops.push({ bodies: [], objs: [], liquid: pour(id, at) }); afterDrop(); return; }
   const m = await loadModel(id), R = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
   const bodies = [], objs = [], scatter = m.pieces.length > 1;
   for (const p of pickPieces(m)) {
     const rel = p.at.clone().sub(m.center); rel.applyQuaternion(R);
-    if (scatter) rel.x *= .8, rel.z *= .8;
-    const pos = at.clone().add(rel).add(new THREE.Vector3(0, 1.6 + (scatter ? Math.random() * 1.2 : 0), 0)), q = R.clone().multiply(p.q);
+    if (scatter) rel.x *= .55, rel.z *= .55;
+    const pos = at.clone().add(rel).add(new THREE.Vector3(0, 1.1 + (scatter ? Math.random() * .8 : 0), 0)), q = R.clone().multiply(p.q);
     const body = world.createRigidBody(RAPIER.RigidBodyDesc.dynamic().setTranslation(pos.x, pos.y, pos.z).setRotation(q)
-      .setLinvel((Math.random() - .5) * (scatter ? 6 : 0), -25, (Math.random() - .5) * (scatter ? 6 : 0)).setAngularDamping(scatter ? 1 : 2).setLinearDamping(.4).setCcdEnabled(true));
+      .setLinvel((Math.random() - .5) * (scatter ? 2 : 0), -20, (Math.random() - .5) * (scatter ? 2 : 0)).setAngularDamping(scatter ? 1.5 : 3).setLinearDamping(.6).setCcdEnabled(true));
     const sz = p.box.getSize(new THREE.Vector3()), mx = Math.max(sz.x, sz.y, sz.z), mn = Math.min(sz.x, sz.y, sz.z);
     let cd = mn > mx * .85 ? RAPIER.ColliderDesc.ball(mx / 2) : (p.pts.length >= 12 ? RAPIER.ColliderDesc.convexHull(p.pts) : null);
     if (!cd) cd = RAPIER.ColliderDesc.cuboid(Math.max(sz.x / 2, .05), Math.max(sz.y / 2, .05), Math.max(sz.z / 2, .05));
-    world.createCollider(cd.setFriction(1.1).setRestitution(BOUNCE[id] ?? .04).setDensity(1), body);
+    world.createCollider(cd.setFriction(1.4).setRestitution(BOUNCE[id] ?? .02).setDensity(1), body);
     const obj = makeObj(p); obj.position.copy(pos); obj.quaternion.copy(q); scene.add(obj);
     bodies.push(body); objs.push(obj); live.push({ body, obj, calm: 0 });
   }
@@ -373,25 +409,33 @@ addEventListener('pointermove', e => {
   if (!drag) return;
   const dx = e.clientX - drag.x0, dy = e.clientY - drag.y0;
   if (!drag.mode) {
-    if (dy < -8 && Math.abs(dy) > Math.abs(dx)) { drag.mode = 'drag'; drag.el.classList.add('held'); controls.enabled = false; startGhost(drag.id); }
+    if (dy < -8 && Math.abs(dy) > Math.abs(dx) && ICING[drag.id]) { drag.mode = 'pipe'; drag.el.classList.add('held'); setPen(null); controls.enabled = false; }
+    else if (dy < -8 && Math.abs(dy) > Math.abs(dx)) { drag.mode = 'drag'; drag.el.classList.add('held'); controls.enabled = false; startGhost(drag.id); }
     else if (Math.abs(dx) > 8) drag.mode = 'scroll';
   }
   if (drag.mode === 'scroll' && drag.type === 'mouse') strip.scrollLeft = drag.sl - dx;
   if (drag.mode === 'drag') moveGhost(e.clientX, e.clientY);
+  if (drag.mode === 'pipe') {   // dragged up out of the bar: piping starts once the finger is over the stage
+    const r = stageEl.getBoundingClientRect();
+    if (e.clientY < r.bottom - 4) { if (!stroke) strokeBegin(drag.id); strokeAt(e.clientX, e.clientY); }
+  }
 });
 addEventListener('pointerup', e => {
   if (!drag) return;
-  const d = drag; drag = null; d.el.classList.remove('held'); controls.enabled = true;
+  const d = drag; drag = null; d.el.classList.remove('held'); controls.enabled = !pen;
+  if (d.mode === 'pipe') { strokeEnd(); return; }
+  if (!d.mode && ICING[d.id]) { setPen(pen === d.id ? null : d.id); return; }
+  if (!d.mode && pen) setPen(null);
   if (d.mode === 'drag') { const at = ghost && ghost.visible && ghost.at; endGhost(); if (at) drop(d.id, at.clone(), ghost?.yaw); }
   else if (!d.mode) { const c = surfaceBelow((Math.random() - .5) * 2, (Math.random() - .5) * 2); drop(d.id, c); }
 });
-addEventListener('pointercancel', () => { if (drag) { drag.el.classList.remove('held'); drag = null; endGhost(); controls.enabled = true; } });
+addEventListener('pointercancel', () => { if (drag) { if (drag.mode === 'pipe') strokeEnd(); drag.el.classList.remove('held'); drag = null; endGhost(); controls.enabled = !pen; } });
 const cookieMissing = () => !cookie;
 
 // While dragging, the topping hangs above the spot where it will land, with a small shadow on that spot.
 async function startGhost(id) {
   const token = {}; ghost = { token, group: null, at: null, yaw: Math.random() * Math.PI * 2, visible: false };
-  if (id === 'puder' || LIQUID[id]) { marker.scale.setScalar(LIQUID[id] ? LIQUID[id][1] : 2.4); return; }
+  if (id === 'puder') { marker.scale.setScalar(2.4); return; }
   marker.scale.setScalar(1);
   const m = await loadModel(id); if (!ghost || ghost.token !== token) return;
   const g = new THREE.Group(), R = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), ghost.yaw);
@@ -472,7 +516,7 @@ $('#new').onclick = () => { photoMode(false); $('#shapes').hidden = false; };
 // ---------- menus from the model list ----------
 // The selection (the other models stay in the folder, unused).
 const PICKED = ['semikolon', 'stern', 'baum', 'herz', 'mond', 'mann', 'stern-schoko', 'guss-lila', 'guss-weiss', 'streusel', 'perlen', 'linsen', 'mandeln', 'kirschen',
-  'puder', 'hagel', 'schoko', 'goldsterne', 'gummibaer', 'popcorn', 'brezel', 'augen', 'kaffee', 'lametta', 'riesenstreusel'];
+  'puder', 'hagel', 'schoko', 'goldsterne', 'gummibaer', 'popcorn', 'brezel', 'kaffee', 'riesenstreusel'];
 const items = (await (await fetch(`${BASE}models/items.json`)).json()).filter(i => PICKED.includes(i.id));
 const name = it => EN ? it.en : it.de;
 const thumb = id => `${BASE}thumbs/${id}.webp`;
@@ -499,7 +543,6 @@ for (const grp of ['klassisch', 'schraeg']) {
 
 // ---------- loop ----------
 let last = performance.now(), acc = 0, frameNo = 0;
-window.__pz = { live };   // for tests
 function loop(now) {
   acc += Math.min(0.1, (now - last) / 1000); last = now;
   let n = 0; while (acc >= 1 / 120 && n++ < 6) { world.step(); acc -= 1 / 120; }
@@ -512,6 +555,11 @@ function loop(now) {
     // A piece that barely moves for half a second is put to sleep, so nothing keeps trembling.
     if (l.body.isDynamic() && !l.body.isSleeping()) {
       const v = l.body.linvel(), w = l.body.angvel();
+      // While something is still moving above the cookie, it is nudged towards the middle: piles grow up, not out.
+      const d = Math.hypot(p.x, p.z);
+      if (cookieR && p.y > 0.35 && d > 0.4 && d < cookieR + 1.5 && Math.hypot(v.x, v.y, v.z) > 0.6) {
+        const J = l.body.mass() * 160 / 60 * Math.min(1.5, d / cookieR); l.body.applyImpulse({ x: -p.x / d * J, y: 0, z: -p.z / d * J }, true);
+      }
       l.calm = (Math.hypot(v.x, v.y, v.z) < 1.5 && Math.hypot(w.x, w.y, w.z) < .6) ? l.calm + 1 : 0;
       if (l.calm > 30) { l.body.sleep(); l.calm = 0; }
     }
@@ -519,7 +567,7 @@ function loop(now) {
   stackTop = Math.max(cookie ? 1 : 0, top);
   // Lots of pieces: settled ones stop moving for good, so the phone keeps up (undo frees them again).
   if (++frameNo % 90 === 0 && live.length > 300) for (const l of live) if (l.body.isSleeping() && l.body.isDynamic()) { l.body.setBodyType(RAPIER.RigidBodyType.Fixed, false); parked.add(l.body); }
-  runLiquids(now); runTween(now); controls.update(); renderer.render(scene, camera);
+  runTween(now); controls.update(); renderer.render(scene, camera);
   requestAnimationFrame(loop);
 }
 resize(); goView('angle', true);

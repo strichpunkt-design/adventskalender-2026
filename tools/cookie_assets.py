@@ -203,8 +203,18 @@ def t_almond():
         o = sphere(0.009, (x, y, 0.0022), (1, .62, .27), m); o.rotation_euler.z = a
         bm = o.modifiers.new('t', 'SIMPLE_DEFORM'); bm.deform_method = 'TAPER'; bm.factor = .5; bm.deform_axis = 'X'; mark()
 def t_cherry():
-    m = mat('cherry', '#B0101A', .12, coat=1, sss=.3)
-    for x, y in ((-0.008, 0), (0.008, 0.004)): sphere(0.0085, (x, y, 0.0075), (1, 1, .88), m); mark()
+    # candied cherries: deep red, glassy, a dimple on top with a thin stalk
+    m = mat('cherry', '#7E0711', .06, coat=1, sss=.55, ramp=('#5E040C', '#B3101C', 18))
+    stalk = mat('stalk2', '#6E6A2E', .55, ramp=('#4F5A22', '#8A7A3C', 40))
+    for x, y, bend in ((-0.009, 0, 1), (0.009, 0.004, -1)):
+        o = sphere(0.0085, (x, y, 0.0078), (1, 1, .9), m, 48)
+        sm = o.modifiers.new('dimple', 'DISPLACE'); sm.strength = 0  # placeholder keeps stack simple
+        bpy.ops.mesh.primitive_uv_sphere_add(radius=0.0024, location=(x, y, 0.0078 + 0.0085 * .9 + 0.0006)); dim = bpy.context.object
+        b = o.modifiers.new('cut', 'BOOLEAN'); b.object = dim; b.operation = 'DIFFERENCE'
+        active(o); bpy.ops.object.modifier_apply(modifier='cut'); bpy.data.objects.remove(dim, do_unlink=True); smooth(o)
+        z0 = 0.0078 + 0.0085 * .9 - 0.0012
+        tube([(x, y, z0), (x + bend * 0.0015, y, z0 + 0.008), (x + bend * 0.006, y + 0.002, z0 + 0.016), (x + bend * 0.013, y + 0.004, z0 + 0.02)], 0.00075, stalk, [1.1, 1, .9, .8])
+        mark()
 def t_powder():
     bpy.ops.mesh.primitive_cone_add(vertices=64, radius1=0.022, depth=0.011, location=(0, 0, 0.0055)); o = bpy.context.object
     mod(o, 'SUBSURF', levels=3, render_levels=3); mod(o, 'DISPLACE', texture=clouds(0.004), strength=0.0012)
