@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Plätzchen-Simulator</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Strichpunkt+Sans:wdth,wght@100..150,400..900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#000;--paper:#fff;--lilac:#B78CFF;--blush:#F3E6E0;--g1:#EAEAEA;--g3:#8A8A8A;--dough:#EBCB9C;
+  --font:'Strichpunkt Sans','Archivo',system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--g1);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-weight:900;font-stretch:150%;text-transform:uppercase;line-height:.92;margin:0}
+.wrap{max-width:1280px;margin:0 auto;padding:48px 24px 80px}
+.kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-stretch:125%;margin:0 0 10px}
+h1{font-size:clamp(40px,7vw,88px)}
+.lead{max-width:720px;font-size:18px;margin:18px 0 0}
+section{margin-top:64px}
+section>h2{font-size:clamp(26px,3.4vw,40px)}
+section>.lead{font-size:16px}
+.screens{display:grid;grid-template-columns:3fr 2fr;gap:18px;margin-top:22px}
+@media (max-width:900px){.screens{grid-template-columns:1fr}}
+.cap{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-stretch:125%;margin:10px 0 0;color:#333}
+
+/* the editor frame */
+.app{background:#000;color:#fff;border-radius:18px;overflow:hidden;display:flex;flex-direction:column}
+.app .top{display:flex;align-items:center;gap:18px;padding:14px 18px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-stretch:125%}
+.app .top b{font-weight:900;font-stretch:150%;margin-right:auto;letter-spacing:0}
+.app .top span{opacity:.7}
+.stage{position:relative;aspect-ratio:4/3;overflow:hidden}
+.stage.flat{background:#000}
+#flatPhoto{background:#000;--bg:#000}
+#flatGrid .t{background:#fff;--bg:#fff}
+.stage img{width:100%;height:100%;object-fit:cover;display:block}
+.frame{position:absolute;inset:9% 16%;pointer-events:none}
+.frame i{position:absolute;width:26px;height:26px;border:3px solid #fff}
+.frame i:nth-child(1){left:0;top:0;border-right:0;border-bottom:0}.frame i:nth-child(2){right:0;top:0;border-left:0;border-bottom:0}
+.frame i:nth-child(3){left:0;bottom:0;border-right:0;border-top:0}.frame i:nth-child(4){right:0;bottom:0;border-left:0;border-top:0}
+.controls{display:flex;align-items:center;justify-content:center;gap:22px;padding:14px 18px 6px;font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-stretch:125%}
+.controls .on{box-shadow:0 2px 0 var(--lilac)}
+.controls .off{opacity:.6}
+.shot{background:var(--lilac);color:#000;font-weight:900;font-stretch:150%;padding:11px 22px;border-radius:99px;letter-spacing:.02em}
+.tray{display:flex;gap:12px;padding:12px 18px 18px;overflow:hidden}
+.tray figure{margin:0;flex:0 0 auto;width:74px;text-align:center;font-size:10px;letter-spacing:.04em;text-transform:uppercase;font-stretch:125%;opacity:.9}
+.tray .bowl{width:64px;height:64px;margin:0 auto 6px;border-radius:50%;background:#fff;display:grid;place-items:center;overflow:hidden;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}
+.tray .bowl svg{width:72%;height:72%}
+.tray .ph{width:64px;height:64px;margin:0 auto 6px;border-radius:50%;background-repeat:no-repeat;border:4px solid #fff}
+
+/* the photo card and gallery */
+.photo{background:#fff;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.photo .pic{aspect-ratio:1;border-radius:6px;overflow:hidden;background:var(--lilac)}
+.photo .pic img,.photo .pic svg{width:100%;height:100%;object-fit:cover;display:block}
+.photo .no{font-weight:900;font-stretch:150%;font-size:24px;text-transform:uppercase;line-height:1}
+.photo .meta{font-size:13px;color:#333;margin-top:4px}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.btn{display:inline-block;padding:12px 18px;background:#000;color:#fff;font-weight:900;font-stretch:150%;text-transform:uppercase;font-size:12px;letter-spacing:.02em;border-radius:99px}
+.btn.l{background:var(--lilac);color:#000}
+.btn.g{background:transparent;color:#000;box-shadow:inset 0 0 0 2px #000}
+.tin{margin-top:18px;background:#000;color:#fff;border-radius:18px;padding:20px}
+.tin h3{font-size:22px}
+.tin .sub{font-size:12px;opacity:.7;margin:6px 0 16px;letter-spacing:.04em;text-transform:uppercase;font-stretch:125%}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px}
+.grid figure{margin:0}
+.grid .t{aspect-ratio:1;border-radius:6px;overflow:hidden;background:var(--lilac)}
+.grid .t img,.grid .t svg{width:100%;height:100%;object-fit:cover;display:block}
+.grid figcaption{font-size:12px;margin-top:6px}
+.grid figcaption b{font-weight:900;font-stretch:150%}
+.notes{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+@media (max-width:900px){.notes{grid-template-columns:1fr}}
+.notes div{background:#fff;border-radius:14px;padding:16px;font-size:14px}
+.notes b{display:block;font-weight:900;font-stretch:150%;text-transform:uppercase;font-size:13px;margin-bottom:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="kicker">Skizze · Türchen-Idee</p>
+  <h1>Plätzchen-<br>Simulator</h1>
+  <p class="lead">Ein Plätzchen ausstechen, verzieren, aus einem schönen Winkel fotografieren. Jedes Foto bekommt eine Nummer und landet in der gemeinsamen Plätzchendose, auf Wunsch auch in Slack. Zwei Richtungen: flach im Strichpunkt-Stil oder fotorealistisch aus Blender.</p>
+
+  <!-- ===== Idea A ===== -->
+  <section>
+    <p class="kicker">Idee A</p>
+    <h2>Flach, im Strichpunkt-Stil</h2>
+    <p class="lead">Wie unsere Animationen: Der Strichpunkt ist das Plätzchen. Zuckerguss wird mit dem Finger aufgespritzt, Streusel fallen und hüpfen, was über den Rand rollt, liegt daneben. Läuft auf jedem Handy, schnell gebaut.</p>
+    <div class="screens">
+      <div>
+        <div class="app">
+          <div class="top"><b>Plätzchen</b><span>Neues Plätzchen</span><span>Abbeißen</span><span>Plätzchendose</span></div>
+          <div class="stage flat" id="flatStage"></div>
+          <div class="controls"><span class="on">Strichpunkt</span><span class="off">Stern</span><span class="off">Baum</span><span class="shot">Foto</span></div>
+          <div class="tray" id="flatTray"></div>
+        </div>
+        <p class="cap">Bearbeiten: Form wählen, Belag aus der Leiste ziehen</p>
+      </div>
+      <div>
+        <div class="photo">
+          <div class="pic" id="flatPhoto"></div>
+          <div><div class="no">Plätzchen Nr. 0147</div><div class="meta">Von Ellen · Stuttgart · heute, 10:42</div></div>
+          <div class="row"><span class="btn l">In die Dose</span><span class="btn">In Slack teilen</span><span class="btn g">Link kopieren</span></div>
+        </div>
+        <p class="cap">Nach dem Foto</p>
+      </div>
+    </div>
+    <div class="tin"><h3>Die Plätzchendose</h3><p class="sub">Was hier gebacken wurde · 147 Plätzchen</p><div class="grid" id="flatGrid"></div></div>
+  </section>
+
+  <!-- ===== Idea B ===== -->
+  <section>
+    <p class="kicker">Idee B</p>
+    <h2>Fotorealistisch, aus Blender</h2>
+    <p class="lead">Echter Teig, glänzender Zuckerguss, Silberperlen, ein Ausstecher aus Blech auf Backpapier. Die Beläge werden einmal in Blender modelliert und im Browser in 3D mit Physik gezeigt. Die Kamera lässt sich drehen; „Foto“ hält den Blick fest. Diese Bilder sind echte Blender-Renderings.</p>
+    <div class="screens">
+      <div>
+        <div class="app">
+          <div class="top"><b>Plätzchen</b><span>Neues Plätzchen</span><span>Hilfe</span><span>Alle Plätzchen</span></div>
+          <div class="stage"><img src="plaetzchen/cookie-schraeg.jpg" alt="Blender-Rendering: Strichpunkt-Plätzchen von schräg oben"><div class="frame"><i></i><i></i><i></i><i></i></div></div>
+          <div class="controls"><span class="off">Von oben</span><span class="on">Schräg</span><span class="off">Krümel-Blick</span><span class="shot">Foto</span></div>
+          <div class="tray" id="realTray"></div>
+        </div>
+        <p class="cap">Bearbeiten: Kamera drehen oder einen Blickwinkel wählen</p>
+      </div>
+      <div>
+        <div class="photo">
+          <div class="pic"><img src="plaetzchen/cookie-kruemel.jpg" alt="Blender-Rendering: Plätzchen aus der Krümel-Perspektive"></div>
+          <div><div class="no">Plätzchen Nr. 0148</div><div class="meta">Von Franziska · Hamburg · heute, 10:44</div></div>
+          <div class="row"><span class="btn l">In die Dose</span><span class="btn">In Slack teilen</span><span class="btn g">Link kopieren</span></div>
+        </div>
+        <p class="cap">Nach dem Foto</p>
+      </div>
+    </div>
+    <div class="tin"><h3>Alle Plätzchen</h3><p class="sub">Was hier gebacken wurde · 148 Plätzchen</p>
+      <div class="grid">
+        <figure><div class="t"><img src="plaetzchen/cookie-oben.jpg" alt=""></div><figcaption><b>Nr. 0148</b><br>Heute, 10:44</figcaption></figure>
+        <figure><div class="t"><img src="plaetzchen/cookie-schraeg.jpg" alt=""></div><figcaption><b>Nr. 0147</b><br>Heute, 10:42</figcaption></figure>
+        <figure><div class="t"><img src="plaetzchen/cookie-kruemel.jpg" alt=""></div><figcaption><b>Nr. 0146</b><br>Heute, 10:31</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="kicker">Für beide</p>
+    <h2>So würde es laufen</h2>
+    <div class="notes">
+      <div><b>Plätzchendose</b>Jedes Foto wird als Bild gespeichert (Supabase, wie die Pinnwand), bekommt eine laufende Nummer und einen eigenen Link.</div>
+      <div><b>Slack</b>„In Slack teilen“ öffnet Slack mit Link und Bild. Oder automatisch: jedes neue Plätzchen landet in einem Kanal (Slack-Webhook).</div>
+      <div><b>Türchen</b>Die Dose wäre das Türchen: offen ab dem Tag, backen kann man bis Weihnachten.</div>
+    </div>
+  </section>
+</div>
+
+<script>
+// Idea A: flat cookies drawn as SVG; sprinkles are placed inside the icing shape.
+const C0 = 'M200 250C222 250 240 268 240 290C240 342 220 378 178 400C175 395 171 391 168 386C194 368 204 350 204 330C182 330 160 312 160 290C160 268 178 250 200 250Z';
+const SHAPES = {
+  semi: { d: C0 + 'M240 150A40 40 0 1 1 160 150A40 40 0 1 1 240 150Z', box: '110 90 180 330' },
+  star: { d: 'M200 120L232 196L314 200L250 252L272 332L200 286L128 332L150 252L86 200L168 196Z', box: '70 100 260 250' },
+  tree: { d: 'M200 110L262 196L236 196L286 272L252 272L300 344L214 344L214 380L186 380L186 344L100 344L148 272L114 272L164 196L138 196Z', box: '80 96 240 300' }
+};
+const ICING = { lilac: '#B78CFF', white: '#FFFFFF', black: '#111111' };
+const SPR = ['#FFFFFF', '#000000', '#B78CFF', '#E2231A'];
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+function cookie(shape, icing, n, opts = {}) {
+  const s = SHAPES[shape], ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg'); svg.setAttribute('viewBox', opts.box || s.box);
+  svg.innerHTML = `<path d="${s.d}" fill="#EBCB9C"/><path class="ic" d="${s.d}" fill="${ICING[icing]}" stroke="#EBCB9C" stroke-width="13" stroke-linejoin="round"/>`;
+  document.body.append(svg); // needs to be in the page to test points
+  const ic = svg.querySelector('.ic'); const [x0, y0, w, h] = svg.getAttribute('viewBox').split(' ').map(Number);
+  const pal = icing === 'white' ? ['#B78CFF', '#000', '#E2231A'] : icing === 'black' ? ['#fff', '#B78CFF'] : SPR;
+  let put = 0, tries = 0, out = '';
+  const ok = (x, y) => [[0, 0], [9, 0], [-9, 0], [0, 9], [0, -9]].every(([a, b]) => ic.isPointInFill(new DOMPoint(x + a, y + b)) && !ic.isPointInStroke(new DOMPoint(x + a, y + b)));
+  while (put < n && tries++ < 4000) {
+    const x = x0 + rnd() * w, y = y0 + rnd() * h;
+    if (!ok(x, y)) continue;
+    put++;
+    out += rnd() < (opts.pearls || 0) ? `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4" fill="#fff" stroke="#000" stroke-width="1.5"/>`
+      : `<rect x="${(x - 7).toFixed(1)}" y="${(y - 2).toFixed(1)}" width="14" height="4" rx="2" fill="${pal[Math.floor(rnd() * pal.length)]}" transform="rotate(${Math.floor(rnd() * 180)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`;
+  }
+  if (opts.bite) out += `<circle cx="${opts.bite[0]}" cy="${opts.bite[1]}" r="34" fill="var(--bg,#000)"/><circle cx="${opts.bite[0] + 30}" cy="${opts.bite[1] + 22}" r="26" fill="var(--bg,#000)"/>`;
+  if (opts.loose) for (let i = 0; i < opts.loose; i++) { const x = x0 + rnd() * w, y = y0 + h * .55 + rnd() * h * .45; if (!ic.isPointInFill(new DOMPoint(x, y)) && !ic.isPointInStroke(new DOMPoint(x, y))) out += `<rect x="${x - 7}" y="${y - 2}" width="14" height="4" rx="2" fill="${SPR[i % 4]}" transform="rotate(${i * 37} ${x} ${y})"/>`; }
+  svg.insertAdjacentHTML('beforeend', out); svg.remove();
+  return svg;
+}
+document.getElementById('flatStage').append(Object.assign(cookie('semi', 'lilac', 46, { box: '30 92 340 340', pearls: .18, loose: 9 }), { style: 'width:100%;height:100%' }));
+document.getElementById('flatPhoto').append(cookie('semi', 'lilac', 40, { box: '90 80 220 340', pearls: .18, bite: [246, 116] }));
+[['semi', 'white', 30], ['star', 'lilac', 26], ['tree', 'white', 22], ['semi', 'black', 34], ['star', 'white', 18], ['tree', 'lilac', 30], ['semi', 'lilac', 12]]
+  .forEach(([s, i, n], k) => document.getElementById('flatGrid').insertAdjacentHTML('beforeend',
+    `<figure><div class="t"></div><figcaption><b>Nr. ${String(146 - k).padStart(4, '0')}</b><br>${['Heute', 'Heute', 'Gestern', 'Gestern', '3. Dez.', '3. Dez.', '2. Dez.', '1. Dez.'][k]}</figcaption></figure>`) ||
+    document.querySelector('#flatGrid figure:last-child .t').append(cookie(s, i, n, { pearls: k % 3 ? 0 : .25, bite: k === 3 ? [250, 120] : null })));
+
+// Topping bar, flat icons for idea A
+const ICON = {
+  'Guss lila': '<circle cx="50" cy="50" r="34" fill="#B78CFF"/>',
+  'Guss weiß': '<circle cx="50" cy="50" r="34" fill="#fff" stroke="#000" stroke-width="3"/>',
+  'Streusel': '<g stroke-linecap="round" stroke-width="7"><path d="M22 40l16 -8M52 30l14 10M30 64l18 4M62 60l10 14M44 48l4 14" stroke="#B78CFF"/><path d="M26 52l12 6M58 46l16 -4M40 74l14 -8" stroke="#000"/><path d="M70 24l8 12M18 30l8 -10" stroke="#E2231A"/></g>',
+  'Perlen': '<g fill="#fff" stroke="#000" stroke-width="3">' + [[34, 36], [58, 30], [46, 54], [70, 52], [30, 64], [58, 72]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="9"/>`).join('') + '</g>',
+  'Schoko-linsen': [[34, 40, '#E2231A'], [62, 36, '#B78CFF'], [48, 62, '#000']].map(([x, y, c]) => `<ellipse cx="${x}" cy="${y}" rx="15" ry="13" fill="${c}"/>`).join(''),
+  'Mandel': '<path d="M50 16C72 34 72 70 50 84C28 70 28 34 50 16Z" fill="#000"/>',
+  'Puder-zucker': '<g fill="#000">' + Array.from({ length: 22 }, (_, i) => `<circle cx="${22 + (i * 37) % 58}" cy="${22 + (i * 23) % 58}" r="3"/>`).join('') + '</g>'
+};
+document.getElementById('flatTray').innerHTML = Object.entries(ICON).map(([k, v]) => `<figure><div class="bowl"><svg viewBox="0 0 100 100">${v}</svg></div>${k.replace('-', '')}</figure>`).join('');
+
+// Topping bar for idea B: crops of the Blender render stand in for rendered thumbnails
+const CROPS = [['Guss lila', 'cookie-oben.jpg', '42% 74%', 900], ['Streusel', 'cookie-oben.jpg', '41% 22%', 1100], ['Silber-perlen', 'cookie-oben.jpg', '44% 63%', 1400], ['Teig', 'cookie-oben.jpg', '36% 78%', 1300], ['Aus-stecher', 'cookie-oben.jpg', '80% 52%', 700]];
+document.getElementById('realTray').innerHTML = CROPS.map(([k, f, p, s]) => `<figure><div class="ph" style="background-image:url(plaetzchen/${f});background-position:${p};background-size:${s}px auto"></div>${k.replace('-', '')}</figure>`).join('');
+</script>
+</body>
+</html>
