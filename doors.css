@@ -192,9 +192,18 @@
 .rcard h3{font-size:clamp(22px,2vw,30px);padding:0 22px 10px;margin:0 -22px 8px;border-bottom:3px solid var(--lilac)}
 .rcard .cols{display:grid;grid-template-columns:1fr 1.4fr;gap:18px;font-size:14px;margin:14px 0}
 .rcard ul,.rcard ol{margin:6px 0 0;padding-left:18px}.rcard li{margin-bottom:4px}
+.rcard .ing{font-size:14px;margin:14px 0 12px}
+.rcard .ing ul{columns:2;column-gap:22px}.rcard .ing li{break-inside:avoid}
+.rcard .stepper{border-top:1.5px solid #000;padding-top:10px;margin-bottom:14px;font-size:14px}
+.rcard .st-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.rcard .st-t{margin:8px 0 10px;min-height:5.8em;line-height:1.4}
+.rcard .st-nav{display:flex;align-items:center;gap:12px}
+.rcard .st-a{width:38px;height:38px;border-radius:50%;background:#000;color:#fff;font-size:18px;line-height:1;flex:none;cursor:pointer}
+.rcard .st-a:disabled{background:#E3E3E3;color:#9A9A9A;cursor:default}
+.rcard .st-d{flex:1;display:flex;gap:4px}.rcard .st-d i{flex:1;height:4px;background:#E3E3E3}.rcard .st-d i.on{background:var(--lilac)}
 .rcard .btn{background:#000;color:#fff}.rcard .btn.primary{background:var(--lilac);color:#000}
 .rcard .btn.ghost{color:#000!important}.rcard .btn.line{background:transparent;color:#000;box-shadow:inset 0 0 0 1.5px #000}
-@media (max-width:599px){.rcard .cols{grid-template-columns:1fr}}
+@media (max-width:599px){.rcard .cols{grid-template-columns:1fr}.rcard .ing ul{columns:1}}
 
 /* ---------- Christmas dinner: a long lilac table with place settings ---------- */
 .c-head .stage.scroll{place-items:start center;overflow-y:auto;overscroll-behavior:contain}

@@ -237,14 +237,27 @@ export function doorTypes({ wall, onCleanup }) {
       const show = () => { const i = fresh ? list.findIndex(r => r.id === fresh) : -1; if (i >= 0) { cur = i; fresh = null; } cur = Math.min(cur, list.length - 1); drawCard(); drawBooks(); };
       const drawCard = () => {
         const r = list[cur], nx = list[(cur + 1) % list.length], key = 'sp_baked_' + r.id, nb = votes(baked, 'baked:' + r.id).length;
+        // Ingredients first; below them the steps, one at a time, with arrows. Keeps the card small.
+        const steps = L(r.s); let si = 0;
+        const stx = h('p', { class: 'st-t' }), stn = h('span', { class: 'lb st-n' }), dots = h('span', { class: 'st-d' }, steps.map(() => h('i')));
+        const go = k => {
+          si = Math.max(0, Math.min(steps.length - 1, si + k)); stx.textContent = steps[si];
+          stn.textContent = L({ de: `Schritt ${si + 1} von ${steps.length}`, en: `Step ${si + 1} of ${steps.length}` });
+          prev.disabled = si === 0; next.disabled = si === steps.length - 1;
+          [...dots.children].forEach((x, i) => x.classList.toggle('on', i <= si));
+        };
+        const prev = h('button', { type: 'button', class: 'st-a', 'aria-label': L({ de: 'Vorheriger Schritt', en: 'Previous step' }), onclick: () => go(-1) }, '←');
+        const next = h('button', { type: 'button', class: 'st-a', 'aria-label': L({ de: 'Nächster Schritt', en: 'Next step' }), onclick: () => go(1) }, '→');
         const front = h('article', { class: 'rcard' }, h('h3', {}, L(r.t)), h('p', { class: 'lb' }, L({ de: 'Eingelegt von ', en: 'Added by ' }) + r.name),
-          h('div', { class: 'cols' }, h('div', {}, h('h4', { class: 'lb' }, L({ de: 'Zutaten', en: 'Ingredients' })), h('ul', {}, L(r.z).map(x => h('li', {}, x)))),
-            h('div', {}, h('h4', { class: 'lb' }, L({ de: 'So geht’s', en: 'How to' })), h('ol', {}, L(r.s).map(x => h('li', {}, x))))),
+          h('div', { class: 'ing' }, h('h4', { class: 'lb' }, L({ de: 'Zutaten', en: 'Ingredients' })), h('ul', {}, L(r.z).map(x => h('li', {}, x)))),
+          h('div', { class: 'stepper' }, h('div', { class: 'st-h' }, h('h4', { class: 'lb' }, L({ de: 'So geht’s', en: 'How to' })), stn), stx,
+            h('div', { class: 'st-nav' }, prev, dots, next)),
           h('div', { class: 'row' }, h('button', { type: 'button', class: 'btn ' + (ls.get(key) ? 'primary' : 'ghost'), disabled: !!ls.get(key), onclick: async () => {
             ls.set(key, '1'); try { await store.add(d.n, { kind: 'vote', body: 'baked:' + r.id }); } catch (e) { ls.del(key); drawCard(); } } },
             (ls.get(key) ? '✓ ' : '') + L({ de: 'Hab ich gebacken', en: 'I baked it' }) + ' · ' + nb),
             list.length > 1 && btn(L({ de: 'Nächstes →', en: 'Next →' }), () => { front.classList.add('out'); setTimeout(() => { cur = (cur + 1) % list.length; drawCard(); drawBooks(); }, 320); }),
             store.isMine(r.id) && btn(t('clear'), () => { store.remove(d.n, r.id).catch(() => {}); cur = 0; }, 'line')));
+        go(0);
         stack.replaceChildren(list.length > 2 ? h('div', { class: 'rcard back b2' }) : '', list.length > 1 ? h('div', { class: 'rcard back b1' }, h('span', { class: 'lb' }, L({ de: 'Als Nächstes: ', en: 'Up next: ' }) + L(nx.t))) : '', front);
       };
       // Add a recipe: one ingredient and one step per line.
