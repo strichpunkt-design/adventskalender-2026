@@ -54,6 +54,10 @@ body.shooting .strip,body.shooting #done,body.shooting #undo{display:none}
 .shapes button{background:var(--dough);border-radius:14px;padding:8px 8px 12px;text-align:center;font-weight:900;font-stretch:150%;text-transform:uppercase;font-size:12px}
 .shapes button:hover{box-shadow:inset 0 0 0 3px var(--lilac)}
 .shapes img{display:block;width:100%;aspect-ratio:1;object-fit:contain}
+.glazes{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px;margin-top:16px}
+.glazes button{background:var(--dough);border-radius:14px;padding:14px 8px 12px;font-weight:900;font-stretch:150%;text-transform:uppercase;font-size:12px}
+.glazes button:hover{box-shadow:inset 0 0 0 3px var(--lilac)}
+.glazes .sw{display:block;width:56px;height:56px;margin:0 auto 10px;border-radius:50%;background:repeating-linear-gradient(45deg,#d8cdb8 0 6px,#efe6d6 6px 12px);box-shadow:inset 0 -5px 0 rgba(0,0,0,.12),0 0 0 1px rgba(0,0,0,.08)}
 .photo{width:min(460px,100%)}
 .photo img{display:block;width:100%;aspect-ratio:1;border-radius:8px;background:#222;margin-bottom:14px}
 .photo p{margin:6px 0 0;font-size:13px}
