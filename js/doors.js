@@ -30,6 +30,24 @@ export function doorTypes({ wall, onCleanup }) {
     return run;
   };
 
+  // The quiz score: shown with the fifth question (there is no extra day for it).
+  const scoreInto = (el, all) => {
+      const qs = all.filter(x => x.type === 'quiz');
+      const right = (q, v) => v != null && (q.q.slider ? Math.abs(+v - q.q.ok) <= q.q.tol : +v === q.q.ok);
+      const mine = qs.map(q => ls.get('sp_quiz_' + q.n)), score = qs.filter((q, i) => right(q, mine[i])).length;
+      const label = score >= 4 ? L({ de: 'Weihnachtsprofi', en: 'Christmas pro' }) : score >= 2 ? L({ de: 'Solide Plätzchenklasse', en: 'Solid cookie class' }) : L({ de: 'Glühwein-Anfänger:in', en: 'Mulled wine beginner' });
+      const team = h('p', { class: 'small' });
+      el.append(h('div', { class: 'score' }, h('div', { class: 'big-n' }, `${score}/${qs.length}`), h('span', { class: 'tag-b' }, label)),
+        h('ol', { class: 'qlist' }, qs.map((q, i) => h('li', { class: right(q, mine[i]) ? 'ok' : '' }, h('b', {}, right(q, mine[i]) ? '✓ ' : mine[i] == null ? '– ' : '✗ '), L(q.title), h('span', {}, ' · ' + (q.q.slider ? Number(q.q.ok).toLocaleString('de-DE') : L(q.q.options)[q.q.ok]))))), team);
+      Promise.all(qs.map(q => store.list(q.n).catch(() => []))).then(lists => {
+        const by = {};
+        lists.forEach((posts, i) => posts.filter(p => p.kind === 'vote').forEach(p => { (by[p.name] = by[p.name] || {})[i] = p.body; }));
+        const names = Object.keys(by), full = names.filter(nm => qs.every((q, i) => right(q, by[nm][i])));
+        if (!names.length) return;
+        team.textContent = (names.length === 1 ? L({ de: 'Eine Person hat mitgerätselt.', en: 'One person played.' }) : L({ de: `${names.length} Kolleg:innen haben mitgerätselt.`, en: `${names.length} colleagues played.` })) + (full.length ? ' ' + L({ de: 'Alle fünf richtig: ', en: 'All five right: ' }) + full.join(', ') + '.' : '');
+      });
+  };
+
   return {
     // ---------- Strichpunkt animations (1 Dec, weekends) ----------
     anim(el, d, o, head) {
@@ -46,7 +64,7 @@ export function doorTypes({ wall, onCleanup }) {
     },
 
     // ---------- Quiz: one question per door ----------
-    quiz(el, d, o) {
+    quiz(el, d, o, head, doors = []) {
       const q = d.q, key = 'sp_quiz_' + d.n, box = h('div', { class: 'quiz' });
       el.append(h('div', { class: 'qnav' }, [1, 2, 3, 4, 5].map(i => h('i', { class: i < d.qi ? 'done' : i === d.qi ? 'on' : '' })), h('span', { class: 'lb' }, L({ de: `Frage ${d.qi} von 5`, en: `Question ${d.qi} of 5` }))), box);
       const fmt = v => Number(v).toLocaleString(L({ de: 'de-DE', en: 'en-GB' }));
@@ -55,8 +73,14 @@ export function doorTypes({ wall, onCleanup }) {
       let last = [];
       const result = (mine, all) => {
         const ok = right(mine);
+        // your running score; after the fifth question the full result
+        const qs = doors.filter(x => x.type === 'quiz' && x.qi <= d.qi);
+        const ok2 = (x, v) => v != null && (x.q.slider ? Math.abs(+v - x.q.ok) <= x.q.tol : +v === x.q.ok);
+        const got = qs.filter(x => ok2(x, ls.get('sp_quiz_' + x.n))).length, total = doors.filter(x => x.type === 'quiz').length;
+        const extra = d.qi < total ? h('p', { class: 'small stand' }, L({ de: `Dein Stand: ${got} von ${qs.length} richtig. Weiter geht es in der nächsten Quiz-Tür.`, en: `Your score so far: ${got} of ${qs.length}. More in the next quiz door.` }))
+          : (() => { const box = h('div', { class: 'final' }, h('h3', {}, L({ de: 'Deine Quiz-Wertung', en: 'Your quiz score' }))); scoreInto(box, doors); return box; })();
         return h('div', { class: 'res' }, h('h3', {}, ok ? L({ de: 'Richtig!', en: 'Correct!' }) : L({ de: 'Knapp daneben', en: 'Not quite' })),
-          h('p', {}, L(q.why)), all.length ? h('p', { class: 'small' }, L({ de: `${Math.round(all.filter(right).length / all.length * 100)} % der Kolleg:innen lagen richtig.`, en: `${Math.round(all.filter(right).length / all.length * 100)} % of colleagues got it right.` })) : null);
+          h('p', {}, L(q.why)), all.length ? h('p', { class: 'small' }, L({ de: `${Math.round(all.filter(right).length / all.length * 100)} % der Kolleg:innen lagen richtig.`, en: `${Math.round(all.filter(right).length / all.length * 100)} % of colleagues got it right.` })) : null, extra);
       };
       const draw = posts => {
         last = posts;
@@ -85,20 +109,21 @@ export function doorTypes({ wall, onCleanup }) {
     },
 
     // ---------- Quiz result on the 23rd ----------
-    quizscore(el, d, o, head, all) {
-      const qs = all.filter(x => x.type === 'quiz');
-      const right = (q, v) => v != null && (q.q.slider ? Math.abs(+v - q.q.ok) <= q.q.tol : +v === q.q.ok);
-      const mine = qs.map(q => ls.get('sp_quiz_' + q.n)), score = qs.filter((q, i) => right(q, mine[i])).length;
-      const label = score >= 4 ? L({ de: 'Weihnachtsprofi', en: 'Christmas pro' }) : score >= 2 ? L({ de: 'Solide Plätzchenklasse', en: 'Solid cookie class' }) : L({ de: 'Glühwein-Anfänger:in', en: 'Mulled wine beginner' });
-      const team = h('p', { class: 'small' });
-      el.append(h('div', { class: 'score' }, h('div', { class: 'big-n' }, `${score}/${qs.length}`), h('span', { class: 'tag-b' }, label)),
-        h('ol', { class: 'qlist' }, qs.map((q, i) => h('li', { class: right(q, mine[i]) ? 'ok' : '' }, h('b', {}, right(q, mine[i]) ? '✓ ' : mine[i] == null ? '– ' : '✗ '), L(q.title), h('span', {}, ' · ' + (q.q.slider ? Number(q.q.ok).toLocaleString('de-DE') : L(q.q.options)[q.q.ok]))))), team);
-      Promise.all(qs.map(q => store.list(q.n).catch(() => []))).then(lists => {
-        const by = {};
-        lists.forEach((posts, i) => posts.filter(p => p.kind === 'vote').forEach(p => { (by[p.name] = by[p.name] || {})[i] = p.body; }));
-        const names = Object.keys(by), full = names.filter(nm => qs.every((q, i) => right(q, by[nm][i])));
-        if (!names.length) return;
-        team.textContent = (names.length === 1 ? L({ de: 'Eine Person hat mitgerätselt.', en: 'One person played.' }) : L({ de: `${names.length} Kolleg:innen haben mitgerätselt.`, en: `${names.length} colleagues played.` })) + (full.length ? ' ' + L({ de: 'Alle fünf richtig: ', en: 'All five right: ' }) + full.join(', ') + '.' : '');
+    quizscore(el, d, o, head, all) { scoreInto(el, all); },
+
+    // ---------- Plätzchen-Simulator: off to the bakery, and everyone's cookies in the tin ----------
+    plaetzchen(el, d, o, head) {
+      const pic = h('img', { class: 'pz-hero', src: ASSET('plaetzchen/hero.jpg'), alt: '' });
+      stage(head, 'pz', pic);
+      const go = h('a', { class: 'btn primary', href: new URL('../plaetzchen/', import.meta.url).href }, L({ de: 'Plätzchen backen', en: 'Bake a cookie' }));
+      const count = h('p', { class: 'small' }), grid = h('div', { class: 'pz-grid' });
+      el.append(h('div', { class: 'row' }, go), count, grid);
+      live(d.n, posts => {
+        const list = posts.filter(p => p.kind === 'image' && p.body === 'plaetzchen').reverse();   // oldest first: numbers stay
+        count.textContent = list.length ? L({ de: `${list.length} Plätzchen in der Dose`, en: `${list.length} cookies in the tin` }) : L({ de: 'Die Dose ist noch leer. Deins wäre das erste.', en: 'The tin is still empty. Yours could be the first.' });
+        if (list.length) pic.src = list[list.length - 1].image;
+        grid.replaceChildren(...list.map((p, i) => [p, i]).reverse().slice(0, 60).map(([p, i]) =>
+          h('figure', {}, h('img', { src: p.image, alt: '', loading: 'lazy' }), h('figcaption', {}, h('b', {}, `Nr. ${String(i + 1).padStart(4, '0')}`), ' ' + p.name))));
       });
     },
 
