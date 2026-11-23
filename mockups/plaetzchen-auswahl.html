@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Plätzchen-Auswahl</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Strichpunkt+Sans:wdth,wght@100..150,400..900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#000;--lilac:#B78CFF;--paper:#EEE6D6;--g1:#EAEAEA;--font:'Strichpunkt Sans','Archivo',system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--g1);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.4;-webkit-font-smoothing:antialiased}
+h1,h2{font-weight:900;font-stretch:150%;text-transform:uppercase;line-height:.92;margin:0}
+.wrap{max-width:1280px;margin:0 auto;padding:48px 24px 120px}
+.kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-stretch:125%;margin:0 0 10px}
+h1{font-size:clamp(40px,7vw,88px)}
+.lead{max-width:760px;font-size:18px;margin:18px 0 0}
+section{margin-top:56px}
+section h2{font-size:clamp(26px,3.4vw,40px);display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+section h2 small{font-size:13px;font-weight:400;font-stretch:125%;letter-spacing:.06em}
+section>p{max-width:760px;margin:10px 0 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-top:20px}
+.tile{position:relative;background:var(--paper);border-radius:14px;padding:10px 12px 14px;cursor:pointer;border:0;text-align:left;font:inherit;color:inherit;
+  box-shadow:inset 0 0 0 3px transparent;transition:box-shadow .15s,transform .15s}
+.tile:hover{transform:translateY(-2px)}
+.tile img{display:block;width:100%;aspect-ratio:1;object-fit:contain}
+.tile b{display:block;font-weight:900;font-stretch:150%;text-transform:uppercase;font-size:14px;line-height:1.05;margin-top:2px}
+.tile .en{font-size:11px;letter-spacing:.04em;text-transform:uppercase;font-stretch:125%;opacity:.55}
+.tile p{margin:6px 0 0;font-size:13px;line-height:1.3}
+.tile .how{position:absolute;left:12px;top:12px;background:#000;color:#fff;font-size:10px;letter-spacing:.06em;text-transform:uppercase;font-stretch:125%;padding:3px 7px;border-radius:99px}
+.tile .tick{position:absolute;right:10px;top:10px;width:28px;height:28px;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:900;color:transparent}
+.tile[aria-pressed="true"]{box-shadow:inset 0 0 0 3px var(--lilac)}
+.tile[aria-pressed="true"] .tick{background:var(--lilac);color:#000}
+.verbs{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.verbs span{background:#fff;border-radius:99px;padding:6px 12px;font-size:13px}
+.verbs b{font-weight:900;font-stretch:150%;text-transform:uppercase;font-size:11px;margin-right:6px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:#000;color:#fff;display:flex;align-items:center;gap:14px;padding:12px max(16px,calc((100vw - 1232px)/2));z-index:5;flex-wrap:wrap}
+.bar .n{font-size:13px;letter-spacing:.04em;text-transform:uppercase;font-stretch:125%;margin-right:auto}
+.bar button{font:inherit;border:0;cursor:pointer;padding:11px 18px;border-radius:99px;font-weight:900;font-stretch:150%;text-transform:uppercase;font-size:12px}
+.bar .copy{background:var(--lilac);color:#000}.bar .clear{background:transparent;color:#fff;box-shadow:inset 0 0 0 2px #fff}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="kicker">Plätzchen-Simulator · Auswahl</p>
+  <h1>Formen und<br>Beläge</h1>
+  <p class="lead">Alles in Blender modelliert und gerendert, genau so käme es auch ins Spiel. Antippen, was dabei sein soll. Unten „Auswahl kopieren“ und mir schicken.</p>
+  <div class="verbs">
+    <span><b>legen</b>fällt mit Physik, rollt, kippt</span>
+    <span><b>streuen</b>eine Handvoll, springt und verteilt sich</span>
+    <span><b>spritzen</b>aus dem Beutel, folgt dem Finger</span>
+    <span><b>klecksen</b>läuft ein bisschen auseinander</span>
+    <span><b>sieben</b>Staub, der liegen bleibt</span>
+  </div>
+  <div id="out"></div>
+</div>
+<div class="bar"><span class="n" id="n">0 ausgewählt</span><button class="clear" id="clear" type="button">Zurücksetzen</button><button class="copy" id="copy" type="button">Auswahl kopieren</button></div>
+<script>
+const GROUPS = {
+  form: ['Formen', 'Ausstecher', 'Der Teig, auf den alles kommt. Der Lebkuchenmann ist aus Lebkuchenteig, der Schoko-Stern aus dunklem Teig.'],
+  klassisch: ['Klassisch', 'Wie bei Oma', ''],
+  schraeg: ['Schräg', 'Wie in der Kaffeeküche', 'Das, was Leute später teilen.']
+};
+const INFO = {
+  semikolon: ['', 'Unser Hausgebäck. Punkt oben, Komma unten.'],
+  stern: ['', 'Der Klassiker, fünf Zacken.'],
+  baum: ['', 'Drei Etagen und ein Stamm.'],
+  herz: ['', 'Für alle, die man mag.'],
+  mond: ['', 'Wie ein Vanillekipferl, nur flach.'],
+  mann: ['', 'Knöpfe und Lächeln aus Zuckerguss. Läuft nicht weg.'],
+  'stern-schoko': ['', 'Acht Zacken, dunkler Teig.'],
+  'guss-lila': ['spritzen', 'Aus dem Spritzbeutel, in unserem Lila.'],
+  'guss-weiss': ['spritzen', 'Deckt alles zu, auch Fehler.'],
+  streusel: ['streuen', 'Eine Handvoll. Die Hälfte landet daneben.'],
+  perlen: ['streuen', 'Rollen garantiert vom Plätzchen.'],
+  linsen: ['legen', 'Bunt, bleiben liegen, wo sie hinfallen.'],
+  mandeln: ['legen', 'Geschält, halbiert, ordentlich.'],
+  kirschen: ['legen', 'Rot, glänzend, umstritten.'],
+  puder: ['sieben', 'Sieben, bis nichts mehr zu sehen ist.'],
+  hagel: ['streuen', 'Knirscht.'],
+  schoko: ['klecksen', 'Ein Klecks und ein Zickzack.'],
+  marmelade: ['klecksen', 'Für Spitzbuben. Klebt überall.'],
+  goldsterne: ['streuen', 'Glänzen mehr, als sie schmecken.'],
+  gurke: ['legen', 'Gruß an die Stulle.'],
+  gummibaer: ['legen', 'Hat sich verlaufen.'],
+  rosenkohl: ['legen', 'Das Weihnachtsgemüse. Rollt weg, wie alle es sich wünschen.'],
+  spiegelei: ['legen', 'Sonnenseite oben.'],
+  fischstaebchen: ['legen', 'Für Heiligabend, wenn es schnell gehen muss.'],
+  senf: ['spritzen', 'Jeder will seinen dazugeben.'],
+  ketchup: ['spritzen', 'Rot ist rot.'],
+  knoblauch: ['legen', 'Hält Vampire von der Plätzchendose fern.'],
+  sardine: ['legen', 'Frisch aus der Dose.'],
+  chili: ['legen', 'Für eine scharfe Weihnacht.'],
+  popcorn: ['streuen', 'Eigentlich fürs Sofa beim Weihnachtsfilm.'],
+  brezel: ['legen', 'Süß und salzig, wie das Jahr.'],
+  augen: ['legen', 'Macht aus jedem Plätzchen ein Gesicht.'],
+  bueroklammer: ['legen', 'Aus dem Büro mitgebracht.'],
+  kaffee: ['streuen', 'Für das Plätzchen nach dem Mittag.'],
+  lametta: ['legen', 'Früher war mehr.'],
+  riesenstreusel: ['legen', 'Einer. Sehr groß.']
+};
+let pick;
+try { pick = new Set(JSON.parse(localStorage.getItem('pz_pick') || '[]')); } catch (e) { pick = new Set(); }
+const save = () => { try { localStorage.setItem('pz_pick', JSON.stringify([...pick])); } catch (e) {} };
+fetch('plaetzchen/items/items.json').then(r => r.json()).then(items => {
+  const out = document.getElementById('out');
+  for (const [g, [title, sub, text]] of Object.entries(GROUPS)) {
+    const list = items.filter(i => i.group === g);
+    const sec = document.createElement('section');
+    sec.innerHTML = `<p class="kicker">${sub}</p><h2>${title} <small>${list.length}</small></h2>${text ? `<p>${text}</p>` : ''}<div class="grid"></div>`;
+    for (const it of list) {
+      const [how, line] = INFO[it.id] || ['', ''];
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'tile'; b.dataset.id = it.id;
+      b.setAttribute('aria-pressed', pick.has(it.id));
+      b.innerHTML = `${how ? `<span class="how">${how}</span>` : ''}<span class="tick">✓</span><img src="plaetzchen/items/${it.id}.webp" alt="" loading="lazy"><b>${it.de}</b><span class="en">${it.en}</span><p>${line}</p>`;
+      b.onclick = () => { pick.has(it.id) ? pick.delete(it.id) : pick.add(it.id); b.setAttribute('aria-pressed', pick.has(it.id)); save(); count(); };
+      sec.querySelector('.grid').append(b);
+    }
+    out.append(sec);
+  }
+  const count = () => { document.getElementById('n').textContent = `${pick.size} von ${items.length} ausgewählt`; };
+  window.count = count; count();
+  document.getElementById('clear').onclick = () => { pick.clear(); save(); document.querySelectorAll('.tile').forEach(t => t.setAttribute('aria-pressed', 'false')); count(); };
+  document.getElementById('copy').onclick = async e => {
+    const txt = Object.keys(GROUPS).map(g => `${GROUPS[g][0]}: ` + items.filter(i => i.group === g && pick.has(i.id)).map(i => i.de).join(', ')).join('\n');
+    try { await navigator.clipboard.writeText(txt); e.target.textContent = 'Kopiert'; } catch (err) { prompt('Auswahl:', txt); }
+    setTimeout(() => { e.target.textContent = 'Auswahl kopieren'; }, 1600);
+  };
+});
+</script>
+</body>
+</html>

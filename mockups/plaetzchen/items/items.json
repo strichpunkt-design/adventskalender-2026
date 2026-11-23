@@ -1,0 +1,218 @@
+[
+ {
+  "id": "semikolon",
+  "group": "form",
+  "de": "Strichpunkt",
+  "en": "Semicolon"
+ },
+ {
+  "id": "stern",
+  "group": "form",
+  "de": "Stern",
+  "en": "Star"
+ },
+ {
+  "id": "baum",
+  "group": "form",
+  "de": "Tannenbaum",
+  "en": "Christmas tree"
+ },
+ {
+  "id": "herz",
+  "group": "form",
+  "de": "Herz",
+  "en": "Heart"
+ },
+ {
+  "id": "mond",
+  "group": "form",
+  "de": "Halbmond",
+  "en": "Crescent"
+ },
+ {
+  "id": "mann",
+  "group": "form",
+  "de": "Lebkuchenmann",
+  "en": "Gingerbread man"
+ },
+ {
+  "id": "stern-schoko",
+  "group": "form",
+  "de": "Schoko-Stern",
+  "en": "Chocolate star"
+ },
+ {
+  "id": "guss-lila",
+  "group": "klassisch",
+  "de": "Zuckerguss lila",
+  "en": "Lilac icing"
+ },
+ {
+  "id": "guss-weiss",
+  "group": "klassisch",
+  "de": "Zuckerguss weiß",
+  "en": "White icing"
+ },
+ {
+  "id": "streusel",
+  "group": "klassisch",
+  "de": "Streusel",
+  "en": "Sprinkles"
+ },
+ {
+  "id": "perlen",
+  "group": "klassisch",
+  "de": "Silberperlen",
+  "en": "Silver pearls"
+ },
+ {
+  "id": "linsen",
+  "group": "klassisch",
+  "de": "Schokolinsen",
+  "en": "Chocolate buttons"
+ },
+ {
+  "id": "mandeln",
+  "group": "klassisch",
+  "de": "Mandeln",
+  "en": "Almonds"
+ },
+ {
+  "id": "kirschen",
+  "group": "klassisch",
+  "de": "Belegkirschen",
+  "en": "Glacé cherries"
+ },
+ {
+  "id": "puder",
+  "group": "klassisch",
+  "de": "Puderzucker",
+  "en": "Icing sugar"
+ },
+ {
+  "id": "hagel",
+  "group": "klassisch",
+  "de": "Hagelzucker",
+  "en": "Pearl sugar"
+ },
+ {
+  "id": "schoko",
+  "group": "klassisch",
+  "de": "Schokoglasur",
+  "en": "Chocolate glaze"
+ },
+ {
+  "id": "marmelade",
+  "group": "klassisch",
+  "de": "Marmelade",
+  "en": "Jam"
+ },
+ {
+  "id": "goldsterne",
+  "group": "klassisch",
+  "de": "Goldsterne",
+  "en": "Gold stars"
+ },
+ {
+  "id": "gurke",
+  "group": "schraeg",
+  "de": "Gewürzgurke",
+  "en": "Pickle"
+ },
+ {
+  "id": "gummibaer",
+  "group": "schraeg",
+  "de": "Gummibärchen",
+  "en": "Gummy bear"
+ },
+ {
+  "id": "rosenkohl",
+  "group": "schraeg",
+  "de": "Rosenkohl",
+  "en": "Brussels sprout"
+ },
+ {
+  "id": "spiegelei",
+  "group": "schraeg",
+  "de": "Spiegelei",
+  "en": "Fried egg"
+ },
+ {
+  "id": "fischstaebchen",
+  "group": "schraeg",
+  "de": "Fischstäbchen",
+  "en": "Fish finger"
+ },
+ {
+  "id": "senf",
+  "group": "schraeg",
+  "de": "Senf",
+  "en": "Mustard"
+ },
+ {
+  "id": "ketchup",
+  "group": "schraeg",
+  "de": "Ketchup",
+  "en": "Ketchup"
+ },
+ {
+  "id": "knoblauch",
+  "group": "schraeg",
+  "de": "Knoblauch",
+  "en": "Garlic"
+ },
+ {
+  "id": "sardine",
+  "group": "schraeg",
+  "de": "Sardine",
+  "en": "Sardine"
+ },
+ {
+  "id": "chili",
+  "group": "schraeg",
+  "de": "Chili",
+  "en": "Chilli"
+ },
+ {
+  "id": "popcorn",
+  "group": "schraeg",
+  "de": "Popcorn",
+  "en": "Popcorn"
+ },
+ {
+  "id": "brezel",
+  "group": "schraeg",
+  "de": "Salzbrezel",
+  "en": "Pretzel"
+ },
+ {
+  "id": "augen",
+  "group": "schraeg",
+  "de": "Wackelaugen",
+  "en": "Googly eyes"
+ },
+ {
+  "id": "bueroklammer",
+  "group": "schraeg",
+  "de": "Büroklammer",
+  "en": "Paper clip"
+ },
+ {
+  "id": "kaffee",
+  "group": "schraeg",
+  "de": "Kaffeebohnen",
+  "en": "Coffee beans"
+ },
+ {
+  "id": "lametta",
+  "group": "schraeg",
+  "de": "Lametta",
+  "en": "Tinsel"
+ },
+ {
+  "id": "riesenstreusel",
+  "group": "schraeg",
+  "de": "Ein Riesenstreusel",
+  "en": "One giant sprinkle"
+ }
+]
