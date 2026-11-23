@@ -22,7 +22,7 @@ const ls = k => { try { return localStorage.getItem(k); } catch (e) { return nul
 const EN = ls('sp_lang') === 'en';
 const TXT = {
   back: ['← Kalender', '← Calendar'], new: ['Neues Plätzchen', 'New cookie'], new_s: ['Neu', 'New'], all_s: ['Alle', 'All'], undo: ['Rückgängig', 'Undo'], all: ['Alle Plätzchen', 'All cookies'],
-  hint: ['Belag nach oben auf das Plätzchen ziehen', 'Drag a topping up onto the cookie'], loading: ['Ofen heizt vor …', 'Preheating the oven …'],
+  hint: ['Belag nach oben aufs Plätzchen ziehen. Einzelne Stücke lassen sich verschieben.', 'Drag a topping up onto the cookie. You can move single pieces too.'], loading: ['Ofen heizt vor …', 'Preheating the oven …'],
   v_top: ['Von oben', 'From above'], v_angle: ['Schräg', 'Angled'], v_flat: ['Flach', 'Low'], v_corner: ['Ecke', 'Corner'],
   done: ['Fertig', 'Done'], shoot: ['Foto', 'Photo'], more: ['Weiter verzieren', 'Keep decorating'], pick: ['Welches Plätzchen?', 'Which cookie?'],
   yours: ['Dein Plätzchen', 'Your cookie'], post: ['An die Pinnwand', 'Pin it to the wall'], name: ['Dein Vorname', 'Your first name'],
@@ -371,7 +371,7 @@ async function drop(id, at, yaw = Math.random() * Math.PI * 2) {
     if (!cd) cd = RAPIER.ColliderDesc.cuboid(Math.max(sz.x / 2, .05), Math.max(sz.y / 2, .05), Math.max(sz.z / 2, .05));
     world.createCollider(cd.setFriction(1.4).setRestitution(BOUNCE[id] ?? .02).setDensity(1), body);
     const obj = makeObj(p); obj.position.copy(pos); obj.quaternion.copy(q); scene.add(obj);
-    bodies.push(body); objs.push(obj); live.push({ body, obj, calm: 0 });
+    bodies.push(body); objs.push(obj); live.push({ body, obj, calm: 0, h: sz.y / 2 });
   }
   drops.push({ bodies, objs }); afterDrop();
 }
@@ -452,6 +452,35 @@ function moveGhost(x, y) {
   if (ghost.group) { ghost.group.visible = true; ghost.group.position.set(p.x, p.y + 1.6, p.z); }
 }
 function endGhost() { if (ghost?.group) scene.remove(ghost.group); marker.visible = false; ghost = null; }
+
+// ---------- picking up a single piece and putting it somewhere else ----------
+let carry = null;
+const owner = o => live.find(l => { for (let x = o; x; x = x.parent) if (x === l.obj) return true; return false; });
+stageEl.addEventListener('pointerdown', e => {
+  if (pen || !cookie || e.target !== canvas || document.body.classList.contains('shooting')) return;
+  const r = canvas.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const hit = ray.intersectObjects(live.map(l => l.obj), true)[0], l = hit && owner(hit.object);
+  if (!l || liquids.some(L => L.frozen.includes(l.body))) return;      // stuck in icing: stays put
+  e.stopPropagation();                                                 // the camera does not turn
+  canvas.setPointerCapture(e.pointerId); parked.delete(l.body);
+  l.body.setBodyType(RAPIER.RigidBodyType.KinematicPositionBased, true);
+  carry = { l }; controls.enabled = false; canvas.style.cursor = 'grabbing'; $('#hint').classList.add('off');
+}, { capture: true });
+canvas.addEventListener('pointermove', e => {
+  if (!carry) {   // on a computer, show that pieces can be picked up
+    if (e.pointerType === 'mouse' && !pen && cookie) { const r = canvas.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, camera); canvas.style.cursor = ray.intersectObjects(live.map(l => l.obj), true).length ? 'grab' : ''; }
+    return;
+  }
+  const p = surfaceAt(e.clientX, e.clientY, carry.l.obj); if (!p) return;
+  carry.l.body.setNextKinematicTranslation({ x: p.x, y: p.y + carry.l.h + 0.7, z: p.z });
+});
+const letGo = () => {
+  if (!carry) return; const b = carry.l.body; carry = null;
+  b.setBodyType(RAPIER.RigidBodyType.Dynamic, true); b.setLinvel({ x: 0, y: -10, z: 0 }, true); b.setAngvel({ x: 0, y: 0, z: 0 }, true);
+  controls.enabled = !pen; canvas.style.cursor = ''; wakeAll();
+};
+canvas.addEventListener('pointerup', letGo); canvas.addEventListener('pointercancel', letGo);
 
 // ---------- views, photo, wall ----------
 document.querySelectorAll('[data-view]').forEach(b => { b.onclick = () => goView(b.dataset.view); });
@@ -560,8 +589,8 @@ function loop(now) {
       if (cookieR && p.y > 0.35 && d > 0.4 && d < cookieR + 1.5 && Math.hypot(v.x, v.y, v.z) > 0.6) {
         const J = l.body.mass() * 160 / 60 * Math.min(1.5, d / cookieR); l.body.applyImpulse({ x: -p.x / d * J, y: 0, z: -p.z / d * J }, true);
       }
-      l.calm = (Math.hypot(v.x, v.y, v.z) < 1.5 && Math.hypot(w.x, w.y, w.z) < .6) ? l.calm + 1 : 0;
-      if (l.calm > 30) { l.body.sleep(); l.calm = 0; }
+      l.calm = (Math.hypot(v.x, v.y, v.z) < 2.5 && Math.hypot(w.x, w.y, w.z) < 1.2) ? l.calm + 1 : 0;
+      if (l.calm > 24) { l.body.sleep(); l.calm = 0; }
     }
   }
   stackTop = Math.max(cookie ? 1 : 0, top);

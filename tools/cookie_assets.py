@@ -204,7 +204,7 @@ def t_almond():
         bm = o.modifiers.new('t', 'SIMPLE_DEFORM'); bm.deform_method = 'TAPER'; bm.factor = .5; bm.deform_axis = 'X'; mark()
 def t_cherry():
     # candied cherries: deep red, glassy, a dimple on top with a thin stalk
-    m = mat('cherry', '#7E0711', .06, coat=1, sss=.55, ramp=('#5E040C', '#B3101C', 18))
+    m = mat('cherry2', '#7E0711', .3, coat=.25, sss=.45, ramp=('#5E040C', '#A50F1A', 18))
     stalk = mat('stalk2', '#6E6A2E', .55, ramp=('#4F5A22', '#8A7A3C', 40))
     for x, y, bend in ((-0.009, 0, 1), (0.009, 0.004, -1)):
         o = sphere(0.0085, (x, y, 0.0078), (1, 1, .9), m, 48)
@@ -250,7 +250,7 @@ def t_pickle():
     o = tube(pts, 0.0085, m, [.55, 1, 1, .55], res=24); o = to_mesh(o)
     mod(o, 'REMESH', mode='VOXEL', voxel_size=0.0006); mod(o, 'DISPLACE', texture=clouds(0.003), strength=0.0007); mod(o, 'SMOOTH', factor=.6, iterations=3); smooth(o)
 def t_gummy():
-    m = mat('gummy', '#E0242E', .2, coat=.5, trans=.7, sss=.4)
+    m = mat('gummy2', '#D8232C', .55, trans=.25, sss=.7)
     B = [('ELLIPSOID', (0, 0, 0.007), 0.009, (1, 1.25, .7)), ('BALL', (0, 0.013, 0.008), 0.0075), ('BALL', (-0.0055, 0.0185, 0.008), 0.0035), ('BALL', (0.0055, 0.0185, 0.008), 0.0035),
          ('ELLIPSOID', (-0.009, 0.003, 0.007), 0.004, (1.3, .8, .8)), ('ELLIPSOID', (0.009, 0.003, 0.007), 0.004, (1.3, .8, .8)),
          ('ELLIPSOID', (-0.006, -0.011, 0.006), 0.0045, (1, 1.2, .9)), ('ELLIPSOID', (0.006, -0.011, 0.006), 0.0045, (1, 1.2, .9))]
@@ -298,17 +298,25 @@ def t_tinsel():
             p.tilt = random.uniform(0, 3)
         o = link(bpy.data.objects.new('ti', cu)); give(o, m); to_mesh(o); mark()
 def t_pretzel():
-    m = mat('pretzel', '#7B3E12', .25, coat=.7, bump=(200, .2, .0005), ramp=('#5E2C0B', '#9A5420', 70))
-    s = 0.0011
-    pts = [(-2, -8), (-8, -4), (-11, 4), (-7, 11), (0, 10), (4, 3), (6, -6), (8, -11), (11, -12)]
-    pts = [(x * s * 2, y * s * 2, 0.004) for x, y in pts]
-    tube(pts, 0.0042, m, res=24)
-    tube([(-x, y, z) for x, y, z in pts], 0.0042, m, res=24)
-    tube([(-0.011, 0.004, 0.0042), (0, 0.007, 0.0046), (0.011, 0.004, 0.0042)], 0.004, m)
-    salt = mat('salt', '#FFFFFF', .3, sss=.4); random.seed(11)
-    for i in range(16):
-        p = random.choice(pts); bpy.ops.mesh.primitive_cube_add(size=0.0014, location=(p[0] * random.choice((1, -1)) + random.uniform(-.002, .002), p[1] + random.uniform(-.002, .002), 0.0082))
-        o = bpy.context.object; o.rotation_euler = (random.random(), random.random(), random.random()); give(o, salt)
+    # A Bavarian pretzel: thick belly at the bottom, two loops on top, the thin ends cross in the middle
+    # and are pressed onto the belly. One rope, lye-brown and glossy, with coarse salt on top.
+    m = mat('pretzel2', '#6E2F0D', .38, coat=.35, ramp=('#4E1F07', '#94471A', 26))
+    P = [(-0.9, -1.25, .30), (-0.45, -0.65, .32), (0.12, -0.05, .34), (0.85, 0.6, .37), (1.75, 1.15, .4), (2.3, 0.45, .44), (2.15, -0.65, .5),
+         (1.25, -1.45, .56), (0.0, -1.72, .6), (-1.25, -1.45, .56), (-2.15, -0.65, .5), (-2.3, 0.45, .44), (-1.75, 1.15, .4), (-0.85, 0.6, .37),
+         (-0.12, -0.05, .34), (0.45, -0.65, .32), (0.9, -1.25, .30)]
+    k = 0.0105   # cm → m, about 5 cm wide
+    lift = {2: .34, 14: 0}   # where the arms cross: one lies on the other
+    pts = [(x * k, y * k, r / .6 * 0.0044 + lift.get(n, 0) * k * .9) for n, (x, y, r) in enumerate(P)]
+    o = tube(pts, 0.0044, m, [r / .6 for _, _, r in P], res=32)
+    mod(o, 'REMESH', mode='VOXEL', voxel_size=0.0005); mod(o, 'SMOOTH', factor=.6, iterations=4); smooth(o)
+    salt = mat('salt2', '#FBFBF8', .45, sss=.5); random.seed(11)
+    for n in range(70):
+        a = random.randrange(len(P) - 1); t = random.random()
+        x0, y0, r0 = P[a]; x1, y1, r1 = P[a + 1]
+        x, y, r = x0 + (x1 - x0) * t, y0 + (y1 - y0) * t, r0 + (r1 - r0) * t
+        z = (r + lift.get(a if t < .5 else a + 1, 0) * (1 - abs(t - .5) * 2 if a in (1, 2, 13, 14) else 0)) * k * .9 + r / .6 * 0.0044 * .8
+        bpy.ops.mesh.primitive_ico_sphere_add(subdivisions=1, radius=random.uniform(0.0008, 0.0013), location=(x * k + random.uniform(-.0015, .0015), y * k + random.uniform(-.0015, .0015), z))
+        c = bpy.context.object; c.scale = (1, random.uniform(.7, 1.2), random.uniform(.6, .9)); c.rotation_euler = (random.random() * 3, random.random() * 3, random.random() * 3); give(c, salt)
 def t_chili():
     m = mat('chili', '#C4140F', .15, coat=.8, sss=.2)
     pts = [(-0.024, 0.002, 0.007), (-0.01, -0.003, 0.0075), (0.006, -0.002, 0.0065), (0.018, 0.004, 0.005), (0.026, 0.012, 0.004)]
@@ -496,11 +504,21 @@ if os.environ.get('EXPORT'):
     if not ONLY: json.dump(man, open(os.path.join(OUT, 'items.json'), 'w'), ensure_ascii=False, indent=1)
     sys.exit(0)
 
-for iid, grp, de, en, fn in ITEMS:
+def piped_line(color, name, rad=0.0019):
+    # a loopy line of piped icing, as it is drawn in the game
+    pts = []
+    for n in range(90):
+        t = n / 89 * 4.4 * math.pi
+        pts.append(((0.0042 * t - 0.009 * math.sin(t)) - 0.029, -0.009 * math.cos(t) * (0.8 + 0.2 * math.sin(t / 3)), rad * .8))
+    o = tube(pts, rad, mat(name, color, .3, coat=.5, sss=.15), [.6] + [1] * 88 + [.6], res=16)
+    for q in (pts[0], pts[-1]): sphere(rad * .62, (q[0], q[1], q[2]), m=mat(name, color))
+LINES = [('guss-lila', '', '', '', lambda: piped_line(LILAC, 'icing_l')), ('guss-weiss', '', '', '', lambda: piped_line(WHITE, 'icing_w2')),
+         ('schoko', '', '', '', lambda: piped_line('#3B1F12', 'choc', 0.0016))]
+for iid, grp, de, en, fn in (LINES if os.environ.get('LINES') else ITEMS):
     if ONLY and iid not in ONLY: continue
     try:
         render_item(iid, fn); print('ok', iid, flush=True)
     except Exception as e:
         print('FAIL', iid, repr(e), flush=True)
 import json
-json.dump([{'id': i, 'group': g, 'de': d, 'en': e} for i, g, d, e, _ in ITEMS], open(os.path.join(OUT, 'items.json'), 'w'), ensure_ascii=False, indent=1)
+if not os.environ.get('LINES'): json.dump([{'id': i, 'group': g, 'de': d, 'en': e} for i, g, d, e, _ in ITEMS], open(os.path.join(OUT, 'items.json'), 'w'), ensure_ascii=False, indent=1)
