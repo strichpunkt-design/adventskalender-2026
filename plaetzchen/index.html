@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content">
+<title>Plätzchen-Simulator · Strichpunkt Advent</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#000000">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Strichpunkt+Sans:wdth,wght@100..150,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="game.css">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="../"><span class="l" data-t="back">← Kalender</span><span class="s">←</span></a>
+  <button type="button" id="new"><span class="l" data-t="new">Neues Plätzchen</span><span class="s" data-t="new_s">Neu</span></button>
+  <button type="button" id="undo" data-t="undo" disabled>Rückgängig</button>
+  <span class="sp"></span>
+  <button type="button" id="all"><span class="l" data-t="all">Alle Plätzchen</span><span class="s" data-t="all_s">Alle</span></button>
+</header>
+
+<main id="stage">
+  <canvas id="c"></canvas>
+  <div id="frame" hidden><i></i><i></i><i></i><i></i></div>
+  <p id="hint" data-t="hint">Belag nach oben auf das Plätzchen ziehen</p>
+  <p id="loading" data-t="loading">Ofen heizt vor …</p>
+</main>
+
+<footer class="bottom">
+  <div class="row">
+    <div class="views" id="views">
+      <button type="button" data-view="top" data-t="v_top">Von oben</button>
+      <button type="button" data-view="angle" data-t="v_angle" aria-pressed="true">Schräg</button>
+      <button type="button" data-view="flat" data-t="v_flat">Flach</button>
+      <button type="button" data-view="corner" data-t="v_corner">Ecke</button>
+    </div>
+    <button type="button" class="go" id="done" data-t="done">Fertig</button>
+    <button type="button" class="go" id="shoot" data-t="shoot" hidden>Foto</button>
+    <button type="button" class="ghost" id="back" data-t="more" hidden>Weiter verzieren</button>
+  </div>
+  <div class="strip" id="strip" aria-label="Beläge"></div>
+</footer>
+
+<!-- choose the cookie -->
+<section class="sheet" id="shapes" hidden>
+  <div class="card">
+    <h2 data-t="pick">Welches Plätzchen?</h2>
+    <div class="shapes" id="shapeList"></div>
+  </div>
+</section>
+
+<!-- after the photo -->
+<section class="sheet" id="result" hidden>
+  <div class="card photo">
+    <img id="shot" alt="">
+    <h2 id="resTitle" data-t="yours">Dein Plätzchen</h2>
+    <p id="resMeta"></p>
+    <input id="name" maxlength="24" autocomplete="given-name" hidden>
+    <div class="btns">
+      <button type="button" class="go" id="post" data-t="post">An die Pinnwand</button>
+      <button type="button" class="ghost" id="retake" data-t="more">Weiter verzieren</button>
+    </div>
+    <p class="err" id="err" hidden></p>
+  </div>
+</section>
+
+<!-- everyone's cookies -->
+<section class="sheet wide" id="gallery" hidden>
+  <div class="card">
+    <button type="button" class="x" id="closeAll" aria-label="Schließen">×</button>
+    <h2 data-t="all">Alle Plätzchen</h2>
+    <p class="sub" id="allCount"></p>
+    <div class="grid" id="allGrid"></div>
+  </div>
+</section>
+
+<script src="../config.js"></script>
+<script type="module" src="game.js"></script>
+</body>
+</html>

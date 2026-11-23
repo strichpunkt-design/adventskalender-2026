@@ -1,0 +1,254 @@
+[
+ {
+  "id": "semikolon",
+  "group": "form",
+  "de": "Strichpunkt",
+  "en": "Semicolon",
+  "pieces": 1
+ },
+ {
+  "id": "stern",
+  "group": "form",
+  "de": "Stern",
+  "en": "Star",
+  "pieces": 1
+ },
+ {
+  "id": "baum",
+  "group": "form",
+  "de": "Tannenbaum",
+  "en": "Christmas tree",
+  "pieces": 1
+ },
+ {
+  "id": "herz",
+  "group": "form",
+  "de": "Herz",
+  "en": "Heart",
+  "pieces": 1
+ },
+ {
+  "id": "mond",
+  "group": "form",
+  "de": "Halbmond",
+  "en": "Crescent",
+  "pieces": 1
+ },
+ {
+  "id": "mann",
+  "group": "form",
+  "de": "Lebkuchenmann",
+  "en": "Gingerbread man",
+  "pieces": 1
+ },
+ {
+  "id": "stern-schoko",
+  "group": "form",
+  "de": "Schoko-Stern",
+  "en": "Chocolate star",
+  "pieces": 1
+ },
+ {
+  "id": "guss-lila",
+  "group": "klassisch",
+  "de": "Zuckerguss lila",
+  "en": "Lilac icing",
+  "pieces": 1
+ },
+ {
+  "id": "guss-weiss",
+  "group": "klassisch",
+  "de": "Zuckerguss weiß",
+  "en": "White icing",
+  "pieces": 1
+ },
+ {
+  "id": "streusel",
+  "group": "klassisch",
+  "de": "Streusel",
+  "en": "Sprinkles",
+  "pieces": 70
+ },
+ {
+  "id": "perlen",
+  "group": "klassisch",
+  "de": "Silberperlen",
+  "en": "Silver pearls",
+  "pieces": 60
+ },
+ {
+  "id": "linsen",
+  "group": "klassisch",
+  "de": "Schokolinsen",
+  "en": "Chocolate buttons",
+  "pieces": 16
+ },
+ {
+  "id": "mandeln",
+  "group": "klassisch",
+  "de": "Mandeln",
+  "en": "Almonds",
+  "pieces": 3
+ },
+ {
+  "id": "kirschen",
+  "group": "klassisch",
+  "de": "Belegkirschen",
+  "en": "Glacé cherries",
+  "pieces": 2
+ },
+ {
+  "id": "puder",
+  "group": "klassisch",
+  "de": "Puderzucker",
+  "en": "Icing sugar",
+  "pieces": 1
+ },
+ {
+  "id": "hagel",
+  "group": "klassisch",
+  "de": "Hagelzucker",
+  "en": "Pearl sugar",
+  "pieces": 70
+ },
+ {
+  "id": "schoko",
+  "group": "klassisch",
+  "de": "Schokoglasur",
+  "en": "Chocolate glaze",
+  "pieces": 1
+ },
+ {
+  "id": "marmelade",
+  "group": "klassisch",
+  "de": "Marmelade",
+  "en": "Jam",
+  "pieces": 1
+ },
+ {
+  "id": "goldsterne",
+  "group": "klassisch",
+  "de": "Goldsterne",
+  "en": "Gold stars",
+  "pieces": 14
+ },
+ {
+  "id": "gurke",
+  "group": "schraeg",
+  "de": "Gewürzgurke",
+  "en": "Pickle",
+  "pieces": 1
+ },
+ {
+  "id": "gummibaer",
+  "group": "schraeg",
+  "de": "Gummibärchen",
+  "en": "Gummy bear",
+  "pieces": 1
+ },
+ {
+  "id": "rosenkohl",
+  "group": "schraeg",
+  "de": "Rosenkohl",
+  "en": "Brussels sprout",
+  "pieces": 1
+ },
+ {
+  "id": "spiegelei",
+  "group": "schraeg",
+  "de": "Spiegelei",
+  "en": "Fried egg",
+  "pieces": 1
+ },
+ {
+  "id": "fischstaebchen",
+  "group": "schraeg",
+  "de": "Fischstäbchen",
+  "en": "Fish finger",
+  "pieces": 1
+ },
+ {
+  "id": "senf",
+  "group": "schraeg",
+  "de": "Senf",
+  "en": "Mustard",
+  "pieces": 1
+ },
+ {
+  "id": "ketchup",
+  "group": "schraeg",
+  "de": "Ketchup",
+  "en": "Ketchup",
+  "pieces": 1
+ },
+ {
+  "id": "knoblauch",
+  "group": "schraeg",
+  "de": "Knoblauch",
+  "en": "Garlic",
+  "pieces": 2
+ },
+ {
+  "id": "sardine",
+  "group": "schraeg",
+  "de": "Sardine",
+  "en": "Sardine",
+  "pieces": 1
+ },
+ {
+  "id": "chili",
+  "group": "schraeg",
+  "de": "Chili",
+  "en": "Chilli",
+  "pieces": 1
+ },
+ {
+  "id": "popcorn",
+  "group": "schraeg",
+  "de": "Popcorn",
+  "en": "Popcorn",
+  "pieces": 3
+ },
+ {
+  "id": "brezel",
+  "group": "schraeg",
+  "de": "Salzbrezel",
+  "en": "Pretzel",
+  "pieces": 1
+ },
+ {
+  "id": "augen",
+  "group": "schraeg",
+  "de": "Wackelaugen",
+  "en": "Googly eyes",
+  "pieces": 2
+ },
+ {
+  "id": "bueroklammer",
+  "group": "schraeg",
+  "de": "Büroklammer",
+  "en": "Paper clip",
+  "pieces": 1
+ },
+ {
+  "id": "kaffee",
+  "group": "schraeg",
+  "de": "Kaffeebohnen",
+  "en": "Coffee beans",
+  "pieces": 3
+ },
+ {
+  "id": "lametta",
+  "group": "schraeg",
+  "de": "Lametta",
+  "en": "Tinsel",
+  "pieces": 9
+ },
+ {
+  "id": "riesenstreusel",
+  "group": "schraeg",
+  "de": "Ein Riesenstreusel",
+  "en": "One giant sprinkle",
+  "pieces": 1
+ }
+]

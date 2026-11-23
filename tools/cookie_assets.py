@@ -31,6 +31,7 @@ def mat(name, color, rough=0.5, metal=0.0, coat=0.0, sss=0.0, trans=0.0, bump=No
     b.inputs['Subsurface Weight'].default_value = sss; b.inputs['Transmission Weight'].default_value = trans
     if sss: b.inputs['Subsurface Radius'].default_value = (0.004, 0.002, 0.001)
     if ramp:
+        m['ramp'] = '|'.join(map(str, ramp))
         n = nt.nodes.new('ShaderNodeTexNoise'); n.inputs['Scale'].default_value = ramp[2]; n.inputs['Detail'].default_value = 8
         r = nt.nodes.new('ShaderNodeValToRGB'); r.color_ramp.elements[0].color = (*hexc(ramp[0]), 1); r.color_ramp.elements[1].color = (*hexc(ramp[1]), 1)
         nt.links.new(n.outputs['Fac'], r.inputs['Fac']); nt.links.new(r.outputs['Color'], b.inputs['Base Color'])
@@ -105,6 +106,14 @@ def flat_shape(geom, extrude, bevel, m, lumpy=True, z=None):
         mod(o, 'SMOOTH', factor=0.5, iterations=4)
     give(o, m); smooth(o); return o
 
+# Pieces: things that fall separately in the game (each sprinkle, each pearl, each googly eye).
+# mark() tags every object made since the last call as one piece; untagged objects form one piece together.
+_pid = [0]
+def mark():
+    _pid[0] += 1
+    for o in bpy.data.objects:
+        if 'piece' not in o: o['piece'] = _pid[0]
+
 def rounded(g, r): return g.buffer(-r).buffer(2 * r).buffer(-r)
 
 # ---------------- shapes (about 8 cm) ----------------
@@ -171,12 +180,13 @@ def sprinkles(n=70, spread=0.018, cols=SPRINKLE_COLS):
         o = link(bpy.data.objects.new('s', random.choice(meshes))); md = o.modifiers.new('b', 'BEVEL'); md.width, md.segments = 0.0005, 3
         r = spread * math.sqrt(random.random()); a = random.uniform(0, 6.28); z = 0.0006 + (spread - r) * 0.35 * random.random()
         o.location = (r * math.cos(a), r * math.sin(a), z); o.rotation_euler = (math.pi / 2 + random.uniform(-.3, .3), 0, random.uniform(0, 3.14))
+        if n > 1: mark()
     bpy.data.objects.remove(base)
 def pile(make, n, spread, h=0.35, seed=4):
     random.seed(seed)
     for i in range(n):
         r = spread * math.sqrt(random.random()); a = random.uniform(0, 6.28)
-        make((r * math.cos(a), r * math.sin(a), (spread - r) * h * random.random()), i)
+        make((r * math.cos(a), r * math.sin(a), (spread - r) * h * random.random()), i); mark()
 
 def t_icing_lilac(): piped(LILAC, 'icing_l')
 def t_icing_white(): piped(WHITE, 'icing_w2')
@@ -191,10 +201,10 @@ def t_almond():
     m = mat('almond', '#EAD6B0', .55, bump=(300, .3, .0006), ramp=('#E2C99B', '#F1E2C6', 80))
     for i, (x, y, a) in enumerate(((-0.012, 0, .3), (0.008, 0.006, -.6), (0.004, -0.012, 1.4))):
         o = sphere(0.009, (x, y, 0.0022), (1, .62, .27), m); o.rotation_euler.z = a
-        bm = o.modifiers.new('t', 'SIMPLE_DEFORM'); bm.deform_method = 'TAPER'; bm.factor = .5; bm.deform_axis = 'Y' if False else 'X'
+        bm = o.modifiers.new('t', 'SIMPLE_DEFORM'); bm.deform_method = 'TAPER'; bm.factor = .5; bm.deform_axis = 'X'; mark()
 def t_cherry():
     m = mat('cherry', '#B0101A', .12, coat=1, sss=.3)
-    for x, y in ((-0.008, 0), (0.008, 0.004)): sphere(0.0085, (x, y, 0.0075), (1, 1, .88), m)
+    for x, y in ((-0.008, 0), (0.008, 0.004)): sphere(0.0085, (x, y, 0.0075), (1, 1, .88), m); mark()
 def t_powder():
     bpy.ops.mesh.primitive_cone_add(vertices=64, radius1=0.022, depth=0.011, location=(0, 0, 0.0055)); o = bpy.context.object
     mod(o, 'SUBSURF', levels=3, render_levels=3); mod(o, 'DISPLACE', texture=clouds(0.004), strength=0.0012)
@@ -221,7 +231,7 @@ def t_goldstars():
     for i in range(14):
         r = 0.018 * math.sqrt(random.random()); a = random.uniform(0, 6.28)
         o = flat_shape(star_geom(5, 0.0045, 0.002), 0.0006, 0.0003, m, lumpy=False, z=0.0012 + random.random() * 0.002)
-        o.location.x, o.location.y = r * math.cos(a), r * math.sin(a); o.rotation_euler = (random.uniform(-.3, .3), random.uniform(-.3, .3), random.uniform(0, 6))
+        o.location.x, o.location.y = r * math.cos(a), r * math.sin(a); o.rotation_euler = (random.uniform(-.3, .3), random.uniform(-.3, .3), random.uniform(0, 6)); mark()
 
 # --- weird and funny ---
 def t_pickle():
@@ -265,7 +275,7 @@ def t_coffee():
     for x, y, a in ((-0.008, 0.002, .4), (0.007, -0.004, -.7), (0.002, 0.011, 1.8)):
         o = sphere(0.0062, (x, y, 0.0034), (1, .75, .55), m); o.rotation_euler.z = a
         ca, sa = math.cos(a), math.sin(a)
-        tube([(x + ca * u - sa * v, y + sa * u + ca * v, 0.0034 + 0.0062 * .55 * (1 - (u / 0.0062) ** 2) ** .5 - 0.0002) for u, v in ((-0.0048, 0.0005), (-0.0016, -0.0006), (0.0016, 0.0006), (0.0048, -0.0005))], 0.0005, mat('beancrease', '#1E120A', .6))
+        tube([(x + ca * u - sa * v, y + sa * u + ca * v, 0.0034 + 0.0062 * .55 * (1 - (u / 0.0062) ** 2) ** .5 - 0.0002) for u, v in ((-0.0048, 0.0005), (-0.0016, -0.0006), (0.0016, 0.0006), (0.0048, -0.0005))], 0.0005, mat('beancrease', '#1E120A', .6)); mark()
 def t_tinsel():
     m = mat('tinsel', '#D8DCE3', .12, metal=1)
     random.seed(7)
@@ -276,7 +286,7 @@ def t_tinsel():
         for i, p in enumerate(sp.points):
             t = i / (n - 1) - .5; p.co = (x0 + t * 0.06 * math.cos(a) + random.uniform(-.003, .003), t * 0.06 * math.sin(a) + random.uniform(-.006, .006), 0.0008 + random.uniform(0, .004), 1)
             p.tilt = random.uniform(0, 3)
-        o = link(bpy.data.objects.new('ti', cu)); give(o, m); to_mesh(o)
+        o = link(bpy.data.objects.new('ti', cu)); give(o, m); to_mesh(o); mark()
 def t_pretzel():
     m = mat('pretzel', '#7B3E12', .25, coat=.7, bump=(200, .2, .0005), ramp=('#5E2C0B', '#9A5420', 70))
     s = 0.0011
@@ -299,20 +309,20 @@ def t_popcorn():
     random.seed(8)
     for k, (cx, cy) in enumerate(((-0.01, 0), (0.009, 0.004), (0, -0.012))):
         el = [('BALL', (cx + random.uniform(-.004, .004), cy + random.uniform(-.004, .004), 0.006 + random.uniform(0, .004)), random.uniform(.0035, .005)) for _ in range(9)]
-        o = metaballs(el, m, 0.0006); mod(o, 'DISPLACE', texture=clouds(0.0022), strength=0.0012)
+        o = metaballs(el, m, 0.0006); mod(o, 'DISPLACE', texture=clouds(0.0022), strength=0.0012); mark()
 def t_eyes():
     w = mat('eyewhite', '#FFFFFF', .35); b = mat('pupil', '#0A0A0A', .3); g = mat('dome', '#FFFFFF', .02, trans=1)
     for x, px in ((-0.0085, 0.0025), (0.0085, -0.002)):
         bpy.ops.mesh.primitive_cylinder_add(vertices=64, radius=0.0075, depth=0.0012, location=(x, 0, 0.0006)); give(bpy.context.object, w)
         bpy.ops.mesh.primitive_cylinder_add(vertices=48, radius=0.0036, depth=0.0006, location=(x + px, -0.0022, 0.0015)); give(bpy.context.object, b)
-        sphere(0.0075, (x, 0, 0.0012), (1, 1, .38), g)
+        sphere(0.0075, (x, 0, 0.0012), (1, 1, .38), g); mark()
 def t_mustard(): piped('#E3B21A', 'mustard', turns=2.2, r0=0.01, h=0.009, rad=0.0036)
 def t_ketchup(): piped('#B5150E', 'ketchup', turns=2.2, r0=0.01, h=0.009, rad=0.0036)
 def t_garlic():
     m = mat('garlic', '#F3EBDD', .5, sss=.5, bump=(60, .4, .0008), ramp=('#E9DCC4', '#FBF6EE', 30))
     for x, y, a in ((-0.008, 0, .3), (0.008, 0.003, -.5)):
         o = sphere(0.009, (x, y, 0.006), (.7, 1, .62), m); o.rotation_euler.z = a
-        sd = o.modifiers.new('t', 'SIMPLE_DEFORM'); sd.deform_method = 'TAPER'; sd.factor = 1.2; sd.deform_axis = 'Y'
+        sd = o.modifiers.new('t', 'SIMPLE_DEFORM'); sd.deform_method = 'TAPER'; sd.factor = 1.2; sd.deform_axis = 'Y'; mark()
 def t_sardine():
     m = mat('sardine', '#9AA7B3', .25, metal=.5, coat=.6, bump=(220, .2, .0004), ramp=('#5C6B7A', '#D9E0E6', 40))
     o = sphere(0.007, (0, 0, 0.0045), (3.6, 1, .65), m, 48)
@@ -396,6 +406,85 @@ sc.render.engine = 'CYCLES'; sc.cycles.device = 'CPU'; sc.cycles.samples = SAMPL
 sc.render.film_transparent = True; sc.render.resolution_x = sc.render.resolution_y = SIZE
 sc.view_settings.view_transform = 'AgX'; sc.view_settings.look = 'AgX - Medium High Contrast'
 sc.cycles.transmission_bounces = 8; sc.cycles.max_bounces = 10
+
+# ---------------- export for the browser (glTF) ----------------
+# Every piece becomes one mesh node (p0, p1, …) with its origin in the middle; shapes become one node "cookie".
+# Noise colours (dough, almonds, pickle …) are painted into vertex colours, because glTF cannot carry Blender's noise.
+from mathutils import noise
+def export_item(iid, grp, build, out):
+    for o in list(bpy.data.objects): bpy.data.objects.remove(o, do_unlink=True)
+    _pid[0] = 0
+    build()
+    objs = [o for o in sc.objects if o.type in ('MESH', 'CURVE', 'META')]
+    for o in sc.objects: o.select_set(False)
+    for o in objs: o.select_set(True)
+    bpy.context.view_layer.objects.active = objs[0]
+    bpy.ops.object.make_single_user(object=True, obdata=True)
+    bpy.ops.object.convert(target='MESH')
+    objs = [o for o in sc.objects if o.type == 'MESH']
+    for o in objs: o.select_set(True)
+    bpy.ops.object.transform_apply(location=False, rotation=True, scale=True)
+    pieces = {}
+    for o in objs: pieces.setdefault(o.get('piece', 0), []).append(o)
+    scatter = len(pieces) > 1
+    for o in objs:
+        me = o.data
+        tris = sum(len(p.vertices) - 2 for p in me.polygons)
+        budget = 9000 if grp == 'form' else (320 if scatter else 4000)
+        if tris > budget:
+            active(o); d = o.modifiers.new('d', 'DECIMATE'); d.ratio = budget / tris; bpy.ops.object.modifier_apply(modifier=d.name)
+        active(o); bpy.ops.object.shade_smooth()
+        ramps = {i: (lambda a: (a[0], a[1], float(a[2])))(m['ramp'].split('|')) for i, m in enumerate(me.materials) if m and 'ramp' in m}
+        ca = me.color_attributes.new('Col', 'BYTE_COLOR', 'POINT')
+        vs = [v.co for v in me.vertices]
+        mn = Vector((min(v.x for v in vs), min(v.y for v in vs), min(v.z for v in vs))); mx = Vector((max(v.x for v in vs), max(v.y for v in vs), max(v.z for v in vs)))
+        size = Vector((max(mx.x - mn.x, 1e-6), max(mx.y - mn.y, 1e-6), max(mx.z - mn.z, 1e-6)))
+        vr = {}
+        for poly in me.polygons:
+            r = ramps.get(poly.material_index)
+            for vi in poly.vertices: vr[vi] = r
+        for vi, r in vr.items():
+            if True:
+                li = vi
+                if r:
+                    v = me.vertices[vi].co + o.location
+                    g = Vector(((v.x + 1) * 40, (v.y + 1) * 40, (v.z + 1) * 40)) * (min(r[2], 140) / 4)
+                    t = max(0.0, min(1.0, 0.5 + 0.7 * noise.fractal(g, 1.0, 2.0, 4)))
+                    c0, c1 = hexc(r[0]), hexc(r[1]); col = tuple(c0[k] + (c1[k] - c0[k]) * t for k in range(3))
+                else: col = (1, 1, 1)
+                ca.data[li].color = (*col, 1)
+        me.color_attributes.active_color = ca
+    for m in bpy.data.materials:   # base colour comes from the vertex colours; bumps do not export
+        nt = m.node_tree
+        if not nt: continue
+        b = nt.nodes.get('Principled BSDF')
+        for l in list(nt.links):
+            if l.to_socket in (b.inputs['Base Color'], b.inputs['Normal']) and ('ramp' in m or l.to_socket == b.inputs['Normal']): nt.links.remove(l)
+        if 'ramp' in m: b.inputs['Base Color'].default_value = (1, 1, 1, 1)
+    names = []
+    for k, (pid, group) in enumerate(sorted(pieces.items())):
+        for o in sc.objects: o.select_set(False)
+        for o in group: o.select_set(True)
+        bpy.context.view_layer.objects.active = group[0]
+        if len(group) > 1: bpy.ops.object.join()
+        o = bpy.context.view_layer.objects.active; o.name = 'cookie' if grp == 'form' else f'p{k}'
+        bpy.ops.object.origin_set(type='ORIGIN_GEOMETRY', center='BOUNDS'); names.append(o.name)
+    for o in sc.objects: o.select_set(o.type == 'MESH')
+    bpy.ops.export_scene.gltf(filepath=os.path.join(out, iid + '.glb'), export_format='GLB', use_selection=True, export_yup=True,
+                              export_apply=True, export_vertex_color='ACTIVE', export_texcoords=False, export_animations=False)
+    return len(names)
+
+if os.environ.get('EXPORT'):
+    man = []
+    for iid, grp, de, en, fn in ITEMS:
+        if ONLY and iid not in ONLY: continue
+        try:
+            n = export_item(iid, grp, fn, OUT); man.append({'id': iid, 'group': grp, 'de': de, 'en': en, 'pieces': n}); print('ok', iid, n, flush=True)
+        except Exception as e:
+            import traceback; traceback.print_exc(); print('FAIL', iid, repr(e), flush=True)
+    import json
+    if not ONLY: json.dump(man, open(os.path.join(OUT, 'items.json'), 'w'), ensure_ascii=False, indent=1)
+    sys.exit(0)
 
 for iid, grp, de, en, fn in ITEMS:
     if ONLY and iid not in ONLY: continue
