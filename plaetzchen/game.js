@@ -47,7 +47,7 @@ const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDraw
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.toneMapping = THREE.AgXToneMapping;
 renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-const scene = new THREE.Scene(); scene.background = new THREE.Color(0x1c1b1a);
+const scene = new THREE.Scene();
 scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
 scene.environmentIntensity = 0.5;
 const sun = new THREE.DirectionalLight(0xfff2e2, 2.6); sun.position.set(-28, 60, 24); sun.castShadow = true;
@@ -55,22 +55,59 @@ Object.assign(sun.shadow.camera, { left: -28, right: 28, top: 28, bottom: -28, n
 sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.02; sun.shadow.radius = 5;
 scene.add(sun, new THREE.HemisphereLight(0xfff8f0, 0x3a3128, 0.35));
 
-// Baking paper: off-white with fine fibres and soft creases, drawn once into a canvas.
-function paperTexture() {
-  const c = document.createElement('canvas'); c.width = c.height = 1024; const g = c.getContext('2d');
-  g.fillStyle = '#ECE4D4'; g.fillRect(0, 0, 1024, 1024);
-  for (let i = 0; i < 9000; i++) { g.fillStyle = `rgba(${Math.random() < .5 ? '255,255,255' : '120,100,80'},${Math.random() * .05})`; g.fillRect(Math.random() * 1024, Math.random() * 1024, 1 + Math.random() * 3, 1); }
-  for (let i = 0; i < 14; i++) {
-    const x = Math.random() * 1024, y = Math.random() * 1024, a = Math.random() * Math.PI, l = 200 + Math.random() * 500;
-    const grd = g.createLinearGradient(0, -6, 0, 6); grd.addColorStop(0, 'rgba(255,255,255,0)'); grd.addColorStop(.5, 'rgba(255,255,255,.18)'); grd.addColorStop(.52, 'rgba(90,70,50,.08)'); grd.addColorStop(1, 'rgba(90,70,50,0)');
-    g.save(); g.translate(x, y); g.rotate(a); g.fillStyle = grd; g.fillRect(-l / 2, -6, l, 12); g.restore();
+// A wooden chopping board on a kitchen worktop, in front of a softly blurred kitchen wall.
+const canvasTex = (w, h, draw, rep = [1, 1]) => {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 8;
+  tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.repeat.set(...rep); return tx;
+};
+const woodTex = canvasTex(1024, 1024, (g, w, h) => {
+  g.fillStyle = '#C79A62'; g.fillRect(0, 0, w, h);
+  for (let y = 0; y < h; y += 2) {   // long grain with gentle waves
+    const k = Math.sin(y * .021) * .5 + Math.sin(y * .0047 + 2) * .5;
+    g.fillStyle = `rgba(${k > 0 ? '110,62,24' : '240,205,155'},${Math.abs(k) * .32})`; g.fillRect(0, y, w, 2);
   }
-  const tx = new THREE.CanvasTexture(c); tx.colorSpace = THREE.SRGBColorSpace; tx.anisotropy = 8; return tx;
-}
-const paper = new THREE.Mesh(new THREE.PlaneGeometry(90, 66), new THREE.MeshStandardMaterial({ map: paperTexture(), roughness: .78 }));
-paper.rotation.x = -Math.PI / 2; paper.receiveShadow = true; scene.add(paper);
-const tray = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.MeshStandardMaterial({ color: 0x262628, metalness: .7, roughness: .45 }));
-tray.rotation.x = -Math.PI / 2; tray.position.y = -0.15; tray.receiveShadow = true; scene.add(tray);
+  for (let i = 0; i < 260; i++) { const y = Math.random() * h; g.strokeStyle = `rgba(90,50,18,${.12 + Math.random() * .2})`; g.lineWidth = .6 + Math.random() * 1.6;
+    g.beginPath(); g.moveTo(0, y); for (let x = 0; x <= w; x += 32) g.lineTo(x, y + Math.sin(x * .01 + i) * 4); g.stroke(); }
+  for (let i = 0; i < 90; i++) { const x = Math.random() * w, y = Math.random() * h, a = Math.random() * Math.PI, l = 30 + Math.random() * 140;   // knife marks
+    g.strokeStyle = `rgba(250,230,200,${.12 + Math.random() * .15})`; g.lineWidth = .8; g.beginPath(); g.moveTo(x, y); g.lineTo(x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke(); }
+}, [1 / 38, 1 / 38]);
+const shape = new THREE.Shape(), BW = 19, BH = 13, R = 2.2;   // half sizes in cm, with a handle on the right
+shape.moveTo(-BW + R, -BH); shape.lineTo(BW - R, -BH); shape.quadraticCurveTo(BW, -BH, BW, -BH + R); shape.lineTo(BW, -3.2);
+shape.lineTo(BW + 5, -2.6); shape.quadraticCurveTo(BW + 9, -2.6, BW + 9, 0); shape.quadraticCurveTo(BW + 9, 2.6, BW + 5, 2.6); shape.lineTo(BW, 3.2);
+shape.lineTo(BW, BH - R); shape.quadraticCurveTo(BW, BH, BW - R, BH); shape.lineTo(-BW + R, BH); shape.quadraticCurveTo(-BW, BH, -BW, BH - R);
+shape.lineTo(-BW, -BH + R); shape.quadraticCurveTo(-BW, -BH, -BW + R, -BH);
+const hole = new THREE.Path(); hole.absarc(BW + 5.6, 0, 1.1, 0, Math.PI * 2, true); shape.holes.push(hole);
+const boardGeo = new THREE.ExtrudeGeometry(shape, { depth: 1.8, bevelEnabled: true, bevelThickness: .25, bevelSize: .3, bevelSegments: 4, curveSegments: 24 });
+boardGeo.rotateX(-Math.PI / 2); boardGeo.translate(-2, -2.05, 0);   // top face at y = 0
+const paper = new THREE.Mesh(boardGeo, new THREE.MeshStandardMaterial({ map: woodTex, roughness: .62 }));   // the surface things land on
+paper.castShadow = paper.receiveShadow = true; scene.add(paper);
+const stone = canvasTex(1024, 1024, (g, w, h) => {
+  g.fillStyle = '#E6E0D6'; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < 6000; i++) { g.fillStyle = `rgba(${Math.random() < .5 ? '120,110,100' : '255,255,255'},${Math.random() * .25})`; g.beginPath(); g.arc(Math.random() * w, Math.random() * h, Math.random() * 2.2, 0, 7); g.fill(); }
+}, [6, 6]);
+const tray = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.MeshStandardMaterial({ map: stone, roughness: .5 }));
+tray.rotation.x = -Math.PI / 2; tray.position.y = -2.1; tray.receiveShadow = true; scene.add(tray);
+// The kitchen around: tiled wall, window light, shelf with jars, a plant. Painted soft, as if out of focus.
+const kitchen = canvasTex(2048, 512, (g, w, h) => {
+  g.fillStyle = '#EFEAE2'; g.fillRect(0, 0, w, h);
+  g.strokeStyle = 'rgba(160,150,140,.5)'; g.lineWidth = 3;
+  for (let y = 250; y < h; y += 46) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
+  for (let y = 250, r = 0; y < h; y += 46, r++) for (let x = (r % 2) * 46; x < w; x += 92) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 46); g.stroke(); }
+  const win = (x) => { g.fillStyle = '#FFFDF7'; g.fillRect(x, 40, 300, 190); g.fillStyle = '#3A3530'; g.fillRect(x + 146, 40, 8, 190); g.fillRect(x, 132, 300, 8); g.lineWidth = 10; g.strokeStyle = '#3A3530'; g.strokeRect(x, 40, 300, 190); };
+  win(180); win(1210);
+  g.fillStyle = '#5B4636'; g.fillRect(620, 150, 420, 14);   // shelf
+  [['#B78CFF', 650, 70], ['#D9C6A5', 720, 90], ['#2F2B28', 800, 60], ['#E7DDD0', 860, 100], ['#B78CFF', 950, 76]].forEach(([c, x, hh]) => { g.fillStyle = c; g.fillRect(x, 150 - hh, 50, hh); });
+  g.fillStyle = '#C8C0B4'; g.fillRect(1600, 70, 220, 160); g.fillStyle = '#8B8378'; g.fillRect(1612, 82, 196, 136);   // a picture
+  g.fillStyle = '#4E6B3A'; for (let i = 0; i < 9; i++) { g.beginPath(); g.ellipse(1520 + Math.cos(i) * 40, 170 - i * 10, 18, 46, i * .5, 0, 7); g.fill(); }   // plant
+  g.fillStyle = '#B5684A'; g.fillRect(1490, 200, 70, 50);
+  g.fillStyle = '#3B3632'; g.fillRect(0, h - 70, w, 70);   // the worktop's edge
+  const c2 = document.createElement('canvas'); c2.width = w; c2.height = h; const g2 = c2.getContext('2d'); g2.filter = 'blur(9px)'; g2.drawImage(g.canvas, 0, 0);
+  g.clearRect(0, 0, w, h); g.drawImage(c2, 0, 0);
+}, [2, 1]);
+const wall = new THREE.Mesh(new THREE.CylinderGeometry(110, 110, 90, 64, 1, true), new THREE.MeshBasicMaterial({ map: kitchen, side: THREE.BackSide }));
+wall.position.y = 38; scene.add(wall);
+scene.background = new THREE.Color(0xEFEAE2); scene.fog = new THREE.Fog(0xEFEAE2, 260, 600);
 
 // ---------- camera and the four angles ----------
 const camera = new THREE.PerspectiveCamera(32, 1, 0.5, 1500);
@@ -109,7 +146,8 @@ const world = new RAPIER.World({ x: 0, y: -981, z: 0 });
 world.lengthUnit = 100;              // we work in centimetres: keeps contact tolerances and sleeping right
 world.numSolverIterations = 8;
 world.timestep = 1 / 120;
-world.createCollider(RAPIER.ColliderDesc.cuboid(300, 1, 300).setTranslation(0, -1, 0).setFriction(0.9));
+world.createCollider(RAPIER.ColliderDesc.cuboid(300, 1, 300).setTranslation(0, -3.1, 0).setFriction(0.9));   // worktop
+world.createCollider(RAPIER.ColliderDesc.cuboid(19.3, 1.05, 13.3).setTranslation(-2, -1.05, 0).setFriction(0.9));   // the board
 const live = [];                    // { body, obj, calm }
 let drops = [];                     // undo stack: { bodies, objs }
 let cookie = null;                  // { obj }

@@ -16,13 +16,15 @@ h2{font-weight:900;font-stretch:150%;text-transform:uppercase;line-height:.95;ma
 .top button:hover,.top a:hover{color:var(--lilac)}
 
 /* the 3D stage */
-#stage{position:relative;flex:1;min-height:0;background:#1c1b1a;touch-action:none}
+#stage{position:relative;overflow:hidden;flex:1;min-height:0;background:#1c1b1a;touch-action:none}
 #c{display:block;width:100%;height:100%}
 #hint{position:absolute;left:50%;bottom:14px;translate:-50% 0;margin:0;background:rgba(0,0,0,.72);padding:7px 14px;border-radius:99px;font-size:12px;letter-spacing:.04em;pointer-events:none;transition:opacity .4s;white-space:nowrap}
 #hint.off{opacity:0}
 #loading{position:absolute;inset:0;display:grid;place-items:center;margin:0;font-size:13px;letter-spacing:.06em;text-transform:uppercase;font-stretch:125%;pointer-events:none;transition:opacity .4s}
 #loading.off{opacity:0}
-#frame{position:absolute;pointer-events:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.45)}
+#frame{position:absolute;pointer-events:none;box-shadow:0 0 0 100vmax rgba(0,0,0,.35)}
+#shoot{font-size:15px;padding:14px 34px;box-shadow:0 0 0 4px rgba(183,140,255,.35)}
+#shoot:hover{background:#fff}
 #frame i{position:absolute;width:28px;height:28px;border:3px solid #fff}
 #frame i:nth-child(1){left:-3px;top:-3px;border-right:0;border-bottom:0}#frame i:nth-child(2){right:-3px;top:-3px;border-left:0;border-bottom:0}
 #frame i:nth-child(3){left:-3px;bottom:-3px;border-right:0;border-top:0}#frame i:nth-child(4){right:-3px;bottom:-3px;border-left:0;border-top:0}
