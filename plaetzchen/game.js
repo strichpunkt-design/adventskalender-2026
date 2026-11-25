@@ -344,15 +344,13 @@ function strokeEnd() {
 // Tapping an icing turns the finger into a piping bag until it is tapped again.
 // A piping bag follows the finger while an icing is chosen; its tip is where the line comes out.
 const bag = document.createElement('div'); bag.className = 'bag'; bag.hidden = true; stageEl.append(bag);
-const BAG = col => `<svg viewBox="0 0 60 120" aria-hidden="true"><path d="M8 6 L52 6 L33 96 L27 96 Z" fill="#F4F1EC" stroke="#000" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M14 30 L46 30 L33 96 L27 96 Z" fill="${col}"/><path d="M8 6 L52 6 L48 18 L12 18 Z" fill="#fff" stroke="#000" stroke-width="2.5" stroke-linejoin="round"/>
-  <path d="M26 94 L34 94 L32 112 L28 112 Z" fill="#C9CCD1" stroke="#000" stroke-width="2"/><circle cx="30" cy="115" r="3" fill="${col}"/></svg>`;
-function moveBag(x, y) { const r = stageEl.getBoundingClientRect(); bag.style.transform = `translate(${x - r.left - 30}px,${y - r.top - 118}px) rotate(-18deg)`; }
+const BAG = id => `<img src="${BASE}bag-${id}.webp" alt="">`;   // rendered in Blender (tools/piping_bag.py)
+function moveBag(x, y) { const r = stageEl.getBoundingClientRect(); bag.style.transform = `translate(${x - r.left - 30}px,${y - r.top - 120}px) rotate(-16deg)`; }
 canvas.addEventListener('pointermove', e => { if (pen) { bag.hidden = false; moveBag(e.clientX, e.clientY); } });
 canvas.addEventListener('pointerleave', () => { if (pen && !stroke) bag.hidden = true; });
 function setPen(id) {
   pen = id; controls.enabled = !pen;
-  bag.hidden = !pen; if (pen) { bag.innerHTML = BAG(ICING[pen][0]); const r = stageEl.getBoundingClientRect(); moveBag(r.left + r.width / 2, r.top + r.height / 2); }
+  bag.hidden = !pen; if (pen) { bag.innerHTML = BAG(pen); const r = stageEl.getBoundingClientRect(); moveBag(r.left + r.width / 2, r.top + r.height / 2); }
   canvas.style.cursor = pen ? 'none' : '';
   document.querySelectorAll('.item').forEach(el => el.classList.toggle('on', el.dataset.id === pen));
   const h = $('#hint'); h.textContent = pen ? t('draw') : t('hint'); h.classList.toggle('off', !pen && drops.length > 0);
@@ -459,7 +457,7 @@ addEventListener('pointermove', e => {
   if (drag.mode === 'drag') moveGhost(e.clientX, e.clientY);
   if (drag.mode === 'pipe') {   // dragged up out of the bar: piping starts once the finger is over the stage
     const r = stageEl.getBoundingClientRect();
-    if (e.clientY < r.bottom - 4) { if (!stroke) { strokeBegin(drag.id); bag.innerHTML = BAG(ICING[drag.id][0]); } bag.hidden = false; moveBag(e.clientX, e.clientY); strokeAt(e.clientX, e.clientY); }
+    if (e.clientY < r.bottom - 4) { if (!stroke) { strokeBegin(drag.id); bag.innerHTML = BAG(drag.id); } bag.hidden = false; moveBag(e.clientX, e.clientY); strokeAt(e.clientX, e.clientY); }
   }
 });
 addEventListener('pointerup', e => {
