@@ -354,8 +354,12 @@ async function finale() {
   if (life) life.party();
   await wait(still ? 300 : 3000);
 }
+// The address always names the open door, so any door can be shared as a link (?tuer=11).
+function setDoorUrl(n) {
+  try { const u = new URL(location.href); if (n) u.searchParams.set('tuer', n); else u.searchParams.delete('tuer'); history.replaceState(null, '', u); } catch (e) {}
+}
 function openCard(n) {
-  state.card = n;
+  state.card = n; setDoorUrl(n);
   seen(n);
   cardBody.replaceChildren(render(DOORS[n - 1], cardOpts()));
   card.querySelectorAll('.c-main').forEach(m => { m.scrollTop = 0; }); cardBody.scrollTop = 0;
@@ -366,7 +370,7 @@ function openCard(n) {
 }
 function closeCard(quiet) {
   if (!state.card) return;
-  const n = state.card; state.card = 0;
+  const n = state.card; state.card = 0; setDoorUrl(0);
   cleanup();
   document.body.classList.remove('card-open');
   if (quiet === true) { card.hidden = true; return; }
@@ -442,4 +446,12 @@ if (!wx.getLoc() && !demo) wx.geolocate(state.lang, t('somewhere')).then(() => w
 addEventListener('pagehide', () => { localStorage.sp_x = Math.round(cam.x); });
 badges(); setInterval(badges, 60000);
 if (state.today === 24 && state.opened.has(24)) document.body.classList.add('finale');
-if (!localStorage.sp_walked) setTimeout(() => { localStorage.sp_walked = '1'; toast(t('walk')); }, 1200);
+if (!localStorage.sp_walked && !qs.get('tuer')) setTimeout(() => { localStorage.sp_walked = '1'; toast(t('walk')); }, 1200);
+// A link straight to one door: walk there and open it (or say how long it still sleeps).
+{ const n = Math.round(+qs.get('tuer')); if (n >= 1 && n <= 24) setTimeout(() => tapHouse(n), 700); }
+// Stars for the night sky: they only show at night and twinkle softly.
+{ const box = document.createElement('div'); box.className = 'stars';
+  for (let i = 0; i < 70; i++) { const s = document.createElement('i'), big = Math.random() < .15;
+    s.style.cssText = `left:${Math.random() * 100}%;top:${Math.random() * 55}%;--o:${(.35 + Math.random() * .55).toFixed(2)};--d:${(2.5 + Math.random() * 4).toFixed(1)}s;--dl:-${(Math.random() * 6).toFixed(1)}s;--z:${big ? 3 : 1.5 + Math.random()}px`;
+    box.append(s); }
+  $('#sky').prepend(box); }

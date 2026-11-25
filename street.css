@@ -247,3 +247,10 @@ body[data-night] .sleigh{color:#555}
 #snd svg{width:20px;height:20px;fill:#000}
 #snd.off svg{opacity:.4}
 #snd.off::after{left:7px;right:7px;background:#000;height:2px}
+
+/* night: soft twinkling stars */
+#sky .stars{position:absolute;inset:0;display:none;pointer-events:none}
+body[data-night] #sky .stars{display:block}
+#sky .stars i{position:absolute;width:var(--z);height:var(--z);border-radius:50%;background:#fff;opacity:.1;animation:twinkle var(--d) ease-in-out var(--dl) infinite}
+@keyframes twinkle{0%,100%{opacity:.08}50%{opacity:var(--o)}}
+@media (prefers-reduced-motion:reduce){#sky .stars i{animation:none;opacity:calc(var(--o) * .6)}}
