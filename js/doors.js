@@ -130,12 +130,21 @@ export function doorTypes({ wall, onCleanup }) {
         go.addEventListener('click', e => { e.preventDefault(); const f = frame(); f.className = 'pz-frame'; (el.closest('.t-plaetzchen') || el.parentNode).append(f); });
         el.append(h('div', { class: 'row' }, go), count, grid);
       }
+      // A cookie from the tin, big, over the card.
+      const zoom = (p, i) => {
+        const wrap = el.closest('.t-plaetzchen') || el.parentNode;
+        const box = h('div', { class: 'pz-zoom', onclick: e => { if (e.target === box || e.target.classList.contains('x')) box.remove(); } },
+          h('figure', {}, h('button', { type: 'button', class: 'x', 'aria-label': 'Schließen' }, '×'), h('img', { src: p.image, alt: '' }),
+            h('figcaption', {}, h('b', {}, `${L({ de: 'Plätzchen Nr.', en: 'Cookie no.' })} ${String(i + 1).padStart(4, '0')}`), h('span', {}, p.name))));
+        wrap.append(box);
+      };
       const refresh = live(d.n, posts => {
         const list = posts.filter(p => p.kind === 'image' && p.body === 'plaetzchen').reverse();   // oldest first: numbers stay
         count.textContent = list.length ? L({ de: `${list.length} Plätzchen in der Dose`, en: `${list.length} cookies in the tin` }) : L({ de: 'Die Dose ist noch leer. Deins wäre das erste.', en: 'The tin is still empty. Yours could be the first.' });
         if (list.length) pic.src = list[list.length - 1].image;
         grid.replaceChildren(...list.map((p, i) => [p, i]).reverse().slice(0, 60).map(([p, i]) =>
-          h('figure', {}, h('img', { src: p.image, alt: '', loading: 'lazy' }), h('figcaption', {}, h('b', {}, `Nr. ${String(i + 1).padStart(4, '0')}`), ' ' + p.name))));
+          h('figure', { tabindex: 0, role: 'button', onclick: () => zoom(p, i), onkeydown: e => { if (e.key === 'Enter') zoom(p, i); } },
+            h('img', { src: p.image, alt: '', loading: 'lazy' }), h('figcaption', {}, h('b', {}, `Nr. ${String(i + 1).padStart(4, '0')}`), ' ' + p.name))));
       });
     },
 

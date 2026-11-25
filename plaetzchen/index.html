@@ -67,12 +67,14 @@
 <!-- after the photo -->
 <section class="sheet" id="result" hidden>
   <div class="card photo">
+    <button type="button" class="x" id="resClose" aria-label="Schließen">×</button>
     <img id="shot" alt="">
     <h2 id="resTitle" data-t="yours">Dein Plätzchen</h2>
     <p id="resMeta"></p>
     <input id="name" maxlength="24" autocomplete="given-name" hidden>
     <div class="btns">
       <button type="button" class="go" id="post" data-t="post">An die Pinnwand</button>
+      <button type="button" class="go" id="again" data-t="new" hidden>Neues Plätzchen</button>
       <button type="button" class="ghost" id="retake" data-t="more">Weiter verzieren</button>
     </div>
     <p class="err" id="err" hidden></p>

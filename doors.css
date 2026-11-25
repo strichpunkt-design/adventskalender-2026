@@ -421,3 +421,10 @@ a.btn{text-decoration:none}
 .t-plaetzchen .c-main>p{font-size:14px;line-height:1.45}
 .t-plaetzchen .c-main h2{font-size:clamp(22px,2vw,28px)}
 .t-plaetzchen .c-main{background:var(--lilac);color:#000}.t-plaetzchen .c-main .kicker{color:#000}.t-plaetzchen .c-main .btn.line{color:#000!important;background:transparent!important;box-shadow:inset 0 0 0 2px #000!important}
+.pz-grid figure{cursor:zoom-in}
+.pz-zoom{position:absolute;inset:0;z-index:30;background:rgba(0,0,0,.7);display:grid;place-items:center;padding:24px;border-radius:inherit}
+.pz-zoom figure{position:relative;margin:0;background:#fff;color:#000;padding:16px;border-radius:14px;max-width:min(560px,100%)}
+.pz-zoom img{display:block;width:100%;border-radius:6px}
+.pz-zoom figcaption{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:14px}
+.pz-zoom b{font-weight:900;font-stretch:150%;text-transform:uppercase}
+.pz-zoom .x{position:absolute;right:-12px;top:-12px;width:36px;height:36px;border-radius:50%;background:#000;color:#fff;font-size:20px}

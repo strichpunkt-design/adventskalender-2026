@@ -544,14 +544,15 @@ $('#shoot').onclick = () => {
     shotBlob = b; $('#shot').src = URL.createObjectURL(b);
     $('#resTitle').textContent = t('yours'); $('#resMeta').textContent = ''; $('#err').hidden = true;
     const nm = $('#name'); nm.hidden = !!ls('sp_name'); nm.placeholder = t('name');
-    $('#post').hidden = false; $('#post').disabled = false; $('#post').textContent = t('post'); $('#retake').textContent = t('more');
+    $('#post').hidden = false; $('#post').disabled = false; $('#post').textContent = t('post'); $('#retake').textContent = t('more'); $('#again').hidden = true;
     $('#result').hidden = false;
   }, 'image/jpeg', 0.9);
 };
-$('#retake').onclick = () => {
-  $('#result').hidden = true; photoMode(false);
-  if ($('#post').hidden) $('#shapes').hidden = false;
-};
+// After the photo: keep decorating, close, or (once it is pinned) start a new cookie.
+const closeResult = () => { $('#result').hidden = true; photoMode(false); };
+$('#retake').onclick = closeResult; $('#resClose').onclick = closeResult;
+$('#result').addEventListener('click', e => { if (e.target === $('#result')) closeResult(); });
+$('#again').onclick = () => { closeResult(); $('#shapes').hidden = false; };
 $('#post').onclick = async () => {
   const nm = $('#name');
   if (!ls('sp_name')) { const v = nm.value.trim(); if (!v) { nm.focus(); return; } try { localStorage.setItem('sp_name', v); } catch (e) {} nm.hidden = true; }
@@ -561,7 +562,7 @@ $('#post').onclick = async () => {
     const mine = (await cookies()).findIndex(p => p.id === id);
     $('#resTitle').textContent = `${t('no')} ${String(mine + 1).padStart(4, '0')}`;
     $('#resMeta').textContent = t('posted');
-    btn.hidden = true; $('#retake').textContent = t('new');
+    btn.hidden = true; $('#again').hidden = false;
     if (parent !== window) parent.postMessage('pz-posted', location.origin);
   } catch (e) {
     console.error(e); $('#err').textContent = t('err'); $('#err').hidden = false; btn.disabled = false; btn.textContent = t('post');
