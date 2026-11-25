@@ -113,21 +113,23 @@ export function doorTypes({ wall, onCleanup }) {
 
     // ---------- Plätzchen-Simulator: off to the bakery, and everyone's cookies in the tin ----------
     plaetzchen(el, d, o, head) {
+      const url = new URL('../plaetzchen/', import.meta.url).href;
       const pic = h('img', { class: 'pz-hero', src: ASSET('plaetzchen/hero.jpg'), alt: '' });
-      stage(head, 'pz', pic);
-      const go = h('a', { class: 'btn primary', href: new URL('../plaetzchen/', import.meta.url).href }, L({ de: 'Plätzchen backen', en: 'Bake a cookie' }));
       const count = h('p', { class: 'small' }), grid = h('div', { class: 'pz-grid' });
-      el.append(h('div', { class: 'row' }, go), count, grid);
-      // The bakery opens inside this card, over its whole area; only now are the 3D files loaded.
-      go.addEventListener('click', e => {
-        e.preventDefault();
-        const wrap = el.closest('.t-plaetzchen') || el.parentNode;
-        const frame = h('iframe', { class: 'pz-frame', src: go.href + '?embed=1', title: L({ de: 'Plätzchen-Simulator', en: 'Cookie simulator' }), allow: 'clipboard-write' });
-        const close = () => { frame.remove(); removeEventListener('message', onMsg); refresh(); };
-        const onMsg = m => { if (m.source === frame.contentWindow && m.data === 'pz-close') close(); };
-        addEventListener('message', onMsg); onCleanup(() => removeEventListener('message', onMsg));
-        wrap.append(frame); frame.focus();
-      });
+      const onMsg = m => { if (m.data === 'pz-posted') refresh(); };
+      addEventListener('message', onMsg); onCleanup(() => removeEventListener('message', onMsg));
+      const frame = () => h('iframe', { src: url + '?embed=1', title: L({ de: 'Plätzchen-Simulator', en: 'Cookie simulator' }), allow: 'clipboard-write' });
+      if (matchMedia('(min-width:900px)').matches) {
+        // On a computer the bakery is right here, in the big picture area; the text column stays beside it.
+        head.classList.add('pz-live'); stage(head, 'pz', Object.assign(frame(), { className: 'pz-inline' }));
+        el.append(h('div', { class: 'row' }, h('a', { class: 'btn line', href: url, target: '_blank', rel: 'noopener' }, L({ de: 'Im Vollbild öffnen', en: 'Open full screen' }))), count, grid);
+      } else {
+        // On a phone the picture area is small: the bakery opens over the whole card when you start.
+        stage(head, 'pz', pic);
+        const go = h('a', { class: 'btn primary', href: url }, L({ de: 'Plätzchen backen', en: 'Bake a cookie' }));
+        go.addEventListener('click', e => { e.preventDefault(); const f = frame(); f.className = 'pz-frame'; (el.closest('.t-plaetzchen') || el.parentNode).append(f); });
+        el.append(h('div', { class: 'row' }, go), count, grid);
+      }
       const refresh = live(d.n, posts => {
         const list = posts.filter(p => p.kind === 'image' && p.body === 'plaetzchen').reverse();   // oldest first: numbers stay
         count.textContent = list.length ? L({ de: `${list.length} Plätzchen in der Dose`, en: `${list.length} cookies in the tin` }) : L({ de: 'Die Dose ist noch leer. Deins wäre das erste.', en: 'The tin is still empty. Yours could be the first.' });

@@ -82,32 +82,12 @@ const boardGeo = new THREE.ExtrudeGeometry(shape, { depth: 1.8, bevelEnabled: tr
 boardGeo.rotateX(-Math.PI / 2); boardGeo.translate(-2, -2.05, 0);   // top face at y = 0
 const paper = new THREE.Mesh(boardGeo, new THREE.MeshStandardMaterial({ map: woodTex, roughness: .62 }));   // the surface things land on
 paper.castShadow = paper.receiveShadow = true; scene.add(paper);
-const stone = canvasTex(1024, 1024, (g, w, h) => {
-  g.fillStyle = '#E6E0D6'; g.fillRect(0, 0, w, h);
-  for (let i = 0; i < 6000; i++) { g.fillStyle = `rgba(${Math.random() < .5 ? '120,110,100' : '255,255,255'},${Math.random() * .25})`; g.beginPath(); g.arc(Math.random() * w, Math.random() * h, Math.random() * 2.2, 0, 7); g.fill(); }
-}, [6, 6]);
-const tray = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.MeshStandardMaterial({ map: stone, roughness: .5 }));
+const tray = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), new THREE.ShadowMaterial({ opacity: .22 }));   // the worktop is in the panorama; this only catches shadows
 tray.rotation.x = -Math.PI / 2; tray.position.y = -2.1; tray.receiveShadow = true; scene.add(tray);
-// The kitchen around: tiled wall, window light, shelf with jars, a plant. Painted soft, as if out of focus.
-const kitchen = canvasTex(2048, 512, (g, w, h) => {
-  g.fillStyle = '#EFEAE2'; g.fillRect(0, 0, w, h);
-  g.strokeStyle = 'rgba(160,150,140,.5)'; g.lineWidth = 3;
-  for (let y = 250; y < h; y += 46) { g.beginPath(); g.moveTo(0, y); g.lineTo(w, y); g.stroke(); }
-  for (let y = 250, r = 0; y < h; y += 46, r++) for (let x = (r % 2) * 46; x < w; x += 92) { g.beginPath(); g.moveTo(x, y); g.lineTo(x, y + 46); g.stroke(); }
-  const win = (x) => { g.fillStyle = '#FFFDF7'; g.fillRect(x, 40, 300, 190); g.fillStyle = '#3A3530'; g.fillRect(x + 146, 40, 8, 190); g.fillRect(x, 132, 300, 8); g.lineWidth = 10; g.strokeStyle = '#3A3530'; g.strokeRect(x, 40, 300, 190); };
-  win(180); win(1210);
-  g.fillStyle = '#5B4636'; g.fillRect(620, 150, 420, 14);   // shelf
-  [['#B78CFF', 650, 70], ['#D9C6A5', 720, 90], ['#2F2B28', 800, 60], ['#E7DDD0', 860, 100], ['#B78CFF', 950, 76]].forEach(([c, x, hh]) => { g.fillStyle = c; g.fillRect(x, 150 - hh, 50, hh); });
-  g.fillStyle = '#C8C0B4'; g.fillRect(1600, 70, 220, 160); g.fillStyle = '#8B8378'; g.fillRect(1612, 82, 196, 136);   // a picture
-  g.fillStyle = '#4E6B3A'; for (let i = 0; i < 9; i++) { g.beginPath(); g.ellipse(1520 + Math.cos(i) * 40, 170 - i * 10, 18, 46, i * .5, 0, 7); g.fill(); }   // plant
-  g.fillStyle = '#B5684A'; g.fillRect(1490, 200, 70, 50);
-  g.fillStyle = '#3B3632'; g.fillRect(0, h - 70, w, 70);   // the worktop's edge
-  const c2 = document.createElement('canvas'); c2.width = w; c2.height = h; const g2 = c2.getContext('2d'); g2.filter = 'blur(9px)'; g2.drawImage(g.canvas, 0, 0);
-  g.clearRect(0, 0, w, h); g.drawImage(c2, 0, 0);
-}, [2, 1]);
-const wall = new THREE.Mesh(new THREE.CylinderGeometry(110, 110, 90, 64, 1, true), new THREE.MeshBasicMaterial({ map: kitchen, side: THREE.BackSide }));
-wall.position.y = 38; scene.add(wall);
-scene.background = new THREE.Color(0xEFEAE2); scene.fog = new THREE.Fog(0xEFEAE2, 260, 600);
+const BGROT = +(new URLSearchParams(location.search).get('bgr') ?? Math.PI);
+// The kitchen around: a 360° panorama rendered in Blender (tools/kitchen_pano.py), softly out of focus.
+scene.background = new THREE.Color(0xD8CFC2);
+new THREE.TextureLoader().load(`${BASE}kitchen.jpg`, tx => { tx.mapping = THREE.EquirectangularReflectionMapping; tx.colorSpace = THREE.SRGBColorSpace; scene.background = tx; scene.backgroundBlurriness = 0.04; scene.backgroundRotation.y = BGROT; });
 
 // ---------- camera and the four angles ----------
 const camera = new THREE.PerspectiveCamera(32, 1, 0.5, 1500);
@@ -316,7 +296,7 @@ function clearAll() {
   while (drops.length) undo(true);
   if (frost) { scene.remove(frost.mesh); frost = null; }
   if (cookie) { scene.remove(cookie.obj); cookie = null; } cookieR = 0; setPen(null);
-  cookieH.fill(0); rebuildStatic(); stackTop = 1; $('#undo').disabled = true;
+  cookieH.fill(0); rebuildStatic(); stackTop = 1; redos.length = 0; hist();
 }
 
 // ---------- icing is drawn: a piped line that follows the finger over everything ----------
@@ -338,7 +318,9 @@ function strokeAt(x, y) {
   const last = stroke.pts[stroke.pts.length - 1];
   if (last && last.distanceTo(p) < stroke.r * .7) return;
   if (stroke.pts.length > 500) return;
-  stroke.pts.push(p);
+  stroke.pts.push(p); shapeStroke();
+}
+function shapeStroke() {
   const cap = q => new THREE.SphereGeometry(stroke.r, 16, 10).translate(q.x, q.y, q.z);
   const pts = stroke.pts;
   const g = pts.length < 2 ? cap(pts[0]) : mergeGeometries([new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts, false, 'centripetal'), Math.min(900, pts.length * 4), stroke.r, 12, false), cap(pts[0]), cap(pts[pts.length - 1])]);
@@ -356,7 +338,8 @@ function strokeEnd() {
   const tmp = staticH.slice(); raster(s.mesh, tmp);
   const ks = [], tp = []; for (let k = 0; k < tmp.length; k++) if (tmp[k] > staticH[k] + 1e-4) { ks.push(k); tp.push(tmp[k]); }
   const layer = { mesh: s.mesh, ks: Int32Array.from(ks), top: Float32Array.from(tp), frozen };
-  liquids.push(layer); drops.push({ bodies: [], objs: [], liquid: layer }); afterDrop(); rebuildStatic();
+  const pts = s.pts.map(q => q.clone()), sid = s.id;
+  liquids.push(layer); drops.push({ bodies: [], objs: [], liquid: layer, again: () => { strokeBegin(sid); stroke.pts = pts.map(q => q.clone()); shapeStroke(); strokeEnd(); } }); afterDrop(); rebuildStatic();
 }
 // Tapping an icing turns the finger into a piping bag until it is tapped again.
 function setPen(id) {
@@ -402,7 +385,7 @@ function dust(at) {
 const gauss = () => Math.sqrt(-2 * Math.log(Math.random() + 1e-9)) * Math.cos(2 * Math.PI * Math.random());
 
 async function drop(id, at, yaw = Math.random() * Math.PI * 2) {
-  if (id === 'puder') { drops.push({ bodies: [], objs: [dust(at)] }); afterDrop(); return; }
+  if (id === 'puder') { drops.push({ bodies: [], objs: [dust(at)], again: () => drop(id, at, yaw) }); afterDrop(); return; }
   const m = await loadModel(id), R = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw);
   const bodies = [], objs = [], scatter = m.pieces.length > 1;
   for (const p of pickPieces(m)) {
@@ -418,9 +401,13 @@ async function drop(id, at, yaw = Math.random() * Math.PI * 2) {
     const obj = makeObj(p); obj.position.copy(pos); obj.quaternion.copy(q); scene.add(obj);
     bodies.push(body); objs.push(obj); live.push({ body, obj, calm: 0, h: sz.y / 2 });
   }
-  drops.push({ bodies, objs }); afterDrop();
+  drops.push({ bodies, objs, again: () => drop(id, at.clone(), yaw) }); afterDrop();
 }
-function afterDrop() { $('#undo').disabled = false; $('#hint').classList.add('off'); }
+// Undo and redo: each step can be played again, so the arrows go both ways.
+const redos = []; let replaying = false;
+function hist() { $('#undo').disabled = !drops.length; $('#redo').disabled = !redos.length; }
+function afterDrop() { if (!replaying) redos.length = 0; hist(); $('#hint').classList.add('off'); }
+async function redo() { const d = redos.pop(); if (!d) return; replaying = true; try { await d.again(); } finally { replaying = false; hist(); } }
 function wakeAll() { for (const l of live) if (l.body.isDynamic()) l.body.wakeUp(); }
 function undo(silent) {
   const d = drops.pop(); if (!d) return;
@@ -434,10 +421,10 @@ function undo(silent) {
   for (const b of parked) if (live.some(l => l.body === b)) b.setBodyType(RAPIER.RigidBodyType.Dynamic, true);
   parked.clear();
   if (d.liquid) rebuildStatic(); else wakeAll();
-  if (!silent) $('#undo').disabled = !drops.length;
+  if (!silent) { redos.push(d); hist(); }
 }
 const parked = new Set();             // settled pieces fixed in place to save work on phones
-$('#undo').onclick = () => undo();
+$('#undo').onclick = () => undo(); $('#redo').onclick = () => redo();
 
 // ---------- the topping bar: scroll sideways, drag up to drop, tap to drop in the middle ----------
 const strip = $('#strip');
@@ -567,6 +554,7 @@ $('#post').onclick = async () => {
     $('#resTitle').textContent = `${t('no')} ${String(mine + 1).padStart(4, '0')}`;
     $('#resMeta').textContent = t('posted');
     btn.hidden = true; $('#retake').textContent = t('new');
+    if (parent !== window) parent.postMessage('pz-posted', location.origin);
   } catch (e) {
     console.error(e); $('#err').textContent = t('err'); $('#err').hidden = false; btn.disabled = false; btn.textContent = t('post');
   }

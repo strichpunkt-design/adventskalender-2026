@@ -21,7 +21,6 @@
 <header class="top">
   <a class="brand" href="../"><span class="l" data-t="back">← Kalender</span><span class="s">←</span></a>
   <button type="button" id="new"><span class="l" data-t="new">Neues Plätzchen</span><span class="s" data-t="new_s">Neu</span></button>
-  <button type="button" id="undo" data-t="undo" disabled>Rückgängig</button>
   <span class="sp"></span>
   <button type="button" id="all"><span class="l" data-t="all">Alle Plätzchen</span><span class="s" data-t="all_s">Alle</span></button>
 </header>
@@ -29,6 +28,7 @@
 <main id="stage">
   <canvas id="c"></canvas>
   <div id="frame" hidden><i></i><i></i><i></i><i></i></div>
+  <div class="hist"><button type="button" id="undo" disabled aria-label="Rückgängig">←</button><button type="button" id="redo" disabled aria-label="Wiederholen">→</button></div>
   <p id="hint" data-t="hint">Belag nach oben auf das Plätzchen ziehen</p>
   <p id="loading" data-t="loading">Ofen heizt vor …</p>
 </main>
