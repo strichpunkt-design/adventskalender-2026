@@ -55,7 +55,7 @@ export function geolocate(lang, fallbackName) {
         city = j.city || j.locality || '';
       } catch (e) {}
       if (!city) city = Object.keys(OFFICES).find(k => Math.hypot(OFFICES[k][0] - lat, (OFFICES[k][1] - lon) * 0.65) < 0.3) || fallbackName;
-      res(setLoc({ lat, lon, city }));
+      res(setLoc({ lat, lon, city, geo: true }));   // geo: the browser shared the location
     }, rej, { timeout: 10000, maximumAge: 600000 });
   });
 }

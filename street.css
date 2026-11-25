@@ -257,7 +257,7 @@ body[data-night] #sky .stars{display:block}
 
 /* the name in the top pill; a lilac tag while it is still missing */
 #who{max-width:12em;overflow:hidden;text-overflow:ellipsis}
-#who.ask{background:var(--lilac);color:#000;padding:2px 8px;border-radius:10px;margin:0 -2px}
+#who.ask{color:var(--lilac)}
 .pill .chev{width:10px;height:6px;margin-left:2px}
 .dots{display:none}
 @media (max-width:599px){#pill #place{display:none}}

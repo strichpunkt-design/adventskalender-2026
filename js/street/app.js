@@ -392,6 +392,8 @@ let pending = null;
 function openOnboard() {
   $('#ob-name').value = localStorage.sp_name || '';
   obStatus.textContent = ''; pending = wx.getLoc();
+  // The place is only asked for when the browser did not share it.
+  $('#ob-place').hidden = !!(pending && pending.geo);
   if (!ob.open) ob.showModal();
 }
 $('#pill').addEventListener('click', openOnboard);
@@ -422,7 +424,6 @@ $('#onboard-form').addEventListener('submit', async e => {
   }
   if (name) localStorage.sp_name = name;
   ob.close(); wx.refresh(); showWho();
-  if (!localStorage.sp_walked) { localStorage.sp_walked = '1'; toast(t('walk')); }
 });
 
 // ---------- start ----------
@@ -441,7 +442,6 @@ if (!wx.getLoc() && !demo) wx.geolocate(state.lang, t('somewhere')).then(() => w
 addEventListener('pagehide', () => { localStorage.sp_x = Math.round(cam.x); });
 badges(); setInterval(badges, 60000);
 if (state.today === 24 && state.opened.has(24)) document.body.classList.add('finale');
-if (!localStorage.sp_walked && !qs.get('tuer')) setTimeout(() => { localStorage.sp_walked = '1'; toast(t('walk')); }, 1200);
 // A link straight to one door: walk there and open it (or say how long it still sleeps).
 { const n = Math.round(+qs.get('tuer')); if (n >= 1 && n <= 24) setTimeout(() => tapHouse(n), 700); }
 // Stars for the night sky: they only show at night and twinkle softly.
