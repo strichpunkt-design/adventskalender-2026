@@ -342,12 +342,22 @@ function strokeEnd() {
   liquids.push(layer); drops.push({ bodies: [], objs: [], liquid: layer, again: () => { strokeBegin(sid); stroke.pts = pts.map(q => q.clone()); shapeStroke(); strokeEnd(); } }); afterDrop(); rebuildStatic();
 }
 // Tapping an icing turns the finger into a piping bag until it is tapped again.
+// A piping bag follows the finger while an icing is chosen; its tip is where the line comes out.
+const bag = document.createElement('div'); bag.className = 'bag'; bag.hidden = true; stageEl.append(bag);
+const BAG = col => `<svg viewBox="0 0 60 120" aria-hidden="true"><path d="M8 6 L52 6 L33 96 L27 96 Z" fill="#F4F1EC" stroke="#000" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M14 30 L46 30 L33 96 L27 96 Z" fill="${col}"/><path d="M8 6 L52 6 L48 18 L12 18 Z" fill="#fff" stroke="#000" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M26 94 L34 94 L32 112 L28 112 Z" fill="#C9CCD1" stroke="#000" stroke-width="2"/><circle cx="30" cy="115" r="3" fill="${col}"/></svg>`;
+function moveBag(x, y) { const r = stageEl.getBoundingClientRect(); bag.style.transform = `translate(${x - r.left - 30}px,${y - r.top - 118}px) rotate(-18deg)`; }
+canvas.addEventListener('pointermove', e => { if (pen) { bag.hidden = false; moveBag(e.clientX, e.clientY); } });
+canvas.addEventListener('pointerleave', () => { if (pen && !stroke) bag.hidden = true; });
 function setPen(id) {
   pen = id; controls.enabled = !pen;
+  bag.hidden = !pen; if (pen) { bag.innerHTML = BAG(ICING[pen][0]); const r = stageEl.getBoundingClientRect(); moveBag(r.left + r.width / 2, r.top + r.height / 2); }
+  canvas.style.cursor = pen ? 'none' : '';
   document.querySelectorAll('.item').forEach(el => el.classList.toggle('on', el.dataset.id === pen));
   const h = $('#hint'); h.textContent = pen ? t('draw') : t('hint'); h.classList.toggle('off', !pen && drops.length > 0);
 }
-canvas.addEventListener('pointerdown', e => { if (!pen) return; canvas.setPointerCapture(e.pointerId); strokeBegin(pen); strokeAt(e.clientX, e.clientY); });
+canvas.addEventListener('pointerdown', e => { if (!pen) return; bag.hidden = false; moveBag(e.clientX, e.clientY); canvas.setPointerCapture(e.pointerId); strokeBegin(pen); strokeAt(e.clientX, e.clientY); });
 canvas.addEventListener('pointermove', e => { if (pen && stroke) strokeAt(e.clientX, e.clientY); });
 canvas.addEventListener('pointerup', () => { if (pen) strokeEnd(); });
 canvas.addEventListener('pointercancel', () => { if (pen) strokeEnd(); });
@@ -449,13 +459,13 @@ addEventListener('pointermove', e => {
   if (drag.mode === 'drag') moveGhost(e.clientX, e.clientY);
   if (drag.mode === 'pipe') {   // dragged up out of the bar: piping starts once the finger is over the stage
     const r = stageEl.getBoundingClientRect();
-    if (e.clientY < r.bottom - 4) { if (!stroke) strokeBegin(drag.id); strokeAt(e.clientX, e.clientY); }
+    if (e.clientY < r.bottom - 4) { if (!stroke) { strokeBegin(drag.id); bag.innerHTML = BAG(ICING[drag.id][0]); } bag.hidden = false; moveBag(e.clientX, e.clientY); strokeAt(e.clientX, e.clientY); }
   }
 });
 addEventListener('pointerup', e => {
   if (!drag) return;
   const d = drag; drag = null; d.el.classList.remove('held'); controls.enabled = !pen;
-  if (d.mode === 'pipe') { strokeEnd(); return; }
+  if (d.mode === 'pipe') { strokeEnd(); if (!pen) bag.hidden = true; return; }
   if (!d.mode && ICING[d.id]) { setPen(pen === d.id ? null : d.id); return; }
   if (!d.mode && pen) setPen(null);
   if (d.mode === 'drag') { const at = ghost && ghost.visible && ghost.at; endGhost(); if (at) drop(d.id, at.clone(), ghost?.yaw); }
@@ -594,9 +604,12 @@ for (const [key, col] of GLAZES) {
   b.onclick = () => { $('#glazes').hidden = true; setGlaze(col); };
   $('#glazeList').append(b);
 }
+// Icing first (the three you pipe), then the classics, then the odd ones; a thin line between the groups.
+const ORDER = ['guss-lila', 'guss-weiss', 'schoko'];
 for (const grp of ['klassisch', 'schraeg']) {
-  const sep = document.createElement('span'); sep.className = 'sep'; sep.textContent = t(grp === 'klassisch' ? 'classic' : 'weird'); strip.append(sep);
-  for (const it of items.filter(i => i.group === grp)) {
+  if (grp !== 'klassisch') { const sep = document.createElement('span'); sep.className = 'sep line'; strip.append(sep); }
+  const list = items.filter(i => i.group === grp).sort((a, b) => (ORDER.indexOf(a.id) + 1 || 99) - (ORDER.indexOf(b.id) + 1 || 99));
+  for (const it of list) {
     const d = document.createElement('div'); d.className = 'item'; d.dataset.id = it.id;
     d.innerHTML = `<span class="disc"><img src="${thumb(it.id)}" alt="" draggable="false"></span>`; d.append(name(it));
     strip.append(d);

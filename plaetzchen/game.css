@@ -83,3 +83,8 @@ body.shooting .strip,body.shooting #done,body.shooting .hist{display:none}
 .grid b{font-weight:900;font-stretch:150%}
 .x{position:absolute;right:14px;top:10px;font-size:28px;line-height:1}
 .embed .top{padding-right:64px}
+
+.hist button{display:grid;place-items:center}.hist svg{width:22px;height:22px;margin-top:-4px}
+.strip .sep.line{writing-mode:initial;rotate:0deg;width:1.5px;height:60px;background:rgba(255,255,255,.3);padding:0;margin:0 6px}
+.bag{position:absolute;left:0;top:0;width:60px;height:120px;pointer-events:none;z-index:3;transform-origin:30px 118px;filter:drop-shadow(0 4px 6px rgba(0,0,0,.25))}
+.bag[hidden]{display:none}.bag svg{display:block;width:100%;height:100%}
