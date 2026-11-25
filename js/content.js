@@ -63,11 +63,10 @@ const D = [
     q: { options: { de: ['Die nassen Banditen', 'Die klebrigen Banditen', 'Die Weihnachtsknacker'], en: ['The Wet Bandits', 'The Sticky Bandits', 'The Christmas Crackers'] }, ok: 0,
          why: { de: 'Marv lässt in jedem Haus das Wasser laufen. Das ist ihr Markenzeichen. Die „klebrigen Banditen“ kommen erst in Teil 2.', en: 'Marv leaves the water running in every house. That’s their trademark. The “Sticky Bandits” only arrive in part 2.' } } },
   // 4 · Fri
-  { type: 'pickup', art: 'nikolaus', kicker: { de: 'Zum Abholen', en: 'Pick-up' }, title: { de: 'Nikolaus kommt früher', en: 'Nikolaus comes early' },
-    body: { de: ['Der 6. Dezember ist ein Sonntag. Darum liegt dein Schoko-Nikolaus schon heute bereit.'], en: ['December 6 is a Sunday. So your chocolate Nikolaus is ready today.'] },
-    office: { de: c => `Hol ihn dir im Studio ${c} ab. Einer pro Person, auch wenn es schwerfällt.`, en: c => `Pick it up at the ${c} studio. One each, hard as that is.` },
-    remote: { de: 'Nicht im Studio? Sag deinem Team Bescheid, dann legt jemand einen für dich zurück.', en: 'Not in a studio? Tell your team and someone will save one for you.' },
-    todo: { de: 'Abgeholt', en: 'Picked up' } },
+  { type: 'colour', mode: 'image', kicker: { de: 'Zum Ausmalen', en: 'To colour in' }, title: { de: 'Unsere Weihnachts\u00adstraße', en: 'Our Christmas street' },
+    body: { de: ['Die ganze Straße auf einem Blatt: unsere Illustrationen, die Weihnachtsfiguren, Häuser, Lichter und Geschenke. Drucken, Stifte raus, Kaffee daneben.', 'Für die Mittagspause, das Wochenende oder die Kinder zu Hause.'],
+            en: ['The whole street on one sheet: our illustrations, the Christmas characters, houses, lights and presents. Print it, get your pens, coffee on the side.', 'For your lunch break, the weekend or the kids at home.'] },
+    ph: { de: 'Bildunterschrift (optional)', en: 'Caption (optional)' } },
   // 5 · Sat
   { type: 'anim', anim: 'ball', kicker: FACT, title: { de: 'Sieben Postämter', en: 'Seven post offices' },
     body: { de: ['In Deutschland gibt es sieben offizielle Weihnachtspostämter, an die Kinder ihre Wunschzettel schicken können. Sie heißen zum Beispiel Himmelpfort, Engelskirchen und Nikolausdorf. Jeder Brief mit Absender bekommt eine Antwort.'],
@@ -76,15 +75,11 @@ const D = [
   { type: 'anim', anim: 'adv2', kicker: { de: 'Zweiter Advent', en: 'Second Sunday of Advent' }, title: { de: 'Zwei Kerzen', en: 'Two candles' },
     body: { de: ['Aus zwei Strichpunkten werden Kerzen. Die anderen warten noch.'], en: ['Two semicolons become candles. The others are still waiting.'] }, },
   // 7 · Mon
-  { type: 'rsvp', art: 'pretzel', kicker: { de: 'Frühstück', en: 'Breakfast' }, title: { de: 'Frühstück in allen Studios', en: 'Breakfast in every studio' },
-    body: { de: ['Der Tag nach Nikolaus beginnt gemeinsam: In jedem Studio gibt es Frühstück. Sag kurz, wo du dabei bist, damit genug Brötchen da sind.'],
-            en: ['The day after Nikolaus starts together: breakfast in every studio. Let us know where you’ll join so there are enough rolls.'] },
-    studios: [
-      { city: 'Stuttgart', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
-      { city: 'Berlin', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
-      { city: 'Hamburg', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
-      { city: 'Basel', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
-    ] },
+  { type: 'pickup', art: 'nikolaus', kicker: { de: 'Zum Abholen', en: 'Pick-up' }, title: { de: 'Nikolaus kommt einen Tag später', en: 'Nikolaus comes a day late' },
+    body: { de: ['Der 6. Dezember war ein Sonntag, also hat der Nikolaus einen Tag drangehängt. Dein Schoko-Nikolaus liegt heute bereit.'], en: ['December 6 was a Sunday, so Nikolaus took an extra day. Your chocolate Nikolaus is ready today.'] },
+    office: { de: c => `Hol ihn dir im Studio ${c} ab. Einer pro Person, auch wenn es schwerfällt.`, en: c => `Pick it up at the ${c} studio. One each, hard as that is.` },
+    remote: { de: 'Nicht im Studio? Sag deinem Team Bescheid, dann legt jemand einen für dich zurück.', en: 'Not in a studio? Tell your team and someone will save one for you.' },
+    todo: { de: 'Abgeholt', en: 'Picked up' } },
   // 8 · Tue
   { type: 'meme', kicker: JOIN, title: { de: 'Meme des Jahres', en: 'Meme of the year' },
     body: { de: ['Häng dein liebstes Weihnachtsmeme an den Baum: Bild, GIF oder kurzes Video. Tipp auf eine Kugel zum Ansehen und Mitlachen. Unten siehst du, welche Memes gerade vorn liegen.'],
@@ -157,10 +152,15 @@ const D = [
     q: { slider: true, min: 0, max: 800000, step: 10000, start: 300000, ok: 180000, tol: 50000, unit: { de: 'Nadeln', en: 'needles' },
          why: { de: 'Rund 180.000 Nadeln. Und gefühlt landen alle davon im Teppich.', en: 'Around 180,000 needles. And it feels like all of them end up in the carpet.' } } },
   // 22 · Tue
-  { type: 'colour', mode: 'image', kicker: { de: 'Zum Ausmalen', en: 'To colour in' }, title: { de: 'Unsere Weihnachts\u00adstraße', en: 'Our Christmas street' },
-    body: { de: ['Die ganze Straße auf einem Blatt: unsere Illustrationen, die Weihnachtsfiguren, Häuser, Lichter und Geschenke. Drucken, Stifte raus, Kaffee daneben.', 'Für die letzten Tage vor den Feiertagen. Oder für die Kinder zu Hause.'],
-            en: ['The whole street on one sheet: our illustrations, the Christmas characters, houses, lights and presents. Print it, get your pens, coffee on the side.', 'For the last days before the holidays. Or for the kids at home.'] },
-    ph: { de: 'Bildunterschrift (optional)', en: 'Caption (optional)' } },
+  { type: 'rsvp', art: 'pretzel', kicker: { de: 'Frühstück', en: 'Breakfast' }, title: { de: 'Frühstück in allen Studios', en: 'Breakfast in every studio' },
+    body: { de: ['Kurz vor den Feiertagen beginnt der Tag gemeinsam: In jedem Studio gibt es Frühstück. Sag kurz, wo du dabei bist, damit genug Brötchen da sind.'],
+            en: ['Just before the holidays, the day starts together: breakfast in every studio. Let us know where you’ll join so there are enough rolls.'] },
+    studios: [
+      { city: 'Stuttgart', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
+      { city: 'Berlin', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
+      { city: 'Hamburg', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
+      { city: 'Basel', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
+    ] },
   // 23 · Wed
   { type: 'quiz', qi: 5, kicker: QUIZ, title: { de: 'In welchem Land isst man an Weihnachten traditionell frittiertes Hähnchen von KFC?', en: 'In which country is fried chicken from KFC a Christmas tradition?' },
     q: { options: { de: ['USA', 'Japan', 'Chile'], en: ['USA', 'Japan', 'Chile'] }, ok: 1,
