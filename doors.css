@@ -428,3 +428,11 @@ a.btn{text-decoration:none}
 .pz-zoom figcaption{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:14px}
 .pz-zoom b{font-weight:900;font-stretch:150%;text-transform:uppercase}
 .pz-zoom .x{position:absolute;right:-12px;top:-12px;width:36px;height:36px;border-radius:50%;background:#000;color:#fff;font-size:20px}
+/* recipe card: calmer title, a soft shadow to lift the cards off the kitchen, lilac text column like door 11 */
+.rcard h3{font-size:clamp(18px,1.55vw,23px);line-height:1.02;overflow-wrap:anywhere;hyphens:auto}
+.rcard{box-shadow:0 6px 18px rgba(0,0,0,.16),0 1px 3px rgba(0,0,0,.1)}
+.rcard.back{box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.t-recipes .c-main{background:var(--lilac);color:#000}.t-recipes .c-main .kicker{color:#000}
+.t-recipes .c-main input,.t-recipes .c-main textarea{color:#000;border-color:#000}
+.t-recipes .c-main input::placeholder,.t-recipes .c-main textarea::placeholder{color:rgba(0,0,0,.55)}
+.t-recipes .c-main .btn.primary{background:#000!important;color:#fff!important}
