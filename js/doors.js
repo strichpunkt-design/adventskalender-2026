@@ -490,15 +490,16 @@ export function doorTypes({ wall, onCleanup }) {
           // The video fills the box like object-fit: cover, so map video coordinates the same way.
           const vw = track.w || video.videoWidth || 1280, vh = track.h || video.videoHeight || 720, k = Math.max(cv.width / vw, cv.height / vh);
           const ox = (cv.width - vw * k) / 2, oy = (cv.height - vh * k) / 2;
-          const w = b[2] * vw * k * 1.02, hh = w * 1.3, x = ox + b[0] * vw * k, y = oy + b[1] * vh * k + w * .02;
-          const s = w / (im.naturalWidth * .7);   // in the team photos the face is 70 % of the width
+          const w = b[2] * vw * k * 1.02, hh = w * 1.38, x = ox + b[0] * vw * k, y = oy + b[1] * vh * k;
+          const s = w / (im.naturalWidth * .72);   // in the team photos the face is about 72 % of the width
           const pad = 4, ow = Math.ceil(w + pad * 2), oh = Math.ceil(hh + pad * 2);
           if (soft.width !== ow || soft.height !== oh) { soft.width = ow; soft.height = oh; }
           const sg = soft.getContext('2d'); sg.clearRect(0, 0, ow, oh);
-          sg.drawImage(im, ow / 2 - im.naturalWidth * s * .5, oh / 2 - im.naturalHeight * s * .54, im.naturalWidth * s, im.naturalHeight * s);
+          // eyes (41 % down the photo) sit a little above the oval's middle, like a tight portrait crop
+          sg.drawImage(im, ow / 2 - im.naturalWidth * s * .5, oh / 2 - .07 * hh - im.naturalHeight * s * .41, im.naturalWidth * s, im.naturalHeight * s);
           sg.globalCompositeOperation = 'destination-in';
           sg.save(); sg.translate(ow / 2, oh / 2); sg.scale(1, hh / w);
-          const rg = sg.createRadialGradient(0, 0, w * .42, 0, 0, w / 2); rg.addColorStop(0, '#000'); rg.addColorStop(1, 'rgba(0,0,0,0)');
+          const rg = sg.createRadialGradient(0, 0, w * .45, 0, 0, w / 2); rg.addColorStop(0, '#000'); rg.addColorStop(1, 'rgba(0,0,0,0)');
           sg.fillStyle = rg; sg.beginPath(); sg.arc(0, 0, w / 2, 0, Math.PI * 2); sg.fill(); sg.restore();
           sg.globalCompositeOperation = 'source-over';
           g.drawImage(soft, x - ow / 2, y - oh / 2);
