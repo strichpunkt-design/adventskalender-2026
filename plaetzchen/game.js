@@ -32,7 +32,14 @@ const TXT = {
 };
 const t = (k, ...a) => { const v = TXT[k][EN ? 1 : 0]; return typeof v === 'function' ? v(...a) : v; };
 document.documentElement.lang = EN ? 'en' : 'de';
+
 document.querySelectorAll('[data-t]').forEach(el => { el.textContent = t(el.dataset.t); });
+// Inside the calendar card: the back arrow closes the bakery instead of leaving the page.
+if (new URLSearchParams(location.search).has('embed') && parent !== window) {
+  document.body.classList.add('embed');
+  document.querySelector('.brand').addEventListener('click', e => { e.preventDefault(); parent.postMessage('pz-close', location.origin); });
+  document.querySelector('.brand .l').textContent = EN ? '← Back' : '← Zurück';
+}
 
 // ---------- renderer, light, table ----------
 const canvas = $('#c'), stageEl = $('#stage'), frame = $('#frame');

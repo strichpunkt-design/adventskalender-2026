@@ -118,7 +118,17 @@ export function doorTypes({ wall, onCleanup }) {
       const go = h('a', { class: 'btn primary', href: new URL('../plaetzchen/', import.meta.url).href }, L({ de: 'Plätzchen backen', en: 'Bake a cookie' }));
       const count = h('p', { class: 'small' }), grid = h('div', { class: 'pz-grid' });
       el.append(h('div', { class: 'row' }, go), count, grid);
-      live(d.n, posts => {
+      // The bakery opens inside this card, over its whole area; only now are the 3D files loaded.
+      go.addEventListener('click', e => {
+        e.preventDefault();
+        const wrap = el.closest('.t-plaetzchen') || el.parentNode;
+        const frame = h('iframe', { class: 'pz-frame', src: go.href + '?embed=1', title: L({ de: 'Plätzchen-Simulator', en: 'Cookie simulator' }), allow: 'clipboard-write' });
+        const close = () => { frame.remove(); removeEventListener('message', onMsg); refresh(); };
+        const onMsg = m => { if (m.source === frame.contentWindow && m.data === 'pz-close') close(); };
+        addEventListener('message', onMsg); onCleanup(() => removeEventListener('message', onMsg));
+        wrap.append(frame); frame.focus();
+      });
+      const refresh = live(d.n, posts => {
         const list = posts.filter(p => p.kind === 'image' && p.body === 'plaetzchen').reverse();   // oldest first: numbers stay
         count.textContent = list.length ? L({ de: `${list.length} Plätzchen in der Dose`, en: `${list.length} cookies in the tin` }) : L({ de: 'Die Dose ist noch leer. Deins wäre das erste.', en: 'The tin is still empty. Yours could be the first.' });
         if (list.length) pic.src = list[list.length - 1].image;

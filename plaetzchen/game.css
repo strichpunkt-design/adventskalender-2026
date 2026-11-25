@@ -76,3 +76,4 @@ body.shooting .strip,body.shooting #done,body.shooting #undo{display:none}
 .grid figcaption{font-size:12px;margin-top:6px;line-height:1.3}
 .grid b{font-weight:900;font-stretch:150%}
 .x{position:absolute;right:14px;top:10px;font-size:28px;line-height:1}
+.embed .top{padding-right:64px}
