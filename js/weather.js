@@ -60,16 +60,22 @@ export function geolocate(lang, fallbackName) {
   });
 }
 
-const kindOf = c => [71, 73, 75, 77, 85, 86].includes(c) ? 'snowy' : c >= 51 ? 'rainy' : c >= 2 ? 'cloudy' : 'sunny';
+// Open-Meteo codes: 0 clear, 1 mainly clear, 2 partly cloudy, 3 overcast, 45/48 fog, 51+ drizzle/rain, 71+ snow.
+// Sun with a few clouds counts as sunny; overcast only when the sky is really covered.
+const kindOf = (c, cover = 100) => [71, 73, 75, 77, 85, 86].includes(c) ? 'snowy' : c >= 51 ? 'rainy' : (c <= 2 || cover < 60) ? 'sunny' : 'cloudy';
 
 export async function refresh() {
   const l = getLoc();
   // Without a location (not allowed, or no city chosen) it simply snows.
   let kind = l ? 'cloudy' : 'snowy', night = new Date().getHours() >= 17 || new Date().getHours() < 8, wind = 10;
   if (l) try {
-    const j = await get(`https://api.open-meteo.com/v1/forecast?latitude=${l.lat}&longitude=${l.lon}&current=weather_code,is_day,wind_speed_10m`);
-    kind = kindOf(j.current.weather_code); night = !j.current.is_day; wind = j.current.wind_speed_10m;
-  } catch (e) {}
+    const j = await get(`https://api.open-meteo.com/v1/forecast?latitude=${l.lat}&longitude=${l.lon}&current=weather_code,is_day,wind_speed_10m,cloud_cover`);
+    kind = kindOf(j.current.weather_code, j.current.cloud_cover); night = !j.current.is_day; wind = j.current.wind_speed_10m;
+    try { localStorage.sp_wx = JSON.stringify({ kind, t: Date.now() }); } catch (e) {}
+  } catch (e) {
+    // weather service not reachable: the last known sky (up to 3 hours old) instead of guessing clouds
+    try { const o = JSON.parse(localStorage.sp_wx || 'null'); if (o && Date.now() - o.t < 3 * 36e5) kind = o.kind; } catch (x) {}
+  }
   if (qs.get('weather')) kind = qs.get('weather');
   if (qs.has('night')) night = qs.get('night') !== '0';
   document.body.dataset.weather = kind;
