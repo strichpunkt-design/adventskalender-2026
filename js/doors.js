@@ -478,11 +478,13 @@ export function doorTypes({ wall, onCleanup }) {
       const faces = d.start.map(f => img(src(f)));
       let track = null, raf = 0, own = [];
       fetch(ASSET('elf/dance.json')).then(r => r.json()).then(t => { track = t; draw(); }).catch(() => {});
-      const fit = () => { const r = box.getBoundingClientRect(), k = devicePixelRatio || 1; cv.width = r.width * k; cv.height = r.height * k; };
+      // Layout size, not the on-screen size: while the card grows open it is scaled, and that must not shrink the canvas.
+      const fit = () => { const k = devicePixelRatio || 1, w = Math.round(box.clientWidth * k), hh = Math.round(box.clientHeight * k); if (w && (cv.width !== w || cv.height !== hh)) { cv.width = w; cv.height = hh; } };
       // Face: an oval cut-out of the photo, a bit larger than the elf's own face so it covers it.
       const soft = document.createElement('canvas');
       const draw = () => {
         if (!track) return;
+        fit();
         const f = Math.min(track.faces[0].length - 1, Math.floor(video.currentTime * track.fps));
         g.clearRect(0, 0, cv.width, cv.height);
         track.faces.forEach((tr, i) => {
@@ -491,11 +493,9 @@ export function doorTypes({ wall, onCleanup }) {
           // Only the face (brow to chin): the elf keeps its own hat, ears and neck. The photo is zoomed so its face
           // fills the oval, and the rim fades out so skin blends into the drawing.
           // The video fills the box like object-fit: cover, so map video coordinates the same way.
-          // Measured from where the video really is on screen (object-fit: cover inside its own box).
           const vw = track.w || video.videoWidth || 1280, vh = track.h || video.videoHeight || 720;
-          const cr = cv.getBoundingClientRect(), vr = video.getBoundingClientRect(), px = cv.width / (cr.width || 1);
-          const kk = Math.max(vr.width / vw, vr.height / vh), k = kk * px;
-          const ox = (vr.left - cr.left + (vr.width - vw * kk) / 2) * px, oy = (vr.top - cr.top + (vr.height - vh * kk) / 2) * px;
+          // video and canvas share the same 16:9 box; the video covers it
+          const k = Math.max(cv.width / vw, cv.height / vh), ox = (cv.width - vw * k) / 2, oy = (cv.height - vh * k) / 2;
           const w = b[2] * vw * k * 1.02, hh = w * 1.38, x = ox + b[0] * vw * k, y = oy + b[1] * vh * k;
           const s = w / (im.naturalWidth * .72);   // in the team photos the face is about 72 % of the width
           const pad = 4, ow = Math.ceil(w + pad * 2), oh = Math.ceil(hh + pad * 2);
