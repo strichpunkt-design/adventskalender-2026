@@ -481,15 +481,18 @@ export function doorTypes({ wall, onCleanup }) {
           if (!b || !im.complete || !im.naturalWidth) return;
           // Only the face (brow to chin): the elf keeps its own hat, ears and neck. The photo is zoomed so its face
           // fills the oval, and the rim fades out so skin blends into the drawing.
-          const w = b[2] * cv.width * 1.02, hh = w * 1.3, x = b[0] * cv.width, y = b[1] * cv.height + w * .02;
-          const s = w / (im.naturalWidth * .6);
+          // The video fills the box like object-fit: cover, so map video coordinates the same way.
+          const vw = track.w || video.videoWidth || 1280, vh = track.h || video.videoHeight || 720, k = Math.max(cv.width / vw, cv.height / vh);
+          const ox = (cv.width - vw * k) / 2, oy = (cv.height - vh * k) / 2;
+          const w = b[2] * vw * k * 1.02, hh = w * 1.3, x = ox + b[0] * vw * k, y = oy + b[1] * vh * k + w * .02;
+          const s = w / (im.naturalWidth * .7);   // in the team photos the face is 70 % of the width
           const pad = 4, ow = Math.ceil(w + pad * 2), oh = Math.ceil(hh + pad * 2);
           if (soft.width !== ow || soft.height !== oh) { soft.width = ow; soft.height = oh; }
           const sg = soft.getContext('2d'); sg.clearRect(0, 0, ow, oh);
           sg.drawImage(im, ow / 2 - im.naturalWidth * s * .5, oh / 2 - im.naturalHeight * s * .54, im.naturalWidth * s, im.naturalHeight * s);
           sg.globalCompositeOperation = 'destination-in';
           sg.save(); sg.translate(ow / 2, oh / 2); sg.scale(1, hh / w);
-          const rg = sg.createRadialGradient(0, 0, w * .36, 0, 0, w / 2); rg.addColorStop(0, '#000'); rg.addColorStop(1, 'rgba(0,0,0,0)');
+          const rg = sg.createRadialGradient(0, 0, w * .42, 0, 0, w / 2); rg.addColorStop(0, '#000'); rg.addColorStop(1, 'rgba(0,0,0,0)');
           sg.fillStyle = rg; sg.beginPath(); sg.arc(0, 0, w / 2, 0, Math.PI * 2); sg.fill(); sg.restore();
           sg.globalCompositeOperation = 'source-over';
           g.drawImage(soft, x - ow / 2, y - oh / 2);
