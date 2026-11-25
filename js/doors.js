@@ -488,13 +488,16 @@ export function doorTypes({ wall, onCleanup }) {
           // Only the face (brow to chin): the elf keeps its own hat, ears and neck. The photo is zoomed so its face
           // fills the oval, and the rim fades out so skin blends into the drawing.
           // The video fills the box like object-fit: cover, so map video coordinates the same way.
-          const vw = track.w || video.videoWidth || 1280, vh = track.h || video.videoHeight || 720, k = Math.max(cv.width / vw, cv.height / vh);
-          const ox = (cv.width - vw * k) / 2, oy = (cv.height - vh * k) / 2;
+          // Measured from where the video really is on screen (object-fit: cover inside its own box).
+          const vw = track.w || video.videoWidth || 1280, vh = track.h || video.videoHeight || 720;
+          const cr = cv.getBoundingClientRect(), vr = video.getBoundingClientRect(), px = cv.width / (cr.width || 1);
+          const kk = Math.max(vr.width / vw, vr.height / vh), k = kk * px;
+          const ox = (vr.left - cr.left + (vr.width - vw * kk) / 2) * px, oy = (vr.top - cr.top + (vr.height - vh * kk) / 2) * px;
           const w = b[2] * vw * k * 1.02, hh = w * 1.38, x = ox + b[0] * vw * k, y = oy + b[1] * vh * k;
           const s = w / (im.naturalWidth * .72);   // in the team photos the face is about 72 % of the width
           const pad = 4, ow = Math.ceil(w + pad * 2), oh = Math.ceil(hh + pad * 2);
           if (soft.width !== ow || soft.height !== oh) { soft.width = ow; soft.height = oh; }
-          const sg = soft.getContext('2d'); sg.clearRect(0, 0, ow, oh);
+          const sg = soft.getContext('2d'); sg.clearRect(0, 0, ow, oh); sg.imageSmoothingEnabled = true; sg.imageSmoothingQuality = 'high';
           // eyes (41 % down the photo) sit a little above the oval's middle, like a tight portrait crop
           sg.drawImage(im, ow / 2 - im.naturalWidth * s * .5, oh / 2 - .07 * hh - im.naturalHeight * s * .41, im.naturalWidth * s, im.naturalHeight * s);
           sg.globalCompositeOperation = 'destination-in';

@@ -442,3 +442,9 @@ a.btn{text-decoration:none}
 .sheet .hist button:disabled{opacity:.35;cursor:default}
 .sheet .hist svg{width:20px;height:20px;margin-top:-4px}.sheet .hist .fw svg{transform:scaleX(-1)}
 .sheet.intro .hist{display:none}
+/* small hints under forms: sentence case, smaller than the body text, tighter lines */
+.c-main p.small{text-transform:none;letter-spacing:.005em;font-size:13px;line-height:1.4;font-stretch:100%}
+/* elf pickers: own arrow with room to breathe */
+.pickrow{position:relative}
+.pickrow select{appearance:none;-webkit-appearance:none;padding:12px 46px 12px 14px}
+.pickrow::after{content:"";position:absolute;right:20px;bottom:19px;width:8px;height:8px;border-right:2px solid var(--cb,#000);border-bottom:2px solid var(--cb,#000);transform:rotate(45deg);pointer-events:none}
