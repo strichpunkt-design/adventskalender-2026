@@ -391,7 +391,7 @@ export function doorTypes({ wall, onCleanup }) {
       const newStroke = () => { bristles = Array.from({ length: 26 }, (_, k) => ({ o: (k / 25 - 0.5) * 2, a: 0.5 + Math.random() * 0.45, gap: Math.random() * 0.3 })); };
       const line = (a, b) => {
         const dx = b[0] - a[0], dy = b[1] - a[1], dist = Math.hypot(dx, dy) || 1, nx = -dy / dist, ny = dx / dist;
-        const r = Math.max(6, 13 - dist * 0.12), press = Math.max(0.45, 1 - dist * 0.015);
+        const r = Math.max(4.5, 10 - dist * 0.1), press = Math.max(0.45, 1 - dist * 0.015);
         for (let s = 0; s <= dist; s += 0.9) {
           const x = a[0] + dx * s / dist, y = a[1] + dy * s / dist;
           for (const br of bristles) if (Math.random() > br.gap) dot(x + nx * br.o * r + (Math.random() - 0.5) * 1.6, y + ny * br.o * r + (Math.random() - 0.5) * 1.6, br.a * press);
@@ -415,19 +415,25 @@ export function doorTypes({ wall, onCleanup }) {
         };
         step();
       };
+      // Undo and redo, like in the cookie bakery: the sheet is remembered before each stroke.
+      const past = [], future = [];
+      const hist = () => { undoB.disabled = !past.length || done; redoB.disabled = !future.length || done; };
+      const undoB = h('button', { type: 'button', 'aria-label': L({ de: 'Rückgängig', en: 'Undo' }), html: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 L4 12 L9 17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 12 H14 a5.5 5.5 0 0 1 0 11 H11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>', onclick: () => { if (!past.length) return; future.push(g.getImageData(0, 0, W, H)); g.putImageData(past.pop(), 0, 0); hist(); } });
+      const redoB = h('button', { type: 'button', class: 'fw', 'aria-label': L({ de: 'Wiederholen', en: 'Redo' }), html: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 L4 12 L9 17" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.5 12 H14 a5.5 5.5 0 0 1 0 11 H11" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>', onclick: () => { if (!future.length) return; past.push(g.getImageData(0, 0, W, H)); g.putImageData(future.pop(), 0, 0); hist(); } });
       const pos = e => { const r = cv.getBoundingClientRect(); return [(e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H]; };
       const stop = () => { clearInterval(timer); timer = 0; };
       const start = () => { if (timer || done) return; timer = setInterval(() => { left--; clock.textContent = left; if (left <= 0) { stop(); done = true; drawing = false; paper.classList.add('done'); } }, 1000); };
       cv.addEventListener('pointerdown', e => {
         if (done) return; e.preventDefault(); cv.setPointerCapture(e.pointerId);
         if (intro) { intro = false; cancelAnimationFrame(raf); blank(); paper.classList.remove('intro'); }
+        { past.push(g.getImageData(0, 0, W, H)); if (past.length > 20) past.shift(); future.length = 0; hist(); }
         drawing = used = true; last = pos(e); newStroke(); line(last, [last[0] + 0.5, last[1] + 0.5]); start();
       });
       cv.addEventListener('pointermove', e => { const p = pos(e); stick.style.left = (p[0] / W * 100) + '%'; stick.style.top = (p[1] / H * 100) + '%'; if (!drawing) return; line(last, p); last = p; });
       cv.addEventListener('pointerup', () => { drawing = false; });
       cv.addEventListener('pointerleave', () => { drawing = false; });
       onCleanup(() => { stop(); cancelAnimationFrame(raf); });
-      const fresh = () => { stop(); blank(); intro = false; left = 30; clock.textContent = '30'; done = used = false; paper.classList.remove('done', 'intro'); e1.textContent = ''; send.disabled = false; };
+      const fresh = () => { past.length = future.length = 0; hist(); stop(); blank(); intro = false; left = 30; clock.textContent = '30'; done = used = false; paper.classList.remove('done', 'intro'); e1.textContent = ''; send.disabled = false; };
       const send = btn(L({ de: 'In den Wald hängen', en: 'Hang it in the forest' }), async () => {
         if (!used) return e1.textContent = L({ de: 'Erst zeichnen, dann aufhängen.', en: 'Draw first, then hang it.' });
         if (!needName(send)) return;
@@ -435,9 +441,9 @@ export function doorTypes({ wall, onCleanup }) {
         try { await store.add(d.n, { kind: 'image', image: cv.toDataURL('image/jpeg', 0.8) }); e1.textContent = L({ de: 'Hängt im Kohle-Wald.', en: 'It’s in the charcoal forest.' }); }
         catch (x) { e1.textContent = t('failed'); send.disabled = false; }
       }, 'primary');
-      const paper = h('div', { class: 'sheet intro' }, cv, stick, clock);
+      const paper = h('div', { class: 'sheet intro' }, cv, stick, clock, h('div', { class: 'hist' }, undoB, redoB));
       stage(head, 'charcoal-bg tall', h('div', { class: 'easel' }, paper, h('div', { class: 'row' }, btn(L({ de: 'Neues Blatt', en: 'New sheet' }), fresh, 'line'), send), e1));
-      blank(); writeIntro();
+      blank(); writeIntro(); hist();
       // The gallery: a compact forest of small framed drawings; tap one to see it large.
       const forest = h('div', { class: 'forest' }), count = h('span', { class: 'lb' });
       el.append(h('div', { class: 'row', style: 'justify-content:space-between;align-items:baseline;margin-top:22px' }, h('h3', { class: 'sub', style: 'margin:0' }, L({ de: 'Der Kohle-Wald', en: 'The charcoal forest' })), count), forest);

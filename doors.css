@@ -436,3 +436,9 @@ a.btn{text-decoration:none}
 .t-recipes .c-main input,.t-recipes .c-main textarea{color:#000;border-color:#000}
 .t-recipes .c-main input::placeholder,.t-recipes .c-main textarea::placeholder{color:rgba(0,0,0,.55)}
 .t-recipes .c-main .btn.primary{background:#000!important;color:#fff!important}
+/* charcoal: undo/redo on the sheet */
+.sheet .hist{position:absolute;left:10px;bottom:10px;display:flex;gap:8px;z-index:3}
+.sheet .hist button{width:40px;height:40px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.2);cursor:pointer;border:0}
+.sheet .hist button:disabled{opacity:.35;cursor:default}
+.sheet .hist svg{width:20px;height:20px;margin-top:-4px}.sheet .hist .fw svg{transform:scaleX(-1)}
+.sheet.intro .hist{display:none}
