@@ -266,3 +266,6 @@ body[data-night] #sky .stars{display:block}
 #ob-place>.small{margin:0 0 14px}
 #ob-place .row{gap:14px;align-items:center}
 #ob-status{margin-top:10px}
+#who.ask{min-width:7.5em;display:inline-block;text-align:left}
+#who.ask::after{content:"";display:inline-block;width:1.5px;height:1.05em;background:currentColor;margin-left:2px;vertical-align:-.15em;animation:caret 1s steps(1) infinite}
+@keyframes caret{50%{opacity:0}}

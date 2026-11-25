@@ -398,10 +398,24 @@ function openOnboard() {
 }
 $('#pill').addEventListener('click', openOnboard);
 // The pill shows your name (or asks for it): your name appears with everything you post.
+// While the name is missing it types itself, with a blinking caret, so it is clear you type here.
+let typing = 0;
 function showWho() {
   const w = $('#who'), n = localStorage.sp_name;
-  w.textContent = n || (state.lang === 'de' ? 'Dein Name' : 'Your name');
-  w.classList.toggle('ask', !n);
+  clearTimeout(typing); w.classList.toggle('ask', !n);
+  if (n) { w.textContent = n; return; }
+  const words = state.lang === 'de' ? ['Dein Name', 'Dein Name hier'] : ['Your name', 'Your name here'];
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) { w.textContent = words[0]; return; }
+  let wi = 0, i = 0, back = false;
+  const tick = () => {
+    const word = words[wi];
+    if (!back) { i++; w.textContent = word.slice(0, i); if (i >= word.length) { back = true; return typing = setTimeout(tick, 2200); } return typing = setTimeout(tick, 90 + Math.random() * 70); }
+    // only remove what differs from the next word, then type on
+    const next = words[(wi + 1) % words.length]; let keep = 0; while (keep < word.length && word[keep] === next[keep]) keep++;
+    if (i > keep) { i--; w.textContent = word.slice(0, i); return typing = setTimeout(tick, 45); }
+    wi = (wi + 1) % words.length; back = false; typing = setTimeout(tick, 300);
+  };
+  w.textContent = ''; typing = setTimeout(tick, 600);
 }
 $('#ob-geo').addEventListener('click', async () => {
   obStatus.textContent = '…';
