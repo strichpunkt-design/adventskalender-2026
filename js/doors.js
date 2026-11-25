@@ -239,7 +239,7 @@ export function doorTypes({ wall, onCleanup }) {
       let list = [seed], baked = [], cur = 0, fresh = null;
       const stack = h('div', { class: 'stack' });
       if (matchMedia('(min-width:900px)').matches) kitchen.append(stack); else el.append(stack);
-      const parse = p => { try { const r = JSON.parse(p.body); return { id: p.id, name: p.name, t: r.t, z: r.z || [], s: r.s || [] }; } catch (e) { return null; } };
+      const parse = p => { try { const r = JSON.parse(p.body); return { id: p.id, name: p.name, t: r.t, b: r.b || '', z: r.z || [], s: r.s || [] }; } catch (e) { return null; } };
       const rnd = i => { const x = Math.sin(i * 91.7 + 3.1) * 43758.5; return x - Math.floor(x); };
       const drawBooks = () => {
         const sc = Math.max(kitchen.clientWidth / 1000, kitchen.clientHeight / 700), ct = kitchen.clientHeight - 200 * sc;
@@ -269,7 +269,7 @@ export function doorTypes({ wall, onCleanup }) {
         };
         const prev = h('button', { type: 'button', class: 'st-a', 'aria-label': L({ de: 'Vorheriger Schritt', en: 'Previous step' }), onclick: () => go(-1) }, '←');
         const next = h('button', { type: 'button', class: 'st-a', 'aria-label': L({ de: 'Nächster Schritt', en: 'Next step' }), onclick: () => go(1) }, '→');
-        const front = h('article', { class: 'rcard' }, h('h3', {}, L(r.t)), h('p', { class: 'lb' }, L({ de: 'Eingelegt von ', en: 'Added by ' }) + r.name),
+        const front = h('article', { class: 'rcard' }, h('h3', {}, L(r.t)), h('p', { class: 'lb' }, L({ de: 'Eingelegt von ', en: 'Added by ' }) + r.name), r.b && h('p', { class: 'rdesc' }, L(r.b)),
           h('div', { class: 'ing' }, h('h4', { class: 'lb' }, L({ de: 'Zutaten', en: 'Ingredients' })), h('ul', {}, L(r.z).map(x => h('li', {}, x)))),
           h('div', { class: 'stepper' }, h('div', { class: 'st-h' }, h('h4', { class: 'lb' }, L({ de: 'So geht’s', en: 'How to' })), stn), stx,
             h('div', { class: 'st-nav' }, prev, dots, next)),
@@ -281,22 +281,25 @@ export function doorTypes({ wall, onCleanup }) {
         go(0);
         stack.replaceChildren(list.length > 2 ? h('div', { class: 'rcard back b2' }) : '', list.length > 1 ? h('div', { class: 'rcard back b1' }, h('span', { class: 'lb' }, L({ de: 'Als Nächstes: ', en: 'Up next: ' }) + L(nx.t))) : '', front);
       };
-      // Add a recipe: one ingredient and one step per line.
+      // Add a recipe: name, a short description, one ingredient per line, one step per paragraph.
       const ti = h('input', { maxlength: 60, placeholder: L({ de: 'Name des Rezepts', en: 'Recipe name' }) });
       const zi = h('textarea', { rows: 5, placeholder: L({ de: 'Zutaten, eine pro Zeile', en: 'Ingredients, one per line' }) });
-      const si = h('textarea', { rows: 5, placeholder: L({ de: 'Schritte, einer pro Zeile', en: 'Steps, one per line' }) });
+      const bi = h('textarea', { rows: 2, maxlength: 200, placeholder: L({ de: 'Kurze Beschreibung (optional)', en: 'Short description (optional)' }) });
+      const si = h('textarea', { rows: 6, placeholder: L({ de: 'Schritte, ein Absatz pro Schritt (Leerzeile dazwischen)', en: 'Steps, one paragraph each (blank line between)' }) });
       const e1 = err();
       const send = btn(L({ de: 'Ins Regal stellen', en: 'Put it on the shelf' }), async () => {
         const lines = v => v.split('\n').map(x => x.trim()).filter(Boolean);
-        const r = { t: ti.value.trim(), z: lines(zi.value), s: lines(si.value) }, body = JSON.stringify(r);
+        // steps: one paragraph each; if nobody leaves blank lines, every line is a step
+        const paras = v => { const p = v.split(/\n\s*\n/).map(x => x.replace(/\s*\n\s*/g, ' ').trim()).filter(Boolean); return p.length > 1 ? p : lines(v); };
+        const r = { t: ti.value.trim(), b: bi.value.trim(), z: lines(zi.value), s: paras(si.value) }, body = JSON.stringify(r);
         if (!r.t || !r.z.length || !r.s.length) return e1.textContent = L({ de: 'Name, Zutaten und Schritte bitte.', en: 'Name, ingredients and steps, please.' });
         if (body.length > 2000) return e1.textContent = L({ de: 'Etwas kürzer, bitte.', en: 'A little shorter, please.' });
         if (!needName(send)) return;
         send.disabled = true;
-        try { fresh = await store.add(d.n, { kind: 'recipe', body }); ti.value = zi.value = si.value = ''; e1.textContent = ''; show(); } catch (e) { e1.textContent = t('failed'); }
+        try { fresh = await store.add(d.n, { kind: 'recipe', body }); ti.value = bi.value = zi.value = si.value = ''; e1.textContent = ''; show(); } catch (e) { e1.textContent = t('failed'); }
         send.disabled = false;
       }, 'primary');
-      const form = h('div', { class: 'wall-form' }, h('h3', { class: 'sub' }, L({ de: 'Dein Rezept', en: 'Your recipe' })), ti, zi, si, h('div', { class: 'row' }, send), e1);
+      const form = h('div', { class: 'wall-form' }, h('h3', { class: 'sub' }, L({ de: 'Dein Rezept', en: 'Your recipe' })), ti, bi, zi, si, h('div', { class: 'row' }, send), e1);
       el.append(form);
       if (!store.isShared) el.append(h('p', { class: 'small', style: 'opacity:.5' }, t('local')));
       live(d.n, posts => {

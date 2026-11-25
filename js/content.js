@@ -94,6 +94,7 @@ const D = [
     body: { de: ['Stell dein Lieblingsrezept ins Regal. Jedes Rezept ist ein kleines Heft, jede Karte trägt deinen Namen. Wer nachbackt, drückt „Hab ich gebacken“.'],
             en: ['Put your favourite recipe on the shelf. Each recipe is a little booklet, each card carries your name. If you bake it, press “I baked it”.'] },
     seed: { t: { de: 'Schoko-Engelsaugen mit Lebkuchenmännchen', en: 'Chocolate thumbprints with gingerbread men' },
+      b: { de: 'Schokoladiger Mürbeteig, weiße Schokolade in der Mitte und ein Mini-Lebkuchenmännchen, das darin sitzt.', en: 'Chocolate shortbread, white chocolate in the middle and a mini gingerbread man sitting in it.' },
       z: { de: ['250 g Mehl', '40 g Kakao', '200 g Butter', '100 g Zucker', '1 Eigelb', '1 Tafel weiße Schokolade', 'Mini-Lebkuchenmännchen'],
            en: ['250 g flour', '40 g cocoa powder', '200 g butter', '100 g sugar', '1 egg yolk', '1 bar of white chocolate', 'Mini gingerbread men'] },
       s: { de: ['Für den Teig Mehl, Kakao und Zucker vermischen. Eigelb und die Butter in Stücken dazugeben und alles kurz mit dem Knethaken vermengen.',

@@ -448,3 +448,6 @@ a.btn{text-decoration:none}
 .pickrow{position:relative}
 .pickrow select{appearance:none;-webkit-appearance:none;padding:12px 46px 12px 14px}
 .pickrow::after{content:"";position:absolute;right:20px;bottom:19px;width:8px;height:8px;border-right:2px solid var(--cb,#000);border-bottom:2px solid var(--cb,#000);transform:rotate(45deg);pointer-events:none}
+/* a button after form fields keeps its distance from the last line */
+.c-main input+.row,.c-main textarea+.row,.c-main select+.row,.c-main input+.btn,.c-main textarea+.btn,.wall-form>.row,.c-main form .row:last-child{margin-top:22px}
+.rcard .rdesc{font-size:14px;margin:8px 0 0;line-height:1.4}
