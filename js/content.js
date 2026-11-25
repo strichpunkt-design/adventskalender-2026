@@ -14,7 +14,7 @@ export const T = {
   ob_kicker: { de: 'Strichpunkt Advent 2026', en: 'Strichpunkt Advent 2026' },
   ob_title: { de: '24 Türen', en: '24 doors' },
   ob_name: { de: 'Dein Name', en: 'Your name' },
-  ob_where: { de: 'Das Plakat zeigt das Wetter bei dir.', en: 'The poster shows the weather where you are.' },
+  ob_where: { de: 'Die Website zeigt das Wetter bei dir.', en: 'The website shows the weather where you are.' },
   ob_geo: { de: 'Standort nutzen', en: 'Use my location' },
   ob_pick: { de: 'Stadt wählen', en: 'Pick a city' },
   ob_other: { de: 'Andere Stadt', en: 'Another city' },
