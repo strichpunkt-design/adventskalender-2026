@@ -86,7 +86,7 @@ let html = '';
 for (const o of Object.values(houses)) {
   const d = String(o.n).padStart(2, '0');
   html += `<button type="button" class="house ${o.line ? 'line' : 'solid'}" data-n="${o.n}" style="left:${o.x}px;top:${GROUND - o.h}px;width:${o.w}px;height:${o.h}px">${houseSvg(o)}` +
-    `<span class="win" style="left:${(o.w - 130) / 2}px;top:${o.wy}px"><span class="room">${STAR}<i>${o.n}</i></span><span class="sh l"><b>${d[0]}</b></span><span class="sh r"><b>${d[1]}</b></span>${LOCK}<span class="badge" hidden></span><span class="dots"></span></span></button>`;
+    `<span class="win" style="left:${(o.w - 130) / 2}px;top:${o.wy}px"><span class="room">${STAR}<i>${o.n}</i></span><span class="sh l"><b>${d[0]}</b></span><span class="sh r"><b>${d[1]}</b></span>${LOCK}<span class="badge" hidden></span></span></button>`;
 }
 world.innerHTML = html;
 world.querySelectorAll('.house').forEach(e => {
@@ -156,22 +156,10 @@ async function badges() {
   try {
     const c = await store.counts();
     for (const n of Object.keys(els)) { const b = els[n].querySelector('.badge'); b.hidden = !c[n]; b.textContent = c[n] || ''; }
-    // One dot under a window for each colleague who opened it today.
-    const who = await store.presence();
-    for (const n of Object.keys(els)) {
-      const names = who[n] || [], box = els[n].querySelector('.dots');
-      box.replaceChildren(...names.slice(0, 8).map(name => { const i = document.createElement('i'); i.title = name; return i; }));
-      if (names.length > 8) { const m = document.createElement('em'); m.textContent = '+' + (names.length - 8); box.append(m); }
-    }
   } catch (e) {}
 }
-function seen(n) {
-  if (demo) return;
-  const key = `sp_seen_${n}_${new Date().toDateString()}`;
-  if (localStorage[key]) return;
-  localStorage[key] = '1';
-  store.add(n, { kind: 'open' }).then(badges).catch(() => { delete localStorage[key]; });
-}
+// Who opened which door is no longer recorded (no dots under the windows).
+function seen() {}
 
 // ---------- camera: walks left and right, zooms in only for a card ----------
 const cam = { x: 0, y: 0, z: 1 };
@@ -382,6 +370,7 @@ $('#card-close').addEventListener('click', () => closeCard());
 
 // ---------- language ----------
 function setLang(l) {
+  setTimeout(showWho);
   state.lang = l; localStorage.sp_lang = l;
   document.documentElement.lang = l;
   $('#lang').classList.toggle('en', l === 'en');
@@ -406,6 +395,12 @@ function openOnboard() {
   if (!ob.open) ob.showModal();
 }
 $('#pill').addEventListener('click', openOnboard);
+// The pill shows your name (or asks for it): your name appears with everything you post.
+function showWho() {
+  const w = $('#who'), n = localStorage.sp_name;
+  w.textContent = n || (state.lang === 'de' ? 'Dein Name' : 'Your name');
+  w.classList.toggle('ask', !n);
+}
 $('#ob-geo').addEventListener('click', async () => {
   obStatus.textContent = '…';
   try { pending = await wx.geolocate(state.lang, t('somewhere')); obCity.value = ''; obOther.hidden = true; obStatus.textContent = t('ob_ok', pending.city); }
@@ -426,7 +421,7 @@ $('#onboard-form').addEventListener('submit', async e => {
     if (!pending) return obStatus.textContent = t('ob_nocity');
   }
   if (name) localStorage.sp_name = name;
-  ob.close(); wx.refresh();
+  ob.close(); wx.refresh(); showWho();
   if (!localStorage.sp_walked) { localStorage.sp_walked = '1'; toast(t('walk')); }
 });
 

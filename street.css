@@ -254,3 +254,10 @@ body[data-night] #sky .stars{display:block}
 #sky .stars i{position:absolute;width:var(--z);height:var(--z);border-radius:50%;background:#fff;opacity:.1;animation:twinkle var(--d) ease-in-out var(--dl) infinite}
 @keyframes twinkle{0%,100%{opacity:.08}50%{opacity:var(--o)}}
 @media (prefers-reduced-motion:reduce){#sky .stars i{animation:none;opacity:calc(var(--o) * .6)}}
+
+/* the name in the top pill; a lilac tag while it is still missing */
+#who{max-width:12em;overflow:hidden;text-overflow:ellipsis}
+#who.ask{background:var(--lilac);color:#000;padding:2px 8px;border-radius:10px;margin:0 -2px}
+.pill .chev{width:10px;height:6px;margin-left:2px}
+.dots{display:none}
+@media (max-width:599px){#pill #place{display:none}}
