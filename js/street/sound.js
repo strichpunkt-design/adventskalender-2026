@@ -148,5 +148,8 @@ export const sfx = {
   },
 };
 // If sound was left on last time, the music starts with the first tap (browsers require one).
-addEventListener('pointerdown', () => { if (ctx && ctx.state === 'suspended') ctx.resume(); if (st.on && !playing && !hushed) startMusic(); }, { passive: true });
+// Some browsers (Safari, iPhone) only accept the end of a tap or a click as permission to play, not its start,
+// so every kind of first touch counts: also a tap inside a door card opened straight from a link.
+const wake = () => { if (ctx && ctx.state === 'suspended') ctx.resume(); if (st.on && !playing && !hushed) startMusic(); };
+for (const ev of ['pointerdown', 'pointerup', 'click', 'keydown', 'touchend']) addEventListener(ev, wake, { passive: true, capture: true });
 document.addEventListener('visibilitychange', () => { if (document.hidden) stopMusic(); });
