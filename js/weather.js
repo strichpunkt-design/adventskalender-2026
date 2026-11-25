@@ -62,15 +62,18 @@ export function geolocate(lang, fallbackName) {
 
 // Open-Meteo codes: 0 clear, 1 mainly clear, 2 partly cloudy, 3 overcast, 45/48 fog, 51+ drizzle/rain, 71+ snow.
 // Sun with a few clouds counts as sunny; overcast only when the sky is really covered.
-const kindOf = (c, cover = 100) => [71, 73, 75, 77, 85, 86].includes(c) ? 'snowy' : c >= 51 ? 'rainy' : (c <= 2 || cover < 60) ? 'sunny' : 'cloudy';
+// Models often call a sky with thin high cloud or haze "overcast" while the sun is out, so the measured
+// direct sunlight decides too: real sunshine on the ground counts as sunny.
+const kindOf = (c, cover = 100, sun = 0) => [71, 73, 75, 77, 85, 86].includes(c) ? 'snowy' : c >= 51 ? 'rainy' : (c <= 2 || cover < 60 || sun >= 90) ? 'sunny' : 'cloudy';
 
 export async function refresh() {
   const l = getLoc();
   // Without a location (not allowed, or no city chosen) it simply snows.
   let kind = l ? 'cloudy' : 'snowy', night = new Date().getHours() >= 17 || new Date().getHours() < 8, wind = 10;
   if (l) try {
-    const j = await get(`https://api.open-meteo.com/v1/forecast?latitude=${l.lat}&longitude=${l.lon}&current=weather_code,is_day,wind_speed_10m,cloud_cover`);
-    kind = kindOf(j.current.weather_code, j.current.cloud_cover); night = !j.current.is_day; wind = j.current.wind_speed_10m;
+    const j = await get(`https://api.open-meteo.com/v1/forecast?latitude=${l.lat}&longitude=${l.lon}&current=weather_code,is_day,wind_speed_10m,cloud_cover,direct_radiation`);
+    kind = kindOf(j.current.weather_code, j.current.cloud_cover, j.current.is_day ? j.current.direct_radiation : 0);
+    if (qs.has('wxdebug')) console.log('weather', l.city, j.current, '→', kind); night = !j.current.is_day; wind = j.current.wind_speed_10m;
     try { localStorage.sp_wx = JSON.stringify({ kind, t: Date.now() }); } catch (e) {}
   } catch (e) {
     // weather service not reachable: the last known sky (up to 3 hours old) instead of guessing clouds
