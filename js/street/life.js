@@ -56,6 +56,7 @@ export function initLife({ world, houses, els, GROUND, W, state, view }) {
   const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
   const byX = Object.values(houses).sort((a, b) => a.x - b.x);
   const actors = [];
+  let lastFly = 0, flying = false, roof = null;   // one Santa at a time: sleigh, walker or roof
   const weather = () => document.body.dataset.weather;
   const roofY = (o, x) => { const r = o.w / 2; return { flat: 0, step: x > o.w * 0.25 && x < o.w * 0.75 ? 0 : 60, gable: o.rd * Math.abs(x - r) / r, arch: r - Math.sqrt(Math.max(0, r * r - (x - r) * (x - r))), shed: o.rd * (1 - x / o.w) }[o.roof]; };
 
@@ -99,9 +100,10 @@ export function initLife({ world, houses, els, GROUND, W, state, view }) {
     smoke.innerHTML = '<i></i><i></i><i></i>';
     e.prepend(chim, santa, smoke);
     art('santa').then(html => { santa.innerHTML = html; prepare(santa.querySelector('svg'), 'santa'); });
+    roof = santa;
     const cycle = () => {
       const on = state.today === 24 && !document.hidden;
-      const up = on && !santa.classList.contains('up');
+      const up = on && !santa.classList.contains('up') && !flying;   // never while the sleigh is in the sky
       santa.classList.toggle('up', up); e.classList.toggle('santa-on', up);
       if (up) sfx.play('santa');
       setTimeout(cycle, up ? 6500 : on ? 2600 : 5000);
@@ -129,7 +131,10 @@ export function initLife({ world, houses, els, GROUND, W, state, view }) {
     setTimeout(() => el.remove(), 1100);
   }
   async function spawnWalker() {
-    const v = view(), pool = state.today === 24 ? [...WALKERS, ['santa', 165, 50, 1, 3]] : WALKERS;
+    // Santa walks only from the 20th to the 23rd, and only when he is nowhere else to be seen.
+    // On the 24th he belongs on the roof.
+    const v = view(), santaFree = state.today >= 20 && state.today <= 23 && !santaSeen();
+    const pool = santaFree ? [...WALKERS, ['santa', 165, 50, 1, 2]] : WALKERS;
     const [key, h, speed, face] = pick(pool.flatMap(w => Array(w[4]).fill(w)));
     const doors = doorsInView(), roll = Math.random();
     const a = await make(key, h, 'walk');
@@ -160,16 +165,18 @@ export function initLife({ world, houses, els, GROUND, W, state, view }) {
     doorway(a); set(a, 'indoor'); useDoor(a.door);
     setTimeout(() => drop(a), 950);
   }
-  // Santa and the reindeer cross the sky.
-  let lastFly = 0;
+  // Santa and the reindeer cross the sky. There is only one Santa: no flight while he walks or waves from the roof.
+
+  function santaSeen() { return flying || actors.some(a => a.key === 'santa') || !!(roof && roof.classList.contains('up')); }
   async function flyby() {
-    lastFly = performance.now();
+    if (santaSeen()) return;
+    lastFly = performance.now(); flying = true;
     sfx.play('santa');
     const el = document.createElement('div');
     el.className = 'sleigh'; el.style.setProperty('--t', 8 + Math.random() * 18 + 'vh');
     el.innerHTML = await art('sleigh');
     document.getElementById('sky').append(el);
-    el.addEventListener('animationend', e => { if (e.target === el) el.remove(); });
+    el.addEventListener('animationend', e => { if (e.target === el) { el.remove(); flying = false; } });
   }
 
   function hover(a) {
