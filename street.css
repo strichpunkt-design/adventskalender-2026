@@ -261,3 +261,8 @@ body[data-night] #sky .stars{display:block}
 .pill .chev{width:10px;height:6px;margin-left:2px}
 .dots{display:none}
 @media (max-width:599px){#pill #place{display:none}}
+/* name dialog: more air between the place line and its buttons */
+#ob-place{margin-top:22px}
+#ob-place>.small{margin:0 0 14px}
+#ob-place .row{gap:14px;align-items:center}
+#ob-status{margin-top:10px}
