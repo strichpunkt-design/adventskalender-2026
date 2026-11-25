@@ -539,8 +539,12 @@ export function doorTypes({ wall, onCleanup }) {
         const f = file.files[0]; if (!f) return;
         if (own[target]) URL.revokeObjectURL(own[target]);
         own[target] = URL.createObjectURL(f); setFace(target, own[target]); file.value = '';
+        const sel = rows.querySelectorAll('select')[target]; if (sel) sel.value = 'own';
       });
-      el.append(rows, file, h('p', { class: 'small', style: 'opacity:.6' }, L({ de: 'Am besten ein Foto von vorn, Gesicht in der Mitte. Es bleibt in deinem Browser, nichts wird hochgeladen.', en: 'Best with a photo from the front, face in the middle. It stays in your browser, nothing is uploaded.' })));
+      // Your own photo: one button per elf.
+      const upl = i => btn(i ? L({ de: 'Foto für Elf rechts', en: 'Photo for right elf' }) : L({ de: 'Foto für Elf links', en: 'Photo for left elf' }), () => { target = i; file.click(); }, 'line');
+      const ups = h('div', { class: 'row upl' }, upl(0), upl(1));
+      el.append(rows, ups, file, h('p', { class: 'small', style: 'opacity:.6' }, L({ de: 'Am besten ein Foto von vorn, Gesicht in der Mitte. Es bleibt in deinem Browser, nichts wird hochgeladen.', en: 'Best with a photo from the front, face in the middle. It stays in your browser, nothing is uploaded.' })));
     },
   };
 }
