@@ -471,6 +471,7 @@ export function doorTypes({ wall, onCleanup }) {
       fetch(ASSET('elf/dance.json')).then(r => r.json()).then(t => { track = t; draw(); }).catch(() => {});
       const fit = () => { const r = box.getBoundingClientRect(), k = devicePixelRatio || 1; cv.width = r.width * k; cv.height = r.height * k; };
       // Face: an oval cut-out of the photo, a bit larger than the elf's own face so it covers it.
+      const soft = document.createElement('canvas');
       const draw = () => {
         if (!track) return;
         const f = Math.min(track.faces[0].length - 1, Math.floor(video.currentTime * track.fps));
@@ -478,11 +479,20 @@ export function doorTypes({ wall, onCleanup }) {
         track.faces.forEach((tr, i) => {
           const b = tr[f], im = faces[i];
           if (!b || !im.complete || !im.naturalWidth) return;
-          const w = b[2] * cv.width * 1.22, hh = w * 1.16, x = b[0] * cv.width, y = b[1] * cv.height + w * .04;
-          g.save(); g.beginPath(); g.ellipse(x, y, w / 2, hh / 2, 0, 0, Math.PI * 2); g.clip();
-          const s = Math.max(w / im.naturalWidth, hh / im.naturalHeight);
-          g.drawImage(im, x - im.naturalWidth * s / 2, y - im.naturalHeight * s / 2, im.naturalWidth * s, im.naturalHeight * s);
-          g.restore();
+          // Only the face (brow to chin): the elf keeps its own hat, ears and neck. The photo is zoomed so its face
+          // fills the oval, and the rim fades out so skin blends into the drawing.
+          const w = b[2] * cv.width * 1.02, hh = w * 1.3, x = b[0] * cv.width, y = b[1] * cv.height + w * .02;
+          const s = w / (im.naturalWidth * .6);
+          const pad = 4, ow = Math.ceil(w + pad * 2), oh = Math.ceil(hh + pad * 2);
+          if (soft.width !== ow || soft.height !== oh) { soft.width = ow; soft.height = oh; }
+          const sg = soft.getContext('2d'); sg.clearRect(0, 0, ow, oh);
+          sg.drawImage(im, ow / 2 - im.naturalWidth * s * .5, oh / 2 - im.naturalHeight * s * .54, im.naturalWidth * s, im.naturalHeight * s);
+          sg.globalCompositeOperation = 'destination-in';
+          sg.save(); sg.translate(ow / 2, oh / 2); sg.scale(1, hh / w);
+          const rg = sg.createRadialGradient(0, 0, w * .36, 0, 0, w / 2); rg.addColorStop(0, '#000'); rg.addColorStop(1, 'rgba(0,0,0,0)');
+          sg.fillStyle = rg; sg.beginPath(); sg.arc(0, 0, w / 2, 0, Math.PI * 2); sg.fill(); sg.restore();
+          sg.globalCompositeOperation = 'source-over';
+          g.drawImage(soft, x - ow / 2, y - oh / 2);
         });
       };
       const loop = () => { draw(); raf = requestAnimationFrame(loop); };
