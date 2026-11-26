@@ -153,9 +153,9 @@ const D = [
     q: { slider: true, min: 0, max: 800000, step: 10000, start: 300000, ok: 180000, tol: 50000, unit: { de: 'Nadeln', en: 'needles' },
          why: { de: 'Rund 180.000 Nadeln. Und gefühlt landen alle davon im Teppich.', en: 'Around 180,000 needles. And it feels like all of them end up in the carpet.' } } },
   // 22 · Tue
-  { type: 'rsvp', art: 'pretzel', kicker: { de: 'Frühstück', en: 'Breakfast' }, title: { de: 'Frühstück in allen Studios', en: 'Breakfast in every studio' },
-    body: { de: ['Kurz vor den Feiertagen beginnt der Tag gemeinsam: In jedem Studio gibt es Frühstück. Sag kurz, wo du dabei bist, damit genug Brötchen da sind.'],
-            en: ['Just before the holidays, the day starts together: breakfast in every studio. Let us know where you’ll join so there are enough rolls.'] },
+  { type: 'rsvp', info: true, art: 'pretzel', kicker: { de: 'Frühstück', en: 'Breakfast' }, title: { de: 'Frühstück in allen Studios', en: 'Breakfast in every studio' },
+    body: { de: ['Kurz vor den Feiertagen beginnt der Tag gemeinsam: In jedem Studio gibt es Frühstück. Hier steht, wann und wo.'],
+            en: ['Just before the holidays, the day starts together: breakfast in every studio. Here’s when and where.'] },
     studios: [
       { city: 'Stuttgart', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
       { city: 'Berlin', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
