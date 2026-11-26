@@ -34,7 +34,7 @@ for r in range(3):
     add(f'<text x="{SX + PW + 16:.1f}" y="{y + 70}" class="s">{T("Hand an der Falzkante: nicht schneiden", "Hand at the fold: do not cut")}</text>')
     for i in range(1, N):
         add(f'<text x="{SX + (i + .5) * PW:.1f}" y="{y + PH / 2 + 10:.1f}" class="ghost" text-anchor="middle">{T("falten", "fold")}</text>')
-add(f'<text x="{W - SX:.0f}" y="{H - 70}" class="s" text-anchor="end">{T("Strichpunkt Advent 2026 · 16. Dezember", "Strichpunkt Advent 2026 · December 16")}</text>')
+add(f'<text x="{W - SX:.0f}" y="{H - 70}" class="s" text-anchor="end">{T("Strichpunkt Advent 2026 · 22. Dezember", "Strichpunkt Advent 2026 · December 22")}</text>')
 
 svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="297mm" height="210mm" viewBox="0 0 {W} {H}">
 <title>{T('Papierkette „Open“: Vorlage', 'Paper chain “Open”: template')}</title>

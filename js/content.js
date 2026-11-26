@@ -128,12 +128,15 @@ const D = [
     q: { options: { de: ['„All I Want for Christmas Is You“, Mariah Carey', '„White Christmas“, Bing Crosby', '„Last Christmas“, Wham!'], en: ['“All I Want for Christmas Is You”, Mariah Carey', '“White Christmas”, Bing Crosby', '“Last Christmas”, Wham!'] }, ok: 1,
          why: { de: '„White Christmas“ von Bing Crosby gilt laut Guinness als meistverkaufte Single überhaupt, mit geschätzt 50 Millionen Exemplaren.', en: 'Bing Crosby’s “White Christmas” is listed by Guinness as the best-selling single of all time, with an estimated 50 million copies.' } } },
   // 16 · Wed
-  { type: 'diy', mode: 'image', kicker: { de: 'Basteln', en: 'Craft' }, title: { de: 'Hand in Hand', en: 'Hand in hand' },
-    body: { de: ['Eine Papierkette aus „Open“, einer unserer Werte-Illustrationen. Falten, einmal schneiden, auffalten: Alle halten sich an der Hand.'],
-            en: ['A paper chain made from “Open”, one of our value illustrations. Fold, cut once, unfold: everyone holds hands.'] },
-    steps: { de: ['Vorlage auf A4 quer drucken, am besten auf festes Papier.', 'Einen Streifen ausschneiden und an den gestrichelten Linien zickzack falten, wie eine Ziehharmonika. Die Figur liegt oben.', 'Entlang der Figur durch alle Lagen schneiden. Die Hände an den Falzkanten (lila markiert) nicht durchschneiden.', 'Auffalten. Für eine längere Kette mehrere Streifen mit Klebeband verbinden.', 'An den Baum, den Monitor oder ins Fenster hängen.'],
-             en: ['Print the template on A4 landscape, ideally on thick paper.', 'Cut out one strip and fold it zigzag along the dashed lines, like an accordion. The figure stays on top.', 'Cut along the figure through all layers. Do not cut the hands at the folds (marked in lilac).', 'Unfold. Tape several strips together for a longer chain.', 'Hang it on the tree, the monitor or in the window.'] },
-    ph: { de: 'Bildunterschrift (optional)', en: 'Caption (optional)' } },
+  { type: 'rsvp', info: true, art: 'pretzel', kicker: { de: 'Frühstück', en: 'Breakfast' }, title: { de: 'Frühstück in allen Studios', en: 'Breakfast in every studio' },
+    body: { de: ['Kurz vor den Feiertagen, am 22. Dezember, beginnt der Tag gemeinsam: In jedem Studio gibt es Frühstück. Hier steht, wann und wo.'],
+            en: ['Just before the holidays, on December 22, the day starts together: breakfast in every studio. Here’s when and where.'] },
+    studios: [
+      { city: 'Stuttgart', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
+      { city: 'Berlin', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
+      { city: 'Hamburg', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
+      { city: 'Basel', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
+    ] },
   // 17 · Thu
   { type: 'dinner', kicker: JOIN, title: { de: 'Was kommt bei dir auf den Tisch?', en: 'What’s on your table?' },
     body: { de: ['Kartoffelsalat mit Würstchen, Raclette oder etwas, das nur deine Familie kennt? Deck deinen Teller an unserer langen Tafel.'], en: ['Potato salad and sausages, raclette, or something only your family knows? Set your plate at our long table.'] } },
@@ -152,15 +155,12 @@ const D = [
     q: { slider: true, min: 0, max: 800000, step: 10000, start: 300000, ok: 180000, tol: 50000, unit: { de: 'Nadeln', en: 'needles' },
          why: { de: 'Rund 180.000 Nadeln. Und gefühlt landen alle davon im Teppich.', en: 'Around 180,000 needles. And it feels like all of them end up in the carpet.' } } },
   // 22 · Tue
-  { type: 'rsvp', info: true, art: 'pretzel', kicker: { de: 'Frühstück', en: 'Breakfast' }, title: { de: 'Frühstück in allen Studios', en: 'Breakfast in every studio' },
-    body: { de: ['Kurz vor den Feiertagen beginnt der Tag gemeinsam: In jedem Studio gibt es Frühstück. Hier steht, wann und wo.'],
-            en: ['Just before the holidays, the day starts together: breakfast in every studio. Here’s when and where.'] },
-    studios: [
-      { city: 'Stuttgart', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
-      { city: 'Berlin', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
-      { city: 'Hamburg', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
-      { city: 'Basel', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
-    ] },
+  { type: 'diy', mode: 'image', kicker: { de: 'Basteln', en: 'Craft' }, title: { de: 'Hand in Hand', en: 'Hand in hand' },
+    body: { de: ['Eine Papierkette aus „Open“, einer unserer Werte-Illustrationen. Falten, einmal schneiden, auffalten: Alle halten sich an der Hand.'],
+            en: ['A paper chain made from “Open”, one of our value illustrations. Fold, cut once, unfold: everyone holds hands.'] },
+    steps: { de: ['Vorlage auf A4 quer drucken, am besten auf festes Papier.', 'Einen Streifen ausschneiden und an den gestrichelten Linien zickzack falten, wie eine Ziehharmonika. Die Figur liegt oben.', 'Entlang der Figur durch alle Lagen schneiden. Die Hände an den Falzkanten (lila markiert) nicht durchschneiden.', 'Auffalten. Für eine längere Kette mehrere Streifen mit Klebeband verbinden.', 'An den Baum, den Monitor oder ins Fenster hängen.'],
+             en: ['Print the template on A4 landscape, ideally on thick paper.', 'Cut out one strip and fold it zigzag along the dashed lines, like an accordion. The figure stays on top.', 'Cut along the figure through all layers. Do not cut the hands at the folds (marked in lilac).', 'Unfold. Tape several strips together for a longer chain.', 'Hang it on the tree, the monitor or in the window.'] },
+    ph: { de: 'Bildunterschrift (optional)', en: 'Caption (optional)' } },
   // 23 · Wed
   { type: 'quiz', qi: 5, kicker: QUIZ, title: { de: 'In welchem Land isst man an Weihnachten traditionell frittiertes Hähnchen von KFC?', en: 'In which country is fried chicken from KFC a Christmas tradition?' },
     q: { options: { de: ['USA', 'Japan', 'Chile'], en: ['USA', 'Japan', 'Chile'] }, ok: 1,
