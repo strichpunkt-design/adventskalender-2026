@@ -54,10 +54,9 @@ const D = [
     body: { de: ['So viele Pakete hat DHL in Deutschland an einem einzigen Tag Anfang Dezember 2024 sortiert. Doppelt so viele wie an einem normalen Tag.', 'Unser erstes Türchen kommt ohne Zustellung aus.'],
             en: ['That’s how many parcels DHL sorted in Germany on a single day in early December 2024. Twice as many as on a normal day.', 'Our first door needs no delivery.'] } },
   // 2 · Wed
-  { type: 'playlist', mode: 'link', spotify: '', kicker: JOIN, title: { de: 'Die Playlist', en: 'The playlist' },
-    body: { de: ['Unsere gemeinsame Weihnachts-Playlist auf Spotify: Jede und jeder darf ein Lieblingslied reinpacken. Oder poste den Link hier und sag, warum genau dieser Song.'],
-            en: ['Our shared Christmas playlist on Spotify: everyone gets to add a favourite song. Or post the link here and say why this one.'] },
-    ph: { de: 'Warum dieser Song?', en: 'Why this song?' } },
+  { type: 'playlist', spotify: 'https://open.spotify.com/playlist/4tiNIj9eQVmrsuhX6BOMHQ?si=1c680b954a0344f2&pt=c5a29ad973383232f1dca3a2f757375f', kicker: JOIN, title: { de: 'Die Playlist', en: 'The playlist' },
+    body: { de: ['Unsere gemeinsame Weihnachts-Playlist auf Spotify: Jede und jeder darf ein Lieblingslied reinpacken. Öffne die Playlist und füg deinen Song hinzu.'],
+            en: ['Our shared Christmas playlist on Spotify: everyone gets to add a favourite song. Open the playlist and add yours.'] } },
   // 3 · Thu
   { type: 'quiz', qi: 1, kicker: QUIZ, title: { de: 'Wie nennen sich die Einbrecher Harry und Marv in „Kevin – Allein zu Haus“ selbst?', en: 'What do burglars Harry and Marv call themselves in “Home Alone”?' },
     q: { options: { de: ['Die nassen Banditen', 'Die klebrigen Banditen', 'Die Weihnachtsknacker'], en: ['The Wet Bandits', 'The Sticky Bandits', 'The Christmas Crackers'] }, ok: 0,

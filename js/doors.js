@@ -57,10 +57,10 @@ export function doorTypes({ wall, onCleanup }) {
     // ---------- Spotify playlist + song wall ----------
     playlist(el, d) {
       const a = d.spotify
-        ? h('a', { class: 'btn primary', href: d.spotify, target: '_blank', rel: 'noopener noreferrer' }, L({ de: 'Playlist öffnen', en: 'Open the playlist' }))
+        ? h('a', { class: 'btn primary', href: d.spotify, target: '_blank', rel: 'noopener noreferrer' }, L({ de: 'Playlist in Spotify öffnen ↗', en: 'Open the playlist in Spotify ↗' }))
         : h('span', { class: 'btn primary', 'aria-disabled': 'true', style: 'opacity:.5' }, L({ de: 'Playlist-Link folgt', en: 'Playlist link coming' }));
+      // Just the way into Spotify; songs are added there, not posted here.
       el.append(h('div', { class: 'row', style: 'margin:6px 0 4px' }, a));
-      wall(el, d, 'link');
     },
 
     // ---------- Quiz: one question per door ----------
