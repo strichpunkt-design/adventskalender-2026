@@ -466,3 +466,6 @@ a.btn{text-decoration:none}
 @keyframes bf-steam{0%,40%{opacity:0;transform:translateY(8px)}48%{opacity:.9}70%{opacity:.6;transform:translateY(-8px)}80%,100%{opacity:0;transform:translateY(-14px)}}
 @media (prefers-reduced-motion:reduce){.bfast .bf-cup,.bfast .bf-croissant,.bfast .bf-steam path{animation:none;opacity:1}}
 .rcard.back.b1,.rcard.back.b2{background:#fff}
+/* next recipe: the front card lifts, tips back and slides under the stack */
+.rcard{transform-origin:50% 100%}
+.rcard.out{translate:0 -18%;rotate:-4deg;scale:.9;opacity:0;transition:translate .32s cubic-bezier(.4,0,.6,1),rotate .32s,scale .32s,opacity .25s .07s}

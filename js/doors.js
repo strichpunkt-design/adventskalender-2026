@@ -254,7 +254,8 @@ export function doorTypes({ wall, onCleanup }) {
         books.replaceChildren(h('div', { class: 'lbl' }, L(list[cur].t)), ...planks);
       };
       // The recipe someone just added opens straight away.
-      const show = () => { const i = fresh ? list.findIndex(r => r.id === fresh) : -1; if (i >= 0) { cur = i; fresh = null; } cur = Math.min(cur, list.length - 1); drawCard(); drawBooks(); };
+      // Our recipe stays in front; new ones join the back of the stack.
+      const show = () => { fresh = null; cur = Math.min(cur, list.length - 1); drawCard(); drawBooks(); };
       const drawCard = () => {
         const r = list[cur], nx = list[(cur + 1) % list.length], key = 'sp_baked_' + r.id, nb = votes(baked, 'baked:' + r.id).length;
         // Ingredients first; below them the steps, one at a time, with arrows. Keeps the card small.
