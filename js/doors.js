@@ -241,7 +241,8 @@ export function doorTypes({ wall, onCleanup }) {
       const seed = { id: 'seed', name: 'Strichpunkt', ...d.seed };
       let list = [seed], baked = [], cur = 0, fresh = null;
       const stack = h('div', { class: 'stack' });
-      if (matchMedia('(min-width:900px)').matches) kitchen.append(stack); else el.append(stack);
+      // Wide screens: the card lies on the kitchen. Phones: the card comes first in the text column, full length and readable, the intro below it.
+      if (matchMedia('(min-width:900px)').matches) kitchen.append(stack); else el.prepend(stack);
       const parse = p => { try { const r = JSON.parse(p.body); return { id: p.id, name: p.name, t: r.t, b: r.b || '', z: r.z || [], s: r.s || [] }; } catch (e) { return null; } };
       const rnd = i => { const x = Math.sin(i * 91.7 + 3.1) * 43758.5; return x - Math.floor(x); };
       const drawBooks = () => {

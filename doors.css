@@ -470,3 +470,12 @@ a.btn{text-decoration:none}
 .rcard{transform-origin:50% 100%}
 .rcard.out{translate:0 -18%;rotate:-4deg;scale:.9;opacity:0;transition:translate .32s cubic-bezier(.4,0,.6,1),rotate .32s,scale .32s,opacity .25s .07s}
 .c-main iframe.spotify{display:block;width:100%;height:152px;border:0;border-radius:12px;margin-top:18px}
+/* recipe card on the kitchen (wide screens): smaller and calmer */
+.kitchen .stack{width:min(430px,42%);top:7%}
+.kitchen .rcard{padding:16px 18px 14px}
+.kitchen .rcard h3{font-size:clamp(16px,1.3vw,20px)}
+.kitchen .rcard .ing,.kitchen .rcard .stepper{font-size:13px}
+.kitchen .rcard .st-t{min-height:5em}
+.kitchen .rcard .btn{font-size:11px;padding:9px 14px}
+/* phones: the card sits at the top of the text column */
+@media (max-width:899px){.t-recipes .c-main>.stack{margin:6px 0 34px}.t-recipes .rcard{rotate:0deg}}
