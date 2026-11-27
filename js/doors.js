@@ -338,6 +338,7 @@ export function doorTypes({ wall, onCleanup }) {
 
     // ---------- Breakfast in every studio: who comes? ----------
     rsvp(el, d) {
+      if (d.studiosHidden) return;   // just the invitation, no list
       const key = 'sp_rsvp_' + d.n, list = h('div', { class: 'studios' }); el.append(list);
       // Just the dates: where and when, no sign-up.
       if (d.info) { list.replaceChildren(...d.studios.map(s => h('div', { class: 'studio' }, h('div', {}, h('h3', {}, s.city), h('p', { class: 'small' }, L(s.when)))))); return; }

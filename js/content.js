@@ -128,9 +128,9 @@ const D = [
     q: { options: { de: ['„All I Want for Christmas Is You“, Mariah Carey', '„White Christmas“, Bing Crosby', '„Last Christmas“, Wham!'], en: ['“All I Want for Christmas Is You”, Mariah Carey', '“White Christmas”, Bing Crosby', '“Last Christmas”, Wham!'] }, ok: 1,
          why: { de: '„White Christmas“ von Bing Crosby gilt laut Guinness als meistverkaufte Single überhaupt, mit geschätzt 50 Millionen Exemplaren.', en: 'Bing Crosby’s “White Christmas” is listed by Guinness as the best-selling single of all time, with an estimated 50 million copies.' } } },
   // 16 · Wed
-  { type: 'rsvp', info: true, art: 'pretzel', kicker: { de: 'Frühstück', en: 'Breakfast' }, title: { de: 'Frühstück in allen Studios', en: 'Breakfast in every studio' },
-    body: { de: ['Kurz vor den Feiertagen, am 22. Dezember, beginnt der Tag gemeinsam: In jedem Studio gibt es Frühstück. Hier steht, wann und wo.'],
-            en: ['Just before the holidays, on December 22, the day starts together: breakfast in every studio. Here’s when and where.'] },
+  { type: 'rsvp', info: true, studiosHidden: true, art: 'pretzel', kicker: { de: 'Frühstück', en: 'Breakfast' }, title: { de: 'Frühstück in allen Studios', en: 'Breakfast in every studio' },
+    body: { de: ['Kurz vor den Feiertagen, am 22. Dezember, beginnt der Tag gemeinsam: In jedem Studio gibt es Frühstück.'],
+            en: ['Just before the holidays, on December 22, the day starts together: breakfast in every studio.'] },
     studios: [
       { city: 'Stuttgart', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
       { city: 'Berlin', when: { de: 'Uhrzeit und Ort folgen', en: 'Time and place to follow' } },
