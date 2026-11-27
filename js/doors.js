@@ -55,7 +55,9 @@ export function doorTypes({ wall, onCleanup }) {
     },
 
     // ---------- Spotify playlist + song wall ----------
-    playlist(el, d) {
+    playlist(el, d, o = {}) {
+      // the site's own music waits while this door is open, so it doesn't play over Spotify
+      if (o.hush) { o.hush(true); onCleanup(() => o.hush(false)); }
       const a = d.spotify
         ? h('a', { class: 'btn primary', href: d.spotify, target: '_blank', rel: 'noopener noreferrer' }, L({ de: 'Playlist in Spotify öffnen ↗', en: 'Open the playlist in Spotify ↗' }))
         : h('span', { class: 'btn primary', 'aria-disabled': 'true', style: 'opacity:.5' }, L({ de: 'Playlist-Link folgt', en: 'Playlist link coming' }));
