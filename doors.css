@@ -480,3 +480,13 @@ a.btn{text-decoration:none}
 /* phones: the card sits at the top of the text column */
 @media (max-width:899px){.t-recipes .c-main>.stack{margin:6px 0 34px}.t-recipes .rcard{rotate:0deg}}
 @media (max-width:899px){.t-recipes .books{left:6%;right:6%;width:auto}.t-recipes .books .lbl{max-width:100%;letter-spacing:.05em}}
+/* door 16 v2: alarm clock + pretzel pile (12 s loop) */
+.bfast2{position:relative;width:min(84%,560px);aspect-ratio:1.05}
+.bf-pile{position:absolute;inset:22% 8% 0 4%}
+.bf-pz{position:absolute;fill:#000;stroke:#B78CFF;stroke-width:5;paint-order:stroke;overflow:visible;transform:rotate(var(--r));opacity:0;animation:bf-pz 12s infinite cubic-bezier(.5,0,.7,1) backwards}
+@keyframes bf-pz{0%{transform:translateY(-260%) rotate(calc(var(--r) - 40deg));opacity:0}1%{opacity:1}8%{transform:translateY(6%) rotate(var(--r))}10%{transform:translateY(-4%) rotate(var(--r))}12%,62%{transform:rotate(var(--r));opacity:1}70%,100%{transform:translateY(18%) rotate(var(--r));opacity:0}}
+.bf-clock{position:absolute;right:2%;top:0;width:30%;overflow:visible;transform-origin:50% 90%;animation:bf-clock 12s infinite}
+.bf-clock .bf-ring{opacity:0;animation:bf-ring 12s infinite}
+@keyframes bf-clock{0%,2%{transform:none}3%,7%,11%,15%{transform:rotate(-9deg) translateY(-3px)}5%,9%,13%,17%{transform:rotate(9deg) translateY(-3px)}19%,100%{transform:none}}
+@keyframes bf-ring{0%,2%{opacity:0}3%,6%,9%,12%,15%{opacity:1}4.5%,7.5%,10.5%,13.5%,17%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.bf-pz{animation:none;opacity:1}.bf-clock,.bf-clock .bf-ring{animation:none}}
