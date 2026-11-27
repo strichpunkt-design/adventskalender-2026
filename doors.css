@@ -497,3 +497,11 @@ a.btn{text-decoration:none}
 @keyframes bf-clock{0%,2%{transform:none}3%,7%,11%,15%{transform:rotate(-9deg) translateY(-3px)}5%,9%,13%,17%{transform:rotate(9deg) translateY(-3px)}19%,100%{transform:none}}
 @keyframes bf-ring{0%,2%{opacity:0}3%,6%,9%,12%,15%{opacity:1}4.5%,7.5%,10.5%,13.5%,17%,100%{opacity:0}}
 @media (prefers-reduced-motion:reduce){.bf-pz{animation:none;opacity:1}.bf-clock,.bf-clock .bf-ring{animation:none}}
+/* door 16 v3: the whole picture fills with pretzels */
+.c-head .stage.art-pretzel{overflow:hidden}
+.bfast2.fill{position:absolute;inset:0;width:auto;aspect-ratio:auto}
+.bfast2.fill .bf-pile{position:absolute;inset:0;opacity:1}
+.bfast2.fill .bf-pz{position:absolute;opacity:1;animation:none;transform:none}
+.bfast2.fill .bf-clock{right:6%;top:8%;width:min(22%,150px);z-index:3;animation-duration:6s}
+.bfast2.fill .bf-clock .bf-ring{animation-duration:6s}
+.c-head .stage.art-pretzel~.tag,.c-head:has(.art-pretzel) .tag,.c-head:has(.art-pretzel) .count{z-index:5;position:absolute}
