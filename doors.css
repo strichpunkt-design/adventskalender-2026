@@ -505,3 +505,4 @@ a.btn{text-decoration:none}
 .bfast2.fill .bf-clock{right:6%;top:8%;width:min(22%,150px);z-index:3;animation-duration:6s}
 .bfast2.fill .bf-clock .bf-ring{animation-duration:6s}
 .c-head .stage.art-pretzel~.tag,.c-head:has(.art-pretzel) .tag,.c-head:has(.art-pretzel) .count{z-index:5;position:absolute}
+.bfast2.fill .bf-clock{display:none}

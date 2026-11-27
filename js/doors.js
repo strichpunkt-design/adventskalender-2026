@@ -576,13 +576,15 @@ export const ART_RUN = {
       const size = Math.max(54, Math.min(110, W / 6)), step = size * .78, rowH = size * .62, cols = Math.ceil(W / step) + 1;
       const spots = [];
       for (let r = 0, y = H - size * .92; y > -size * .4; r++, y -= rowH)
-        for (let c = 0; c < cols; c++) spots.push({ x: c * step - (r % 2 ? step / 2 : 0) + (Math.random() - .5) * size * .18, y: y + (Math.random() - .5) * size * .12, r: (Math.random() - .5) * 50 });
-      const gap = 55;   // ms between pretzels: fast
+        for (let c = 0; c < cols; c++) spots.push({ row: r, s: size * (.85 + Math.random() * .3), x: c * step - (r % 2 ? step / 2 : 0) + (Math.random() - .5) * size * .45, y: y + (Math.random() - .5) * size * .3, r: (Math.random() - .5) * 120 });
+      // not row by row: pretzels land all over the place, only roughly from the bottom up
+      spots.sort((a, b) => (a.row + Math.random() * 2.6) - (b.row + Math.random() * 2.6));
+      const gap = 50;   // ms between pretzels on average: fast
       spots.forEach((p, i) => {
         const el = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         el.setAttribute('viewBox', '0 3 100 92'); el.setAttribute('class', 'bf-pz');
         el.innerHTML = '<use href="#bf-pretzel"/>';
-        Object.assign(el.style, { left: p.x + 'px', top: p.y + 'px', width: size + 'px' });
+        Object.assign(el.style, { left: p.x + 'px', top: p.y + 'px', width: p.s + 'px' });
         pile.append(el);
         const fall = p.y + size * 1.3, dur = 420 + Math.sqrt(fall) * 18;
         el.animate([
@@ -590,9 +592,9 @@ export const ART_RUN = {
           { transform: `translateY(0) rotate(${p.r}deg)`, offset: .78, easing: 'cubic-bezier(0,.5,.5,1)' },
           { transform: `translateY(-${size * .12}px) rotate(${p.r + 4}deg)`, offset: .9, easing: 'cubic-bezier(.5,0,1,.5)' },
           { transform: `translateY(0) rotate(${p.r}deg)`, opacity: 1 }
-        ], { duration: dur, delay: 900 + i * gap, fill: 'both' });
+        ], { duration: dur, delay: 300 + i * gap + Math.random() * 120, fill: 'both' });
       });
-      const full = 900 + spots.length * gap + 900;
+      const full = 300 + spots.length * gap + 900;
       // the alarm clock rings at the start and is gone once the pile is half way up
       const clock = stage.querySelector('.bf-clock');
       if (clock) { clock.getAnimations().filter(x => x.id === 'fade').forEach(x => x.cancel());
