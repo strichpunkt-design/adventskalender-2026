@@ -586,13 +586,16 @@ export const ART_RUN = {
         el.innerHTML = '<use href="#bf-pretzel"/>';
         Object.assign(el.style, { left: p.x + 'px', top: p.y + 'px', width: p.s + 'px' });
         pile.append(el);
-        const fall = p.y + size * 1.3, dur = 420 + Math.sqrt(fall) * 18;
+        const fall = p.y + p.s * 1.6,   // starts fully above the frame
+          _u = 0, dur = 420 + Math.sqrt(fall) * 18;
         el.animate([
-          { transform: `translateY(${-fall}px) rotate(${p.r - 40}deg)`, opacity: 1, easing: 'cubic-bezier(.45,0,1,.6)' },
+          { transform: `translateY(${-fall}px) rotate(${p.r - 40}deg)`, opacity: 0, easing: 'cubic-bezier(.45,0,1,.6)' },
+          { opacity: 0, offset: .45 }, { opacity: 1, offset: .62 },   // only shows on the last part of the fall, never at the top edge
           { transform: `translateY(0) rotate(${p.r}deg)`, offset: .78, easing: 'cubic-bezier(0,.5,.5,1)' },
           { transform: `translateY(-${size * .12}px) rotate(${p.r + 4}deg)`, offset: .9, easing: 'cubic-bezier(.5,0,1,.5)' },
           { transform: `translateY(0) rotate(${p.r}deg)`, opacity: 1 }
-        ], { duration: dur, delay: 300 + i * gap + Math.random() * 120, fill: 'both' });
+        ], { duration: dur, delay: 300 + i * gap + Math.random() * 120, fill: 'forwards' });
+        el.style.opacity = 0;   // nothing waits at the top: each one appears only as it starts to fall
       });
       const full = 300 + spots.length * gap + 900;
       // the alarm clock rings at the start and is gone once the pile is half way up
