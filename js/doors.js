@@ -593,6 +593,10 @@ export const ART_RUN = {
         ], { duration: dur, delay: 900 + i * gap, fill: 'both' });
       });
       const full = 900 + spots.length * gap + 900;
+      // the alarm clock rings at the start and is gone once the pile is half way up
+      const clock = stage.querySelector('.bf-clock');
+      if (clock) { clock.getAnimations().filter(x => x.id === 'fade').forEach(x => x.cancel());
+        const f = clock.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, delay: 900 + spots.length / 2 * gap, fill: 'forwards' }); f.id = 'fade'; }
       timer = setTimeout(() => {   // all at once, then again
         pile.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 350, fill: 'forwards' }).finished.then(() => { pile.getAnimations().forEach(a => a.cancel()); timer = setTimeout(run, 250); });
       }, full + 1600);
