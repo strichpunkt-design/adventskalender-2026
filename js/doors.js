@@ -59,8 +59,10 @@ export function doorTypes({ wall, onCleanup }) {
       const a = d.spotify
         ? h('a', { class: 'btn primary', href: d.spotify, target: '_blank', rel: 'noopener noreferrer' }, L({ de: 'Playlist in Spotify öffnen ↗', en: 'Open the playlist in Spotify ↗' }))
         : h('span', { class: 'btn primary', 'aria-disabled': 'true', style: 'opacity:.5' }, L({ de: 'Playlist-Link folgt', en: 'Playlist link coming' }));
-      // Just the way into Spotify; songs are added there, not posted here.
-      el.append(h('div', { class: 'row', style: 'margin:6px 0 4px' }, a));
+      // The playlist itself, playable right here (Spotify's own player); the button opens it in Spotify to add songs.
+      const id = (d.spotify.match(/playlist\/([A-Za-z0-9]+)/) || [])[1];
+      if (id) el.append(h('iframe', { class: 'spotify', src: `https://open.spotify.com/embed/playlist/${id}?utm_source=generator`, height: 152, loading: 'lazy', allow: 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture', title: 'Spotify' }));
+      el.append(h('div', { class: 'row', style: 'margin:14px 0 4px' }, a));
     },
 
     // ---------- Quiz: one question per door ----------

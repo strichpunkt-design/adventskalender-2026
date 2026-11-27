@@ -469,3 +469,4 @@ a.btn{text-decoration:none}
 /* next recipe: the front card lifts, tips back and slides under the stack */
 .rcard{transform-origin:50% 100%}
 .rcard.out{translate:0 -18%;rotate:-4deg;scale:.9;opacity:0;transition:translate .32s cubic-bezier(.4,0,.6,1),rotate .32s,scale .32s,opacity .25s .07s}
+.c-main iframe.spotify{display:block;width:100%;height:152px;border:0;border-radius:12px;margin-top:18px}

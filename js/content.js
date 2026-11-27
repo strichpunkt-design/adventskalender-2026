@@ -50,7 +50,7 @@ const FACT = { de: 'Fun Fact', en: 'Fun fact' }, QUIZ = { de: 'Quiz', en: 'Quiz'
 
 const D = [
   // 1 · Tue
-  { type: 'playlist', spotify: 'https://open.spotify.com/playlist/4tiNIj9eQVmrsuhX6BOMHQ?si=1c680b954a0344f2&pt=c5a29ad973383232f1dca3a2f757375f', kicker: JOIN, title: { de: 'Die Playlist', en: 'The playlist' },
+  { type: 'playlist', value: 'create', spotify: 'https://open.spotify.com/playlist/4tiNIj9eQVmrsuhX6BOMHQ?si=1c680b954a0344f2&pt=c5a29ad973383232f1dca3a2f757375f', kicker: JOIN, title: { de: 'Die Playlist', en: 'The playlist' },
     body: { de: ['Unsere gemeinsame Weihnachts-Playlist auf Spotify: Jede und jeder darf ein Lieblingslied reinpacken. Öffne die Playlist und füg deinen Song hinzu.'],
             en: ['Our shared Christmas playlist on Spotify: everyone gets to add a favourite song. Open the playlist and add yours.'] } },
   // 2 · Wed
