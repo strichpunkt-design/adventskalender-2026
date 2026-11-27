@@ -81,8 +81,8 @@ const D = [
     todo: { de: 'Abgeholt', en: 'Picked up' } },
   // 8 · Tue
   { type: 'meme', kicker: JOIN, title: { de: 'Meme des Jahres', en: 'Meme of the year' },
-    body: { de: ['Häng dein liebstes Weihnachtsmeme an den Baum: Bild, GIF oder kurzes Video. Tipp auf eine Kugel zum Ansehen und Mitlachen. Unten siehst du, welche Memes gerade vorn liegen.'],
-            en: ['Hang your favourite Christmas meme on the tree: picture, GIF or short video. Tap a bauble to look and laugh along. Below you can see which memes are leading right now.'] },
+    body: { de: ['Häng dein liebstes Weihnachtsmeme an den Baum. Tipp auf eine Kugel zum Ansehen und Mitlachen. Unten siehst du, welche Memes gerade vorn liegen.'],
+            en: ['Hang your favourite Christmas meme on the tree. Tap a bauble to look and laugh along. Below you can see which memes are leading right now.'] },
     ph: { de: 'Bildunterschrift (optional)', en: 'Caption (optional)' } },
   // 9 · Wed
   { type: 'quiz', qi: 2, kicker: QUIZ, title: { de: 'Wie heißen die Rentiere vom Weihnachtsmann?', en: 'What are Santa’s reindeer called?' },
