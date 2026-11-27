@@ -479,3 +479,4 @@ a.btn{text-decoration:none}
 .kitchen .rcard .btn{font-size:11px;padding:9px 14px}
 /* phones: the card sits at the top of the text column */
 @media (max-width:899px){.t-recipes .c-main>.stack{margin:6px 0 34px}.t-recipes .rcard{rotate:0deg}}
+@media (max-width:899px){.t-recipes .books{left:6%;right:6%;width:auto}.t-recipes .books .lbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}}
