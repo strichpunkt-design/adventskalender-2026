@@ -24,7 +24,7 @@ export const T = {
   ob_nocity: { de: 'Stadt nicht gefunden. Versuch eine andere.', en: 'City not found. Try another.' },
   ob_need: { de: 'Wähl einen Standort oder eine Stadt.', en: 'Choose your location or a city.' },
   post: { de: 'Posten', en: 'Post' },
-  image: { de: 'Bild wählen', en: 'Choose image' },
+  image: { de: 'Bild hinzufügen', en: 'Add a picture' },
   empty: { de: 'Noch leer. Mach den Anfang.', en: 'Still empty. Go first.' },
   need_text: { de: 'Schreib erst etwas.', en: 'Write something first.' },
   need_link: { de: 'Füg einen Link ein, der mit https:// beginnt.', en: 'Paste a link that starts with https://.' },

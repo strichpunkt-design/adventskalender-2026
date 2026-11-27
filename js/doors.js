@@ -154,7 +154,6 @@ export function doorTypes({ wall, onCleanup }) {
       const st = stage(head, 'blush tall', tb);
       let big = false, posts = [], laughs = [];
       const zoom = btn(L({ de: 'Baum vergrößern', en: 'Enlarge the tree' }), () => { big = !big; zoom.textContent = big ? L({ de: 'Ganzer Baum', en: 'Whole tree' }) : L({ de: 'Baum vergrößern', en: 'Enlarge the tree' }); layout(); }, 'line');
-      el.append(h('div', { class: 'row' }, zoom));
       wall(el, d, 'image', { board: false, moving: true });
       // Pack n ornaments into the tree triangle (viewBox 400x500) on a hex grid, as large as they can be.
       const grid = dd => { const pts = []; for (let k = 0, y = 112; y <= 400; k++, y += dd * 0.866) { const hw = 160 * (y - 70) / 340 - dd * 0.3, off = k % 2 ? dd / 2 : 0; for (let j = -20; j <= 20; j++) { const x = 200 + j * dd + off; if (Math.abs(x - 200) <= hw) pts.push([x, y]); } } return pts; };

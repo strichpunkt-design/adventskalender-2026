@@ -63,11 +63,17 @@ function wall(el, d, mode = d.mode, { board: showBoard = true, moving = false } 
     const ta = h('textarea', { maxlength: 280, placeholder: L(d.ph) || '', 'aria-label': L(d.ph) || L(d.title) });
     const url = mode === 'link' && h('input', { type: 'url', placeholder: 'https://open.spotify.com/…', maxlength: 300, 'aria-label': 'Link' });
     const file = mode === 'image' && h('input', { type: 'file', accept: moving ? 'image/*,video/mp4,video/webm,video/quicktime' : 'image/*', hidden: true });
-    const fileBtn = file && btn(t('image'), () => file.click(), 'line');
+    // Pictures go straight up: choosing one posts it (with the caption, if any). One button, no second step.
+    const fileBtn = file && btn(t('image'), () => {
+      if (who && !localStorage.sp_name && !who.value.trim()) { err.textContent = t('need_name'); who.focus(); return; }
+      file.click();
+    }, 'primary');
     if (file) file.addEventListener('change', async () => {
       err.textContent = '';
-      try { img = moving ? await store.prepare(file.files[0]) : await store.shrink(file.files[0]); fileBtn.textContent = '✓ ' + file.files[0].name.slice(0, 18); }
+      try { img = moving ? await store.prepare(file.files[0]) : await store.shrink(file.files[0]); }
       catch (e) { img = null; err.textContent = e.code === 'big' ? t('too_big') : t('failed'); }
+      file.value = '';
+      if (img) send.click();
     });
     const send = btn(t('post'), async () => {
       const body = ta.value.trim(), link = url ? url.value.trim() : '';
@@ -79,12 +85,13 @@ function wall(el, d, mode = d.mode, { board: showBoard = true, moving = false } 
       try {
         await store.add(d.n, { kind: mode, body, url: link, image: img });
         if (who) who.remove();
-        ta.value = ''; if (url) url.value = ''; img = null; if (fileBtn) fileBtn.textContent = t('image');
+        ta.value = ''; if (url) url.value = ''; img = null;
       } catch (e) { err.textContent = t('failed'); }
       send.disabled = false;
     }, 'primary');
     [ta, url].forEach(i => i && i.addEventListener('input', () => { err.textContent = ''; }));
-    el.append(h('div', { class: 'wall-form' }, who, url, ta, file, h('div', { class: 'row' }, fileBtn, send), err));
+    el.append(h('div', { class: 'wall-form' }, who, url, ta, file, h('div', { class: 'row' }, fileBtn, file ? null : send),
+      file && h('p', { class: 'small', style: 'opacity:.6' }, moving ? L({ de: 'JPG, PNG, GIF oder kurzes Video (MP4, MOV), bis 8 MB.', en: 'JPG, PNG, GIF or a short video (MP4, MOV), up to 8 MB.' }) : L({ de: 'JPG oder PNG.', en: 'JPG or PNG.' })), err));
   }
   if (!store.isShared) el.append(h('p', { class: 'small', style: 'opacity:.5' }, t('local')));
   if (!showBoard) return;
